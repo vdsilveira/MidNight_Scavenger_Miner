@@ -23,14 +23,25 @@ export default function MiningStatus({ apiBase }: MiningStatusProps) {
   useEffect(() => {
     const loadStatus = async () => {
       try {
-        const res = await fetch(`${apiBase}/wallets/mining-status`)
+        const res = await fetch(`${apiBase}/wallets/mining-status`).catch(err => {
+          console.error("Erro ao buscar mining status:", err)
+          return { ok: false } as Response
+        })
+
         if (res.ok) {
-          const data = await res.json()
-          setStatus(data)
-          setLastUpdate(new Date())
+          try {
+            const data = await res.json()
+            console.log("⛏️ Mining status recebido:", data)
+            setStatus(data)
+            setLastUpdate(new Date())
+          } catch (e) {
+            console.error("Erro ao processar mining status:", e)
+          }
+        } else {
+          console.warn("Mining status não disponível")
         }
       } catch (error) {
-        console.error("Error loading mining status:", error)
+        console.error("❌ Erro geral ao carregar mining status:", error)
       }
     }
 

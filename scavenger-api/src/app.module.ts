@@ -25,6 +25,8 @@ import { CardanoDerivationService } from './cardano-derivation/cardano-derivatio
 import { AutoMinerService } from './auto-miner/auto-miner.service';
 import { ConsolidationController } from './consolidation/consolidation.controller';
 import { ConsolidationService } from './consolidation/consolidation.service';
+import { ChallengeMonitorService } from './challenge/challenge-monitor.service';
+import { SolutionStatsService } from './solution/solution-stats.service';
 
 @Module({
   imports: [
@@ -61,6 +63,8 @@ import { ConsolidationService } from './consolidation/consolidation.service';
     CardanoDerivationService,
     AutoMinerService,
     ConsolidationService,
+    ChallengeMonitorService,
+    SolutionStatsService,
   ],
 })
 export class AppModule {}

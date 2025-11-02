@@ -20,7 +20,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "miner": "ts-node tools/miner-cli.ts",
     "multi-miner": "ts-node tools/multi-address-miner.ts",
-    "sync-wallets": "ts-node tools/sync-wallets.ts"
+    "sync-wallets": "ts-node tools/sync-wallets.ts",
+    "test:challenge": "ts-node test-challenge-validation.ts",
+    "test:hash": "ts-node test-hash-validation.ts",
+    "test:mining": "ts-node test-mining-performance.ts"
   },
   "dependencies": {
     "@bitcoin-js/tiny-secp256k1-asmjs": "^2.2.4",
@@ -40,7 +43,7 @@
     "crypto-js": "^4.2.0",
     "hex": "^0.1.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1",
+    "rxjs": "^7.8.2",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
@@ -53,6 +56,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^22.18.13",
     "@types/supertest": "^6.0.2",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",

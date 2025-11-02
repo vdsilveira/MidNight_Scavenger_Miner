@@ -22,31 +22,42 @@ export default function RecentActivity({ apiBase, onNewSolution }: RecentActivit
   useEffect(() => {
     const loadActivity = async () => {
       try {
-        const res = await fetch(`${apiBase}/wallets/recent-activity`)
+        const res = await fetch(`${apiBase}/wallets/recent-activity`).catch(err => {
+          console.error("Erro ao buscar recent activity:", err)
+          return { ok: false } as Response
+        })
+
         if (res.ok) {
-          const data = await res.json()
-          const newSolutions = data.recentSolutions || []
+          try {
+            const data = await res.json()
+            console.log("✨ Recent activity recebido:", data)
+            const newSolutions = data.recentSolutions || []
 
-          if (newSolutions.length > previousCount && previousCount > 0) {
-            const newCount = newSolutions.length - previousCount
-            const newNotification = {
-              id: Date.now().toString(),
-              message: `🎉 ${newCount} new solution(s) found and submitted!`,
-              timestamp: new Date(),
+            if (newSolutions.length > previousCount && previousCount > 0) {
+              const newCount = newSolutions.length - previousCount
+              const newNotification = {
+                id: Date.now().toString(),
+                message: `🎉 ${newCount} new solution(s) found and submitted!`,
+                timestamp: new Date(),
+              }
+              setNotifications((prev) => [newNotification, ...prev.slice(0, 4)])
+              if (onNewSolution) onNewSolution()
+
+              setTimeout(() => {
+                setNotifications((prev) => prev.filter((n) => n.id !== newNotification.id))
+              }, 5000)
             }
-            setNotifications((prev) => [newNotification, ...prev.slice(0, 4)])
-            if (onNewSolution) onNewSolution()
 
-            setTimeout(() => {
-              setNotifications((prev) => prev.filter((n) => n.id !== newNotification.id))
-            }, 5000)
+            setSolutions(newSolutions)
+            setPreviousCount(newSolutions.length)
+          } catch (e) {
+            console.error("Erro ao processar recent activity:", e)
           }
-
-          setSolutions(newSolutions)
-          setPreviousCount(newSolutions.length)
+        } else {
+          console.warn("Recent activity não disponível")
         }
       } catch (error) {
-        console.error("Error loading activity:", error)
+        console.error("❌ Erro geral ao carregar recent activity:", error)
       }
     }
 

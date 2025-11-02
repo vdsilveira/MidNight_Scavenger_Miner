@@ -60,49 +60,181 @@ export default function Dashboard() {
   const [pendingCount, setPendingCount] = useState(0)
   const [walletFilter, setWalletFilter] = useState<"all" | "mining" | "pending" | "submitted">("all")
 
+  const [challengeChanged, setChallengeChanged] = useState(false)
+  const [lastChallengeId, setLastChallengeId] = useState<string | null>(null)
+
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [statsRes, challengeRes, walletsRes] = await Promise.all([
-          fetch(`${API_BASE}/wallets/stats`),
-          fetch(`${API_BASE}/challenge/current`),
-          fetch(`${API_BASE}/wallets`),
+        // ✅ Buscar todas as informações em paralelo
+        const [statsRes, challengeRes, walletsRes, challengeInfoRes] = await Promise.all([
+          fetch(`${API_BASE}/wallets/stats`).catch(err => {
+            console.error("Erro ao buscar stats:", err)
+            return { ok: false } as Response
+          }),
+          fetch(`${API_BASE}/challenge/current`).catch(err => {
+            console.error("Erro ao buscar challenge:", err)
+            return { ok: false } as Response
+          }),
+          fetch(`${API_BASE}/wallets`).catch(err => {
+            console.error("Erro ao buscar wallets:", err)
+            return { ok: false } as Response
+          }),
+          fetch(`${API_BASE}/wallets/challenge-info`).catch(err => {
+            console.error("Erro ao buscar challenge info:", err)
+            return { ok: false } as Response
+          }),
         ])
 
+        // ✅ Processar stats
         if (statsRes.ok) {
-          const statsData = await statsRes.json()
-          setStats(statsData)
+          try {
+            const statsData = await statsRes.json()
+            console.log("📊 Stats recebidos:", statsData)
+            setStats({
+              totalWallets: statsData.totalWallets || 0,
+              totalSubmissions: statsData.totalSubmissions || 0,
+              totalNightEarned: statsData.totalNightEarned || 0,
+              status: statsData.status || "connected",
+            })
+          } catch (e) {
+            console.error("Erro ao processar stats:", e)
+            setStats(prev => ({ ...prev, status: "disconnected" }))
+          }
+        } else {
+          console.warn("Stats não disponíveis")
+          setStats(prev => ({ ...prev, status: "disconnected" }))
         }
 
+        // ✅ Processar challenge
         if (challengeRes.ok) {
-          const challengeData = await challengeRes.json()
-          setChallenge(challengeData)
+          try {
+            const challengeData = await challengeRes.json()
+            console.log("🎯 Challenge recebido:", challengeData)
+            
+            // ✅ Detectar mudança de challenge
+            const currentChallengeId = challengeData.challenge?.challenge_id
+            if (currentChallengeId && lastChallengeId && currentChallengeId !== lastChallengeId) {
+              console.log(`🔄 CHALLENGE MUDOU! ${lastChallengeId} → ${currentChallengeId}`)
+              setChallengeChanged(true)
+              setTimeout(() => setChallengeChanged(false), 10000) // Remover aviso após 10s
+            }
+            
+            if (currentChallengeId) {
+              setLastChallengeId(currentChallengeId)
+            }
+            
+            setChallenge(challengeData)
+          } catch (e) {
+            console.error("Erro ao processar challenge:", e)
+          }
+        } else {
+          console.warn("Challenge não disponível")
         }
 
+        // ✅ Processar informações de mudança de challenge
+        if (challengeInfoRes.ok) {
+          try {
+            const challengeInfo = await challengeInfoRes.json()
+            console.log("📊 Challenge info recebido:", challengeInfo)
+            
+            if (challengeInfo.hasChanged) {
+              console.log(`🔄 Challenge mudou detectado via API: ${challengeInfo.lastChallengeId} → ${challengeInfo.currentChallengeId}`)
+              setChallengeChanged(true)
+              setTimeout(() => setChallengeChanged(false), 10000)
+              
+              // Atualizar lastChallengeId
+              if (challengeInfo.currentChallengeId) {
+                setLastChallengeId(challengeInfo.currentChallengeId)
+              }
+            }
+          } catch (e) {
+            console.error("Erro ao processar challenge info:", e)
+          }
+        }
+
+        // ✅ Processar wallets
         if (walletsRes.ok) {
-          const walletsData = await walletsRes.json()
-          console.log("[v0] Wallets response structure:", walletsData)
+          try {
+            const walletsData = await walletsRes.json()
+            console.log("💼 Wallets recebidos:", walletsData)
 
-          const walletsArray = Array.isArray(walletsData) ? walletsData : walletsData.wallets || []
+            // ✅ Suportar diferentes formatos de resposta
+            const walletsArray = Array.isArray(walletsData) 
+              ? walletsData 
+              : walletsData.wallets || walletsData.data || []
 
-          setWallets(walletsArray)
-          setSubmittedCount(walletsArray.filter((w: Wallet) => w.status === "submitted").length)
-          setPendingCount(walletsArray.filter((w: Wallet) => w.status === "pending").length)
+            console.log(`📋 Processando ${walletsArray.length} carteiras`)
+
+            setWallets(walletsArray)
+            setSubmittedCount(walletsArray.filter((w: Wallet) => w.status === "submitted").length)
+            setPendingCount(walletsArray.filter((w: Wallet) => w.status === "pending").length)
+          } catch (e) {
+            console.error("Erro ao processar wallets:", e)
+          }
+        } else {
+          console.warn("Wallets não disponíveis")
         }
+
+        // ✅ Atualizar status de conexão baseado em sucesso
+        setStats(prev => ({
+          ...prev,
+          status: statsRes.ok || challengeRes.ok || walletsRes.ok ? "connected" : "disconnected"
+        }))
       } catch (error) {
-        console.error("Erro ao carregar dados:", error)
+        console.error("❌ Erro geral ao carregar dados:", error)
+        setStats(prev => ({ ...prev, status: "disconnected" }))
       }
     }
 
+    // ✅ Carregar imediatamente e depois a cada 5 segundos
     loadData()
     const interval = setInterval(loadData, 5000)
     return () => clearInterval(interval)
+  }, [lastChallengeId]) // ✅ Incluir lastChallengeId para detectar mudanças
+  
+  // ✅ Verificar conexão com API periodicamente
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/wallets/stats`, { 
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        })
+        if (!res.ok) {
+          console.error(`❌ API não respondeu: ${res.status} ${res.statusText}`)
+          setStats(prev => ({ ...prev, status: "disconnected" }))
+        }
+      } catch (error) {
+        console.error("❌ Erro de conexão com API:", error)
+        setStats(prev => ({ ...prev, status: "disconnected" }))
+      }
+    }
+    
+    checkConnection()
+    const connectionCheck = setInterval(checkConnection, 10000) // Verificar a cada 10s
+    return () => clearInterval(connectionCheck)
   }, [])
 
   const filteredWallets = walletFilter === "all" ? wallets : wallets.filter((w) => w.status === walletFilter)
 
   return (
     <div className="min-h-screen bg-[#0a0e27]">
+      {/* ✅ Notificação de Mudança de Challenge */}
+      {challengeChanged && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-4 rounded-lg shadow-xl border-2 border-yellow-400 animate-pulse">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🔄</span>
+            <div>
+              <p className="font-bold text-lg">Challenge Mudou!</p>
+              <p className="text-sm opacity-90">
+                Novo challenge detectado: {challenge?.challenge?.challenge_id || 'Carregando...'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="border-b border-[#1a1f3a] bg-[#0f1533] sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">

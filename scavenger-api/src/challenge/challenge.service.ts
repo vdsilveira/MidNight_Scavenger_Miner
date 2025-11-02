@@ -90,17 +90,48 @@ export class ChallengeService {
     return Math.min(Math.floor(hours / 1) + 1, this.challengesPerDay);
   }
 
+  /**
+   * Calcula a dificuldade baseado no dia
+   * ✅ Conforme teste de validação: difficulty = min(0x000000FF + (day * 0x10), 0xFFFFFFFF)
+   */
   private calculateDifficulty(day: number): string {
+    if (day < 1 || day > this.maxDay) {
+      throw new Error(`Invalid day: ${day} (must be between 1 and ${this.maxDay})`);
+    }
+
     const baseDifficulty = 0x000000ff;
     const difficulty = Math.min(baseDifficulty + (day * 0x10), 0xffffffff);
-    return difficulty.toString(16).padStart(8, '0').toUpperCase();
+    const hex = difficulty.toString(16).padStart(8, '0').toUpperCase();
+    
+    // ✅ Validar formato (8 hex chars, maiúsculas) - conforme teste
+    if (hex.length !== 8 || !/^[0-9A-F]{8}$/.test(hex)) {
+      throw new Error(`Invalid difficulty format: ${hex}`);
+    }
+    
+    return hex;
   }
 
+  /**
+   * Gera no_pre_mine deterministicamente baseado no challenge_id
+   * ✅ Sempre retorna 64 caracteres hex (32 bytes) - conforme teste de validação
+   */
   private generateNoPreMine(challengeId: string): string {
-    return crypto
+    // ✅ Validar formato do challenge_id antes de gerar
+    if (!/^D\d{2}C\d{2}$/.test(challengeId)) {
+      throw new Error(`Invalid challengeId format: ${challengeId}`);
+    }
+
+    const hash = crypto
       .createHash('sha256')
       .update(`${this.ROM_SEED}:${challengeId}`)
       .digest('hex');
+    
+    // ✅ Garantir que sempre retorna 64 caracteres (conforme teste)
+    if (hash.length !== 64) {
+      throw new Error(`Generated no_pre_mine has invalid length: ${hash.length}, expected 64`);
+    }
+    
+    return hash;
   }
 }
 

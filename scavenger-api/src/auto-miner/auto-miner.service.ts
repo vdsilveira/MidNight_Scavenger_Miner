@@ -24,8 +24,10 @@ export class AutoMinerService implements OnModuleInit {
   // Fila de endereços aguardando para minerar
   private pendingAddresses: Array<{ address: string; index: number }> = [];
   
-  // Rastrear último no_pre_mine usado para limpeza de ROMs
+  // Rastrear último challenge para detectar mudanças
+  private lastChallengeId: string | null = null;
   private lastNoPreMine: string | null = null;
+  private challengeChangeCallbacks: Array<(oldChallengeId: string | null, newChallengeId: string) => void> = [];
 
   constructor(
     private readonly configService: ConfigService,
@@ -227,7 +229,10 @@ export class AutoMinerService implements OnModuleInit {
 
   private startMiningForAddress(address: string, index: number) {
     this.logger.log(`⛏️  Iniciando worker para endereço ${index + 1}: ${address.substring(0, 20)}...`);
-    let nonceCounter = BigInt(index * 1000000); // Cada worker começa em um range diferente
+    // ✅ Ajustado: Começar nonces próximos ao 0 para não perder soluções no início
+    // Browser normalmente começa do 0, então vamos fazer o mesmo
+    // Usar index * 10 para distribuir ligeiramente, mas não pular grandes ranges
+    let nonceCounter = BigInt(index * 10); // ✅ Ajustado: Começar próximo do 0
     const increment = BigInt(1);
     let isWorkerActive = true;
     let attemptCount = 0;
@@ -257,22 +262,53 @@ export class AutoMinerService implements OnModuleInit {
 
         const challengeData = challenge.challenge;
         
-        // Limpar ROMs de desafios expirados apenas quando o desafio muda
-        // Isso libera memória e garante que apenas 1 ROM fica em cache
-        if (this.lastNoPreMine !== challengeData.no_pre_mine) {
+        // ✅ Detectar mudança de challenge (por challenge_id ou no_pre_mine)
+        const challengeChanged = 
+          this.lastChallengeId !== challengeData.challenge_id || 
+          this.lastNoPreMine !== challengeData.no_pre_mine;
+        
+        if (challengeChanged) {
+          const oldChallengeId = this.lastChallengeId;
+          const oldNoPreMine = this.lastNoPreMine;
+          
+          // Log da mudança
+          if (oldChallengeId && oldChallengeId !== challengeData.challenge_id) {
+            this.logger.log(
+              `🔄 Challenge mudou: ${oldChallengeId} → ${challengeData.challenge_id} ` +
+              `(Hora: ${new Date().toISOString()})`
+            );
+            
+            // Notificar callbacks
+            this.challengeChangeCallbacks.forEach(callback => {
+              try {
+                callback(oldChallengeId, challengeData.challenge_id);
+              } catch (e) {
+                this.logger.error(`Erro em callback de mudança de challenge: ${e.message}`);
+              }
+            });
+          } else if (oldNoPreMine && oldNoPreMine !== challengeData.no_pre_mine) {
+            this.logger.log(
+              `🔄 no_pre_mine mudou para challenge ${challengeData.challenge_id} ` +
+              `(Hora: ${new Date().toISOString()})`
+            );
+          }
+          
+          // Limpar ROMs de desafios expirados quando o desafio muda
           try {
             const wasmService = this.ashmaizeService.wasmServiceForCleanup;
             if (wasmService && typeof wasmService.clearExpiredRoms === 'function') {
-              if (this.lastNoPreMine) {
-                // Desafio mudou, limpar ROM antiga
-                this.logger.log(`🔄 Desafio mudou, limpando ROM do desafio anterior`);
+              if (oldNoPreMine) {
+                this.logger.log(`🗑️  Limpando ROM do challenge anterior: ${oldChallengeId || 'unknown'}`);
                 wasmService.clearExpiredRoms(challengeData.no_pre_mine);
               }
-              this.lastNoPreMine = challengeData.no_pre_mine;
             }
           } catch (e) {
-            // Ignorar erros de limpeza
+            this.logger.warn(`Erro ao limpar ROMs expiradas: ${e.message}`);
           }
+          
+          // Atualizar rastreadores
+          this.lastChallengeId = challengeData.challenge_id;
+          this.lastNoPreMine = challengeData.no_pre_mine;
         }
 
         // Verificar prazo
@@ -500,9 +536,12 @@ export class AutoMinerService implements OnModuleInit {
 
   /**
    * Gera nonce incremental para mineração mais eficiente
+   * ✅ Sempre retorna 16 caracteres hex (conforme teste de validação)
    */
   private generateIncrementalNonce(baseNonce: bigint): string {
-    return baseNonce.toString(16).padStart(16, '0');
+    // ✅ Garantir sempre 16 caracteres hex (64 bits) - conforme teste
+    const hex = baseNonce.toString(16);
+    return hex.padStart(16, '0').substring(0, 16); // Garantir máximo de 16 chars
   }
 
   private delay(ms: number): Promise<void> {
@@ -531,5 +570,53 @@ export class AutoMinerService implements OnModuleInit {
 
   getActiveAddressesSet(): Set<string> {
     return this.activeWorkers;
+  }
+
+  /**
+   * Verifica se o challenge mudou desde a última verificação
+   */
+  hasChallengeChanged(): boolean {
+    try {
+      const challenge = this.challengeService.getCurrentChallenge();
+      if (challenge.code !== 'active' || !challenge.challenge) {
+        return false;
+      }
+      
+      return this.lastChallengeId !== challenge.challenge.challenge_id;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Obtém o challenge atual e informações de mudança
+   */
+  getChallengeInfo() {
+    const challenge = this.challengeService.getCurrentChallenge();
+    const currentChallengeId = challenge.challenge?.challenge_id || null;
+    
+    return {
+      currentChallengeId,
+      lastChallengeId: this.lastChallengeId,
+      hasChanged: this.lastChallengeId !== null && this.lastChallengeId !== currentChallengeId,
+      lastNoPreMine: this.lastNoPreMine,
+      currentNoPreMine: challenge.challenge?.no_pre_mine || null,
+      challenge,
+    };
+  }
+
+  /**
+   * Registra callback para ser chamado quando o challenge mudar
+   */
+  onChallengeChange(callback: (oldChallengeId: string | null, newChallengeId: string) => void) {
+    this.challengeChangeCallbacks.push(callback);
+    
+    // Retornar função para remover callback
+    return () => {
+      const index = this.challengeChangeCallbacks.indexOf(callback);
+      if (index > -1) {
+        this.challengeChangeCallbacks.splice(index, 1);
+      }
+    };
   }
 }

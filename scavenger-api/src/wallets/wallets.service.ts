@@ -82,6 +82,7 @@ export class WalletsService {
       totalWallets: addresses.size,
       totalSubmissions,
       totalNightEarned: totalNight,
+      status: 'connected', // ✅ Status sempre "connected" se a API está rodando
       addresses: Array.from(addresses),
     };
   }
@@ -115,6 +116,84 @@ export class WalletsService {
     return {
       recentSolutions: recentSolutions.slice(0, 20), // Últimas 20 soluções
       totalSolutions: recentSolutions.length,
+    };
+  }
+
+  /**
+   * Obtém informações sobre soluções de um challenge específico
+   */
+  getChallengeSolutions(challengeId: string) {
+    const solutions = this.storageService.getSolutionsByChallenge(challengeId);
+    const addresses = this.storageService.getAddressesWithSolutionForChallenge(challengeId);
+    
+    return {
+      challengeId,
+      totalSolutions: solutions.length,
+      uniqueAddresses: addresses.length,
+      addresses,
+      solutions: solutions.map(s => ({
+        address: s.address,
+        nonce: s.nonce,
+        timestamp: s.timestamp.toISOString(),
+      })),
+      hasSolutions: solutions.length > 0,
+    };
+  }
+
+  /**
+   * Verifica se um challenge foi resolvido (tem soluções submetidas)
+   */
+  isChallengeResolved(challengeId: string): boolean {
+    return this.storageService.hasSolutionsForChallenge(challengeId);
+  }
+
+  /**
+   * Obtém estatísticas de todos os challenges
+   */
+  getAllChallengesStats() {
+    const allSolutions = this.storageService.getAllSolutions();
+    const challengeStats = new Map<string, {
+      challengeId: string;
+      totalSolutions: number;
+      uniqueAddresses: number;
+      addresses: string[];
+      firstSolutionAt?: string;
+      lastSolutionAt?: string;
+    }>();
+
+    for (const [address, solutions] of allSolutions.entries()) {
+      for (const solution of solutions) {
+        if (!challengeStats.has(solution.challengeId)) {
+          challengeStats.set(solution.challengeId, {
+            challengeId: solution.challengeId,
+            totalSolutions: 0,
+            uniqueAddresses: 0,
+            addresses: [],
+          });
+        }
+
+        const stats = challengeStats.get(solution.challengeId)!;
+        stats.totalSolutions += 1;
+        
+        if (!stats.addresses.includes(address)) {
+          stats.addresses.push(address);
+          stats.uniqueAddresses += 1;
+        }
+
+        // Rastrear primeira e última solução
+        const solutionTime = solution.timestamp.toISOString();
+        if (!stats.firstSolutionAt || solutionTime < stats.firstSolutionAt) {
+          stats.firstSolutionAt = solutionTime;
+        }
+        if (!stats.lastSolutionAt || solutionTime > stats.lastSolutionAt) {
+          stats.lastSolutionAt = solutionTime;
+        }
+      }
+    }
+
+    return {
+      challenges: Array.from(challengeStats.values()),
+      totalChallenges: challengeStats.size,
     };
   }
 }

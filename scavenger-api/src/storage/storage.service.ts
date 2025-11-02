@@ -157,5 +157,62 @@ export class StorageService {
 
     return allSolutions;
   }
+
+  /**
+   * Obtém todas as soluções para um challenge específico
+   */
+  getSolutionsByChallenge(challengeId: string): SubmittedSolution[] {
+    const allSolutions: SubmittedSolution[] = [];
+    
+    for (const [address, solutions] of this.solutions.entries()) {
+      const challengeSolutions = solutions.filter(s => s.challengeId === challengeId);
+      allSolutions.push(...challengeSolutions);
+    }
+
+    // Ordenar por timestamp (mais recente primeiro)
+    allSolutions.sort((a, b) => 
+      b.timestamp.getTime() - a.timestamp.getTime()
+    );
+
+    return allSolutions;
+  }
+
+  /**
+   * Verifica se um challenge específico tem soluções submetidas
+   */
+  hasSolutionsForChallenge(challengeId: string): boolean {
+    for (const [_, solutions] of this.solutions.entries()) {
+      if (solutions.some(s => s.challengeId === challengeId)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Conta quantas soluções foram submetidas para um challenge
+   */
+  countSolutionsForChallenge(challengeId: string): number {
+    let count = 0;
+    for (const [_, solutions] of this.solutions.entries()) {
+      count += solutions.filter(s => s.challengeId === challengeId).length;
+    }
+    return count;
+  }
+
+  /**
+   * Obtém endereços que submeteram solução para um challenge
+   */
+  getAddressesWithSolutionForChallenge(challengeId: string): string[] {
+    const addresses = new Set<string>();
+    
+    for (const [address, solutions] of this.solutions.entries()) {
+      if (solutions.some(s => s.challengeId === challengeId)) {
+        addresses.add(address);
+      }
+    }
+
+    return Array.from(addresses);
+  }
 }
 
