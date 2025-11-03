@@ -21,9 +21,11 @@ export class AutoMinerService implements OnModuleInit {
   private miningWorkers: Map<string, NodeJS.Timeout> = new Map();
   private activeWorkers: Set<string> = new Set();
   private pendingAddresses: PendingAddress[] = [];
+  private allAddresses: PendingAddress[] = [];
   private lastChallengeId: string | null = null;
   private lastNoPreMine: string | null = null;
   private challengeChangeCallbacks: Array<(oldId: string | null, newId: string) => void> = [];
+  private isResetting = false;
 
   private readonly maxConcurrentWorkers: number;
   private readonly miningInterval: number;
@@ -118,13 +120,18 @@ export class AutoMinerService implements OnModuleInit {
     this.logger.log('⛏️  Iniciando mineração...');
     await this.delay(2000);
 
-    this.pendingAddresses = addresses.map(addr => ({
+    this.allAddresses = addresses.map(addr => ({
       address: addr.address,
       index: addr.index,
     }));
+    this.pendingAddresses = [...this.allAddresses];
 
     this.logger.log(`🚀 Iniciando mineração com pool de ${this.maxConcurrentWorkers} workers simultâneos...`);
     this.startWorkerPool();
+    // reinicializa fila e workers quando o desafio mudar
+    this.challengeChangeCallbacks.push(() => {
+      this.resetForNewChallenge();
+    });
     this.startStatsLogger();
   }
 
@@ -150,6 +157,24 @@ export class AutoMinerService implements OnModuleInit {
       setTimeout(() => processNext(), i * 200);
     }
     setTimeout(() => processNext(), initialCount * 200 + 500);
+  }
+
+  private resetForNewChallenge() {
+    if (this.isResetting) return;
+    this.isResetting = true;
+    try {
+      this.logger.log('🔁 Desafio mudou — resetando fila e workers para a ordem original de endereços');
+      // parar timeouts ativos dos workers atuais
+      this.miningWorkers.forEach(timeoutId => clearTimeout(timeoutId));
+      this.miningWorkers.clear();
+      this.activeWorkers.clear();
+      // repovoar fila com ordem original
+      this.pendingAddresses = [...this.allAddresses];
+      // reiniciar o pool
+      this.startWorkerPool();
+    } finally {
+      this.isResetting = false;
+    }
   }
 
   private startMiningForAddress(address: string, index: number) {
@@ -191,7 +216,7 @@ export class AutoMinerService implements OnModuleInit {
         const nonce = this.generateIncrementalNonce(nonceCounter);
         nonceCounter += BigInt(1);
 
-        const preimage = this.buildPreimageBytes(
+        const preimageBytes = this.buildPreimageBytes(
           nonce,
           address,
           challengeData.challenge_id,
@@ -201,10 +226,11 @@ export class AutoMinerService implements OnModuleInit {
           challengeData.no_pre_mine_hour,
         );
 
-        const isValid = await this.ashmaizeService.validateSolution(
-          preimage,
+        // Usar o WASM diretamente com bytes (mais eficiente)
+        const isValid = this.ashmaizeService.validateSolution(
+          preimageBytes,
           challengeData.no_pre_mine,
-          challengeData.difficulty
+          challengeData.difficulty,
         );
 
         this.attemptsSinceLastLog += 1;
@@ -246,7 +272,15 @@ export class AutoMinerService implements OnModuleInit {
     runWorker().catch(() => {});
   }
 
-  private buildPreimageBytes(nonce: string, address: string, challengeId: string, difficulty: string, noPreMine: string, latestSubmission: string, noPreMineHour: string): Uint8Array {
+  private buildPreimageBytes(
+    nonce: string,
+    address: string,
+    challengeId: string,
+    difficulty: string,
+    noPreMine: string,
+    latestSubmission: string,
+    noPreMineHour: string,
+  ): Uint8Array {
     const hexToBytes = (hex: string): Uint8Array => {
       if (hex.length % 2 !== 0) throw new Error(`Invalid hex length: ${hex.length}`);
       const out = new Uint8Array(hex.length / 2);
@@ -254,7 +288,6 @@ export class AutoMinerService implements OnModuleInit {
       return out;
     };
     const utf8 = (str: string): Uint8Array => new TextEncoder().encode(str);
-
     const parts: Uint8Array[] = [
       hexToBytes(nonce),
       utf8(address),

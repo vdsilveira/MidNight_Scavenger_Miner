@@ -9,9 +9,9 @@ export class AshmaizeWasmService {
 
   private readonly NB_LOOPS = 8;
   private readonly NB_INSTRS = 256;
-  private readonly PRE_SIZE = 16777216; 
+  private readonly PRE_SIZE = 16 * 1024; // 16 KB (align with ashmaize-web tests)
   private readonly MIXING_NUMBERS = 4;
-  private readonly ROM_SIZE = 1073741824; 
+  private readonly ROM_SIZE = 10 * 1024 * 1024; // 10 MB (align with ashmaize-web tests)
 
   private getOrCreateRom(noPreMine: string): Rom {
     if (this.wasmDisabled) throw new Error('WASM disabled');

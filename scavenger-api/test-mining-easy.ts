@@ -37,9 +37,140 @@ function buildPreimageBytes(
   return result;
 }
 
+type Challenge = {
+  challenge_id: string;
+  difficulty: string;
+  no_pre_mine: string;
+  latest_submission: string;
+  no_pre_mine_hour: string;
+};
+
+class MinerScheduler {
+  private readonly allAddresses: string[];
+  private queue: string[] = [];
+  private completed = new Set<string>();
+  private stopFlag = { value: false };
+  private readonly wasm: AshmaizeWasmService;
+  private readonly challengeService: ChallengeService;
+
+  constructor(addresses: string[], wasm: AshmaizeWasmService, challengeService: ChallengeService) {
+    this.allAddresses = [...addresses];
+    this.wasm = wasm;
+    this.challengeService = challengeService;
+  }
+
+  startNewChallenge(ch: Challenge, concurrency: number) {
+    this.stopFlag.value = false;
+    this.queue = [...this.allAddresses];
+    this.completed.clear();
+    return this.runPool(ch, concurrency);
+  }
+
+  stopCurrentChallenge() {
+    this.stopFlag.value = true;
+  }
+
+  private async runPool(ch: Challenge, concurrency: number) {
+    const workers: Promise<void>[] = [];
+    for (let i = 0; i < concurrency; i++) {
+      workers.push(this.workerLoop(i, ch));
+    }
+    await Promise.race([
+      Promise.all(workers),
+      this.monitorChallengeChange(ch),
+    ]);
+    this.stopCurrentChallenge();
+  }
+
+  private async monitorChallengeChange(ch: Challenge) {
+    while (!this.stopFlag.value) {
+      await new Promise(r => setTimeout(r, 2000));
+      const current = this.challengeService.getCurrentChallenge();
+      if (current.code !== 'active' || !current.challenge) continue;
+      if (current.challenge.challenge_id !== ch.challenge_id) {
+        return; // trigger stop
+      }
+    }
+  }
+
+  private nextAddress(): string | undefined {
+    return this.queue.shift();
+  }
+
+  private shouldStop(): boolean {
+    return this.stopFlag.value;
+  }
+
+  private async workerLoop(workerIndex: number, ch: Challenge) {
+    let address = this.nextAddress();
+    while (address && !this.shouldStop()) {
+      const found = await this.mineWithAddress(workerIndex, address, ch, () => this.shouldStop());
+      if (this.shouldStop()) break;
+      if (found) {
+        this.completed.add(address);
+        address = this.nextAddress();
+      } else {
+        break;
+      }
+    }
+  }
+
+  private async mineWithAddress(workerIndex: number, address: string, ch: Challenge, stopSignal: () => boolean) {
+    // independent nonce stream per worker+address
+    let nonceBig = this.initialNonce(workerIndex, address);
+    let attempts = 0;
+    const start = Date.now();
+    while (!stopSignal()) {
+      const nonce = nonceBig.toString(16).padStart(16, '0').substring(0, 16);
+      const preimageBytes = buildPreimageBytes(
+        nonce,
+        address,
+        ch.challenge_id,
+        ch.difficulty,
+        ch.no_pre_mine,
+        ch.latest_submission,
+        ch.no_pre_mine_hour,
+      );
+      const ok = this.wasm.validateSolution(preimageBytes, ch.no_pre_mine, ch.difficulty);
+      attempts++;
+      if (ok) {
+        const elapsed = (Date.now() - start) / 1000;
+        const hps = attempts / Math.max(1e-9, elapsed);
+        const hashHex = this.wasm.computeHash(preimageBytes, ch.no_pre_mine);
+        console.log(`[W${workerIndex}] ✅ address=${address} nonce=${nonce} hash=${hashHex.substring(0,16)}... attempts=${attempts} speed=${hps.toFixed(1)} H/s`);
+        return true;
+      }
+      nonceBig += 1n;
+      if (attempts % 20000 === 0) {
+        const elapsed = (Date.now() - start) / 1000;
+        const hps = attempts / Math.max(1e-9, elapsed);
+        console.log(`[W${workerIndex}] ⏳ address=${address} attempts=${attempts} speed=${hps.toFixed(1)} H/s`);
+      }
+    }
+    return false;
+  }
+
+  private initialNonce(workerIndex: number, address: string): bigint {
+    // derive a pseudo-random but stable seed per worker/address
+    let seed = BigInt(0);
+    for (let i = 0; i < address.length; i++) seed = (seed << 5n) + BigInt(address.charCodeAt(i));
+    seed ^= BigInt(workerIndex + 1) * 0x9e3779b97f4a7c15n;
+    return seed & 0xFFFFFFFFFFFFFFFFn;
+  }
+}
+
 async function main() {
   const challengeService = new ChallengeService();
   const wasm = new AshmaizeWasmService();
+
+  // configure your address pool and desired concurrency here
+  const addresses: string[] = [
+    'addr1qexample0001',
+    'addr1qexample0002',
+    'addr1qexample0003',
+    'addr1qexample0004',
+  ];
+  const concurrency = Math.min(4, addresses.length);
 
   const current = challengeService.getCurrentChallenge();
   if (current.code !== 'active' || !current.challenge) {
@@ -47,54 +178,25 @@ async function main() {
     return;
   }
 
-  const ch = current.challenge;
-  // Reduced difficulty: require last 4 bits zero (≈1/16)
-  const easyDifficulty = 'FFFFF000';
+  const ch = current.challenge as Challenge;
+  const scheduler = new MinerScheduler(addresses, wasm, challengeService);
+  console.log(`🚀 Starting mining: challenge=${ch.challenge_id} difficulty=${ch.difficulty}`);
+  await scheduler.startNewChallenge(ch, concurrency);
 
-  // Dummy address for testing; replace with a registered one if needed
-  const address = 'addr1qtestaddressforhashingonly';
-
-  let nonceBig = BigInt('0x0123456789ABCDEF');
-  const start = Date.now();
-  let attempts = 0;
-
+  // If the challenge changes while running, we stop and start again automatically
   while (true) {
-    const nonce = nonceBig.toString(16).padStart(16, '0').substring(0, 16);
-    const preimageBytes = buildPreimageBytes(
-      nonce,
-      address,
-      ch.challenge_id,
-      easyDifficulty,
-      ch.no_pre_mine,
-      ch.latest_submission,
-      ch.no_pre_mine_hour,
-    );
-
-    const ok = wasm.validateSolution(preimageBytes, ch.no_pre_mine, easyDifficulty);
-    attempts++;
-    if (ok) {
-      const elapsed = (Date.now() - start) / 1000;
-      const hps = attempts / Math.max(1e-9, elapsed);
-      const hashHex = wasm.computeHash(preimageBytes, ch.no_pre_mine);
-      console.log('✅ Found valid solution (easy difficulty)');
-      console.log(`   Nonce: ${nonce}`);
-      console.log(`   Hash : ${hashHex.substring(0, 16)}...`);
-      console.log(`   Attempts: ${attempts}, time: ${elapsed.toFixed(2)}s, ~${hps.toFixed(1)} H/s`);
-      break;
+    const next = challengeService.getCurrentChallenge();
+    if (next.code === 'active' && next.challenge && next.challenge.challenge_id !== ch.challenge_id) {
+      const nextCh = next.challenge as Challenge;
+      console.log(`🔁 Challenge changed → restarting miners for ${nextCh.challenge_id}`);
+      await scheduler.startNewChallenge(nextCh, concurrency);
     }
-
-    nonceBig += 1n;
-    if (attempts % 10000 === 0) {
-      const elapsed = (Date.now() - start) / 1000;
-      const hps = attempts / Math.max(1e-9, elapsed);
-      console.log(`⏳ Attempts: ${attempts}, ${hps.toFixed(1)} H/s`);
-    }
+    await new Promise(r => setTimeout(r, 3000));
   }
 }
 
 main().catch(e => {
   console.error(e);
-  process.exit(1);
 });
 
 
