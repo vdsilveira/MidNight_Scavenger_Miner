@@ -240,7 +240,17 @@ export class AutoMinerService implements OnModuleInit {
         // Debug: logar hash a cada 50000 tentativas para verificar formato
         if (this.totalAttempts % 50000 === 0) {
           const hashHex = this.ashmaizeService.computeHash(preimageBytes, challengeData.no_pre_mine);
-          this.logger.debug(`[DEBUG] address=${address.substring(0, 20)}... nonce=${nonce} hash=${hashHex.substring(0, 16)}... preimage_len=${preimage.length}`);
+          const hashStarts = hashHex.substring(0, 8);
+          const difficulty = challengeData.difficulty;
+          // Calcular quantos bits de zero são necessários
+          const diffNum = parseInt(difficulty, 16) >>> 0;
+          const zeroMask = (~diffNum) >>> 0;
+          const leadingZeros = Math.clz32(zeroMask);
+          this.logger.debug(
+            `[DEBUG] address=${address.substring(0, 20)}... nonce=${nonce} ` +
+            `hash=${hashStarts}... (difficulty=${difficulty}, needs ${leadingZeros} leading zero bits) ` +
+            `preimage_len=${preimageBytes.length} bytes valid=${isValid}`
+          );
         }
         if (isValid) {
           this.logger.log(`🎉 Challenge encontrado pelo endereço ${address}! Nonce: ${nonce}`);
@@ -306,13 +316,12 @@ export class AutoMinerService implements OnModuleInit {
     };
     const utf8 = (str: string): Uint8Array => new TextEncoder().encode(str);
     
-    // ✅ Remover asteriscos do challenge_id se presente
-    const cleanChallengeId = challengeId.replace(/^\*\*/, '');
-    
+    // ✅ IMPORTANTE: Usar challenge_id COM asteriscos (como a API retorna)
+    // O browser usa o challenge_id exatamente como vem da API
     const parts: Uint8Array[] = [
       hexToBytes(nonce),           // 8 bytes
       utf8(address),                // UTF-8 bytes
-      utf8(cleanChallengeId),      // UTF-8 bytes (sem **)
+      utf8(challengeId),           // UTF-8 bytes (COM ** se presente)
       hexToBytes(difficulty),       // 4 bytes
       hexToBytes(noPreMine),        // 32 bytes
       utf8(latestSubmission),       // UTF-8 bytes
