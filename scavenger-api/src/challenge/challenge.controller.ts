@@ -9,8 +9,15 @@ export class ChallengeController {
     private readonly challengeMonitor: ChallengeMonitorService,
   ) {}
 
-  @Get('challenge/current')
+  // ✅ Rota principal conforme documentação Midnight: GET /challenge
+  @Get('challenge')
   getChallenge() {
+    return this.challengeService.getCurrentChallenge();
+  }
+
+  // ✅ Rota adicional para compatibilidade (mantida para frontend)
+  @Get('challenge/current')
+  getChallengeCurrent() {
     return this.challengeService.getCurrentChallenge();
   }
 
