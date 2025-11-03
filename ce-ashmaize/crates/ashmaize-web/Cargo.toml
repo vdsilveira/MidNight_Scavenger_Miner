@@ -32,3 +32,7 @@ wee_alloc = { version = "0.4.2", optional = true }
 
 [dev-dependencies]
 wasm-bindgen-test = "~0.3.50"
+
+[[bin]]
+name = "ashmaize-web"
+path = "src/bin/ashmaize-web.rs"

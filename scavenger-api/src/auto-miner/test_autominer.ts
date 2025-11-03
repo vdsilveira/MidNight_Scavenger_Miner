@@ -4,11 +4,12 @@ import { CardanoDerivationService } from '../cardano-derivation/cardano-derivati
 import { StorageService } from '../storage/storage.service';
 import { RegisterService } from '../register/register.service';
 import { ChallengeService } from '../challenge/challenge.service';
-import { AshmaizeService } from '../ashmaize/ashmaize.service';
+import { AshmaizeWasmService } from '../ashmaize/ashmaize-wasm.service';
 import { SolutionService } from '../solution/solution.service';
 import { TermsService } from '../terms/terms.service';
 
-// Mocks básicos para todas as dependências
+// === MOCKS ===
+
 const configService = {
   get: (key: string, defaultValue?: string) => defaultValue ?? '',
 } as unknown as ConfigService;
@@ -40,11 +41,11 @@ const challengeService = {
   }),
 } as unknown as ChallengeService;
 
+// ✅ Mock WASM service — não tem WASM real aqui, só simulação
 const ashmaizeService = {
-  wasmServiceForCleanup: null,
   validateSolution: async () => false,
   computeHash: async () => '0000abcd',
-} as unknown as AshmaizeService;
+} as unknown as AshmaizeWasmService;
 
 const solutionService = {
   submitSolution: async () => Promise.resolve(),
@@ -54,7 +55,7 @@ const termsService = {
   getTermsAndConditions: () => ({ message: 'Accept terms' }),
 } as unknown as TermsService;
 
-// Instancia AutoMinerService com todos os mocks
+// === Instantiate miner ===
 const miner = new AutoMinerService(
   configService,
   cardanoDerivation,
@@ -68,7 +69,7 @@ const miner = new AutoMinerService(
 
 console.log('✅ AutoMinerService instanciado com sucesso');
 
-// Chamar método público para teste
+// Run test
 (async () => {
   await miner.startAutoMining('seed-phrase', 5);
   console.log(miner.getMiningStatus());

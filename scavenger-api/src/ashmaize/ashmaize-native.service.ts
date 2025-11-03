@@ -35,7 +35,7 @@ export class AshmaizeNativeService {
       'ce-ashmaize',
       'target',
       buildType,
-      'ashmaize-hash',
+      'ashmaize-web',
     );
     
     // Log para debug

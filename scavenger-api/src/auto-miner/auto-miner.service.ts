@@ -4,22 +4,29 @@ import { CardanoDerivationService } from '../cardano-derivation/cardano-derivati
 import { StorageService } from '../storage/storage.service';
 import { RegisterService } from '../register/register.service';
 import { ChallengeService } from '../challenge/challenge.service';
-import { AshmaizeService } from '../ashmaize/ashmaize.service';
+import { AshmaizeWasmService } from '../ashmaize/ashmaize-wasm.service';
 import { SolutionService } from '../solution/solution.service';
 import { TermsService } from '../terms/terms.service';
+
+interface PendingAddress {
+  address: string;
+  index: number;
+}
 
 @Injectable()
 export class AutoMinerService implements OnModuleInit {
   private readonly logger = new Logger(AutoMinerService.name);
+
   private isMining = false;
   private miningWorkers: Map<string, NodeJS.Timeout> = new Map();
   private activeWorkers: Set<string> = new Set();
-  private readonly maxConcurrentWorkers: number;
-  private readonly miningInterval: number;
-  private pendingAddresses: Array<{ address: string; index: number }> = [];
+  private pendingAddresses: PendingAddress[] = [];
   private lastChallengeId: string | null = null;
   private lastNoPreMine: string | null = null;
-  private challengeChangeCallbacks: Array<(oldChallengeId: string | null, newChallengeId: string) => void> = [];
+  private challengeChangeCallbacks: Array<(oldId: string | null, newId: string) => void> = [];
+
+  private readonly maxConcurrentWorkers: number;
+  private readonly miningInterval: number;
 
   constructor(
     private readonly configService: ConfigService,
@@ -27,7 +34,7 @@ export class AutoMinerService implements OnModuleInit {
     private readonly storageService: StorageService,
     private readonly registerService: RegisterService,
     private readonly challengeService: ChallengeService,
-    private readonly ashmaizeService: AshmaizeService,
+    private readonly ashmaizeService: AshmaizeWasmService, // WASM Service
     private readonly solutionService: SolutionService,
     private readonly termsService: TermsService,
   ) {
@@ -37,6 +44,7 @@ export class AutoMinerService implements OnModuleInit {
     this.miningInterval = parseInt(
       this.configService.get<string>('MINING_INTERVAL_MS', '10')
     );
+
     this.logger.log(
       `⚙️  Configuração de mineração: ${this.maxConcurrentWorkers} workers simultâneos, ` +
       `intervalo de ${this.miningInterval}ms entre tentativas`
@@ -59,7 +67,7 @@ export class AutoMinerService implements OnModuleInit {
     this.logger.log('🚀 Iniciando mineração automática...');
     try {
       await this.startAutoMining(seedPhrase);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Erro ao iniciar mineração automática: ${error.message}`);
     }
   }
@@ -88,7 +96,7 @@ export class AutoMinerService implements OnModuleInit {
         await this.registerService.register(addr.address, signature, addr.pubkey);
         this.logger.log(`✅ Endereço ${i + 1}/${addresses.length} registrado: ${addr.address.substring(0, 20)}...`);
         await this.delay(100);
-      } catch (error) {
+      } catch (error: any) {
         if (error.message?.includes('already registered') || error.message?.includes('Conflict')) {
           this.logger.log(`⚠️  Endereço ${i + 1} já estava registrado`);
         } else {
@@ -135,8 +143,7 @@ export class AutoMinerService implements OnModuleInit {
   }
 
   private startMiningForAddress(address: string, index: number) {
-     // define um baseNonce
-    let nonceCounter =  BigInt(81985529216486895) ;
+    let nonceCounter = BigInt(81985529216486895);
     let isWorkerActive = true;
 
     const worker = async () => {
@@ -156,13 +163,6 @@ export class AutoMinerService implements OnModuleInit {
           this.challengeChangeCallbacks.forEach(cb => {
             try { cb(oldChallengeId, challengeData.challenge_id); } catch {}
           });
-
-          try {
-            const wasmService = this.ashmaizeService.wasmServiceForCleanup;
-            if (wasmService?.clearExpiredRoms && oldChallengeId) {
-              wasmService.clearExpiredRoms(challengeData.no_pre_mine);
-            }
-          } catch {}
         }
 
         const currentTime = new Date();
@@ -180,6 +180,7 @@ export class AutoMinerService implements OnModuleInit {
 
         const nonce = this.generateIncrementalNonce(nonceCounter);
         nonceCounter += BigInt(1);
+
         const preimage = this.buildPreimage(
           nonce,
           address,
@@ -190,24 +191,34 @@ export class AutoMinerService implements OnModuleInit {
           challengeData.no_pre_mine_hour,
         );
 
-        const isValid = await this.ashmaizeService.validateSolution(preimage, challengeData.no_pre_mine, challengeData.difficulty);
-        if (isValid) {
-            this.logger.log(`🎉 Challenge encontrado pelo endereço ${address}! Nonce: ${nonce}`);
-            await this.solutionService.submitSolution(address, challengeData.challenge_id, nonce);
-            isWorkerActive = false;
-            this.activeWorkers.delete(address);
+        const isValid = await this.ashmaizeService.validateSolution(
+          preimage,
+          challengeData.no_pre_mine,
+          challengeData.difficulty
+        );
 
-            // inicia próximo endereço se houver
-            if (this.pendingAddresses.length > 0) {
-                const next = this.pendingAddresses.shift();
-                if (next) {
-                    this.activeWorkers.add(next.address);
-                    this.startMiningForAddress(next.address, next.index);
-                }
+        if (isValid) {
+          this.logger.log(`🎉 Challenge encontrado pelo endereço ${address}! Nonce: ${nonce}`);
+          await this.solutionService.submitSolution(
+            address,
+            challengeData.challenge_id,
+            nonce
+          );
+          isWorkerActive = false;
+          this.activeWorkers.delete(address);
+
+          if (this.pendingAddresses.length > 0) {
+            const next = this.pendingAddresses.shift();
+            if (next) {
+              this.activeWorkers.add(next.address);
+              this.startMiningForAddress(next.address, next.index);
             }
+          }
         }
 
-      } catch {}
+      } catch (e) {
+        this.logger.error(`Erro no worker ${address}: ${e.message}`);
+      }
     };
 
     const runWorker = async () => {
@@ -244,8 +255,6 @@ export class AutoMinerService implements OnModuleInit {
     this.logger.log('⛏️  Mineração parada');
   }
 
-  // ================= MÉTODOS DE STATUS ================= //
-
   getMiningStatus() {
     return {
       isMining: this.isMining,
@@ -271,25 +280,9 @@ export class AutoMinerService implements OnModuleInit {
         hasChanged: this.lastChallengeId !== null && this.lastChallengeId !== currentChallengeId,
         lastNoPreMine: this.lastNoPreMine,
         currentNoPreMine: challenge.challenge?.no_pre_mine || null,
-        challenge,
       };
     } catch {
-      return {
-        currentChallengeId: null,
-        lastChallengeId: this.lastChallengeId,
-        hasChanged: false,
-        lastNoPreMine: this.lastNoPreMine,
-        currentNoPreMine: null,
-        challenge: null,
-      };
+      return {};
     }
-  }
-
-  onChallengeChange(callback: (oldChallengeId: string | null, newChallengeId: string) => void) {
-    this.challengeChangeCallbacks.push(callback);
-    return () => {
-      const index = this.challengeChangeCallbacks.indexOf(callback);
-      if (index > -1) this.challengeChangeCallbacks.splice(index, 1);
-    };
   }
 }
