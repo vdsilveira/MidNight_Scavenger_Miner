@@ -27,6 +27,11 @@ export class AutoMinerService implements OnModuleInit {
 
   private readonly maxConcurrentWorkers: number;
   private readonly miningInterval: number;
+  private readonly statsIntervalMs: number;
+  private statsTimer: NodeJS.Timeout | null = null;
+  private attemptsSinceLastLog = 0;
+  private totalAttempts = 0;
+  private totalValid = 0;
 
   constructor(
     private readonly configService: ConfigService,
@@ -44,10 +49,14 @@ export class AutoMinerService implements OnModuleInit {
     this.miningInterval = parseInt(
       this.configService.get<string>('MINING_INTERVAL_MS', '10')
     );
+    this.statsIntervalMs = parseInt(
+      this.configService.get<string>('LOG_MINING_STATS_INTERVAL_MS', '60000')
+    );
 
     this.logger.log(
       `⚙️  Configuração de mineração: ${this.maxConcurrentWorkers} workers simultâneos, ` +
-      `intervalo de ${this.miningInterval}ms entre tentativas`
+      `intervalo de ${this.miningInterval}ms entre tentativas, ` +
+      `logs a cada ${this.statsIntervalMs}ms`
     );
   }
 
@@ -116,6 +125,7 @@ export class AutoMinerService implements OnModuleInit {
 
     this.logger.log(`🚀 Iniciando mineração com pool de ${this.maxConcurrentWorkers} workers simultâneos...`);
     this.startWorkerPool();
+    this.startStatsLogger();
   }
 
   private startWorkerPool() {
@@ -181,7 +191,7 @@ export class AutoMinerService implements OnModuleInit {
         const nonce = this.generateIncrementalNonce(nonceCounter);
         nonceCounter += BigInt(1);
 
-        const preimage = this.buildPreimage(
+        const preimage = this.buildPreimageBytes(
           nonce,
           address,
           challengeData.challenge_id,
@@ -197,8 +207,11 @@ export class AutoMinerService implements OnModuleInit {
           challengeData.difficulty
         );
 
+        this.attemptsSinceLastLog += 1;
+        this.totalAttempts += 1;
         if (isValid) {
           this.logger.log(`🎉 Challenge encontrado pelo endereço ${address}! Nonce: ${nonce}`);
+          this.totalValid += 1;
           await this.solutionService.submitSolution(
             address,
             challengeData.challenge_id,
@@ -233,8 +246,29 @@ export class AutoMinerService implements OnModuleInit {
     runWorker().catch(() => {});
   }
 
-  private buildPreimage(nonce: string, address: string, challengeId: string, difficulty: string, noPreMine: string, latestSubmission: string, noPreMineHour: string): string {
-    return `${nonce}${address}${challengeId}${difficulty}${noPreMine}${latestSubmission}${noPreMineHour}`;
+  private buildPreimageBytes(nonce: string, address: string, challengeId: string, difficulty: string, noPreMine: string, latestSubmission: string, noPreMineHour: string): Uint8Array {
+    const hexToBytes = (hex: string): Uint8Array => {
+      if (hex.length % 2 !== 0) throw new Error(`Invalid hex length: ${hex.length}`);
+      const out = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < hex.length; i += 2) out[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+      return out;
+    };
+    const utf8 = (str: string): Uint8Array => new TextEncoder().encode(str);
+
+    const parts: Uint8Array[] = [
+      hexToBytes(nonce),
+      utf8(address),
+      utf8(challengeId),
+      hexToBytes(difficulty),
+      hexToBytes(noPreMine),
+      utf8(latestSubmission),
+      utf8(noPreMineHour),
+    ];
+    const totalLen = parts.reduce((acc, p) => acc + p.length, 0);
+    const result = new Uint8Array(totalLen);
+    let offset = 0;
+    for (const p of parts) { result.set(p, offset); offset += p.length; }
+    return result;
   }
 
   private generateIncrementalNonce(baseNonce: bigint): string {
@@ -252,6 +286,7 @@ export class AutoMinerService implements OnModuleInit {
     this.miningWorkers.clear();
     this.activeWorkers.clear();
     this.pendingAddresses = [];
+    if (this.statsTimer) { clearInterval(this.statsTimer); this.statsTimer = null; }
     this.logger.log('⛏️  Mineração parada');
   }
 
@@ -284,5 +319,20 @@ export class AutoMinerService implements OnModuleInit {
     } catch {
       return {};
     }
+  }
+
+  private startStatsLogger() {
+    if (this.statsTimer) return;
+    this.statsTimer = setInterval(() => {
+      const challenge = this.challengeService.getCurrentChallenge();
+      const challengeId = challenge.challenge?.challenge_id || 'N/A';
+      const secs = this.statsIntervalMs / 1000;
+      const hps = this.attemptsSinceLastLog / secs;
+      this.logger.log(
+        `📈 Mining stats — H/s: ${hps.toFixed(1)}, attempts(total): ${this.totalAttempts}, valid(total): ${this.totalValid}, ` +
+        `activeWorkers: ${this.activeWorkers.size}, pending: ${this.pendingAddresses.length}, challenge: ${challengeId}`
+      );
+      this.attemptsSinceLastLog = 0;
+    }, this.statsIntervalMs);
   }
 }
