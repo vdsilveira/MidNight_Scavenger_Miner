@@ -47,16 +47,18 @@ export class ChallengeService {
     const currentDay = Math.min(Math.max(1, daysSinceStart), this.maxDay);
     const challengeNumber = this.calculateChallengeNumber(nowUTC);
 
+    // ✅ API retorna com ** prefixo, precisamos usar isso no preimage
     const challengeId = `D${String(currentDay).padStart(2, '0')}C${String(challengeNumber).padStart(2, '0')}`;
+    const challengeIdWithAsterisks = `**${challengeId}`;
 
-    // ✅ no_pre_mine fixo
+    // ✅ no_pre_mine fixo (sem asteriscos para cálculo)
     const noPreMine = this.generateNoPreMine(challengeId);
 
     const latestSubmission = new Date(startDate.getTime() + (currentDay - 1) * 24 * 60 * 60 * 1000);
     latestSubmission.setUTCHours(23, 59, 59, 0);
 
     const challenge = {
-      challenge_id: challengeId,
+      challenge_id: challengeIdWithAsterisks, // ✅ Formato da API (com **)
       day: currentDay,
       challenge_number: challengeNumber,
       issued_at: nowUTC.toISOString(),

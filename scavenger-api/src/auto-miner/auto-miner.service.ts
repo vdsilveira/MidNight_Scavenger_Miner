@@ -216,6 +216,8 @@ export class AutoMinerService implements OnModuleInit {
         const nonce = this.generateIncrementalNonce(nonceCounter);
         nonceCounter += BigInt(1);
 
+        // ✅ Usar formato MISTO (hex bytes + UTF-8) como no test-mining-easy.ts
+        // Este formato pode ser o correto usado pelo browser
         const preimageBytes = this.buildPreimageBytes(
           nonce,
           address,
@@ -226,7 +228,6 @@ export class AutoMinerService implements OnModuleInit {
           challengeData.no_pre_mine_hour,
         );
 
-        // Usar o WASM diretamente com bytes (mais eficiente)
         const isValid = this.ashmaizeService.validateSolution(
           preimageBytes,
           challengeData.no_pre_mine,
@@ -235,6 +236,12 @@ export class AutoMinerService implements OnModuleInit {
 
         this.attemptsSinceLastLog += 1;
         this.totalAttempts += 1;
+        
+        // Debug: logar hash a cada 50000 tentativas para verificar formato
+        if (this.totalAttempts % 50000 === 0) {
+          const hashHex = this.ashmaizeService.computeHash(preimageBytes, challengeData.no_pre_mine);
+          this.logger.debug(`[DEBUG] address=${address.substring(0, 20)}... nonce=${nonce} hash=${hashHex.substring(0, 16)}... preimage_len=${preimage.length}`);
+        }
         if (isValid) {
           this.logger.log(`🎉 Challenge encontrado pelo endereço ${address}! Nonce: ${nonce}`);
           this.totalValid += 1;
@@ -272,6 +279,14 @@ export class AutoMinerService implements OnModuleInit {
     runWorker().catch(() => {});
   }
 
+  /**
+   * Constrói o preimage em BYTES (formato MISTO: hex bytes + UTF-8)
+   * Igual ao test-mining-easy.ts que pode ser o formato correto do browser
+   * 
+   * Ordem: nonce (hex bytes) + address (UTF-8) + challenge_id (UTF-8) + 
+   *        difficulty (hex bytes) + no_pre_mine (hex bytes) + 
+   *        latest_submission (UTF-8) + no_pre_mine_hour (UTF-8)
+   */
   private buildPreimageBytes(
     nonce: string,
     address: string,
@@ -284,23 +299,33 @@ export class AutoMinerService implements OnModuleInit {
     const hexToBytes = (hex: string): Uint8Array => {
       if (hex.length % 2 !== 0) throw new Error(`Invalid hex length: ${hex.length}`);
       const out = new Uint8Array(hex.length / 2);
-      for (let i = 0; i < hex.length; i += 2) out[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+      for (let i = 0; i < hex.length; i += 2) {
+        out[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+      }
       return out;
     };
     const utf8 = (str: string): Uint8Array => new TextEncoder().encode(str);
+    
+    // ✅ Remover asteriscos do challenge_id se presente
+    const cleanChallengeId = challengeId.replace(/^\*\*/, '');
+    
     const parts: Uint8Array[] = [
-      hexToBytes(nonce),
-      utf8(address),
-      utf8(challengeId),
-      hexToBytes(difficulty),
-      hexToBytes(noPreMine),
-      utf8(latestSubmission),
-      utf8(noPreMineHour),
+      hexToBytes(nonce),           // 8 bytes
+      utf8(address),                // UTF-8 bytes
+      utf8(cleanChallengeId),      // UTF-8 bytes (sem **)
+      hexToBytes(difficulty),       // 4 bytes
+      hexToBytes(noPreMine),        // 32 bytes
+      utf8(latestSubmission),       // UTF-8 bytes
+      utf8(noPreMineHour),          // UTF-8 bytes
     ];
+    
     const totalLen = parts.reduce((acc, p) => acc + p.length, 0);
     const result = new Uint8Array(totalLen);
     let offset = 0;
-    for (const p of parts) { result.set(p, offset); offset += p.length; }
+    for (const p of parts) {
+      result.set(p, offset);
+      offset += p.length;
+    }
     return result;
   }
 
