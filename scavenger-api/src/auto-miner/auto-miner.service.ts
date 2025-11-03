@@ -13,18 +13,10 @@ export class AutoMinerService implements OnModuleInit {
   private readonly logger = new Logger(AutoMinerService.name);
   private isMining = false;
   private miningWorkers: Map<string, NodeJS.Timeout> = new Map();
-  
-  // Pool de workers ativos (limita concorrência)
   private activeWorkers: Set<string> = new Set();
   private readonly maxConcurrentWorkers: number;
-  
-  // Controle de intervalo entre tentativas
-  private readonly miningInterval: number; // ms entre cada tentativa
-  
-  // Fila de endereços aguardando para minerar
+  private readonly miningInterval: number;
   private pendingAddresses: Array<{ address: string; index: number }> = [];
-  
-  // Rastrear último challenge para detectar mudanças
   private lastChallengeId: string | null = null;
   private lastNoPreMine: string | null = null;
   private challengeChangeCallbacks: Array<(oldChallengeId: string | null, newChallengeId: string) => void> = [];
@@ -39,20 +31,12 @@ export class AutoMinerService implements OnModuleInit {
     private readonly solutionService: SolutionService,
     private readonly termsService: TermsService,
   ) {
-    // Configurações otimizadas para evitar sobrecarga
-    // Máximo de workers simultâneos (padrão: 5 para não sobrecarregar)
     this.maxConcurrentWorkers = parseInt(
       this.configService.get<string>('MAX_CONCURRENT_WORKERS', '5')
     );
-    
-    // Intervalo entre tentativas em ms (padrão: 10ms para mineração rápida)
-    // Com intervalo baixo, conseguimos muitas tentativas por segundo
-    // IMPORTANTE: Com setTimeout recursivo, o próximo só roda DEPOIS que o anterior terminou
-    // então não há risco de sobrecarga mesmo com intervalo baixo
     this.miningInterval = parseInt(
       this.configService.get<string>('MINING_INTERVAL_MS', '10')
     );
-    
     this.logger.log(
       `⚙️  Configuração de mineração: ${this.maxConcurrentWorkers} workers simultâneos, ` +
       `intervalo de ${this.miningInterval}ms entre tentativas`
@@ -65,17 +49,14 @@ export class AutoMinerService implements OnModuleInit {
 
     if (!seedPhrase) {
       this.logger.warn('SEED_PHRASE não configurada. Mineração automática desabilitada.');
-      this.logger.warn('Configure SEED_PHRASE no arquivo .env para habilitar mineração automática.');
       return;
     }
-
     if (autoMine === 'false') {
       this.logger.log('AUTO_MINE=false. Mineração automática desabilitada.');
       return;
     }
 
     this.logger.log('🚀 Iniciando mineração automática...');
-    
     try {
       await this.startAutoMining(seedPhrase);
     } catch (error) {
@@ -85,7 +66,6 @@ export class AutoMinerService implements OnModuleInit {
 
   async startAutoMining(seedPhrase: string, addressCount?: number) {
     const count = addressCount || parseInt(this.configService.get<string>('ADDRESS_COUNT', '50'));
-    
     if (this.isMining) {
       this.logger.warn('Mineração já está em andamento');
       return;
@@ -94,46 +74,22 @@ export class AutoMinerService implements OnModuleInit {
     this.isMining = true;
     this.logger.log(`📝 Derivando ${count} endereços...`);
 
-    // Derivar endereços
-    const addresses = await this.cardanoDerivation.deriveMultipleAddresses(
-      seedPhrase,
-      count,
-      0, // account 0
-    );
-
+    const addresses = await this.cardanoDerivation.deriveMultipleAddresses(seedPhrase, count, 0);
     this.logger.log(`✅ ${addresses.length} endereços derivados`);
 
-    // Obter mensagem dos termos
     const terms = this.termsService.getTermsAndConditions();
     const message = terms.message;
 
-    // Registrar todos os endereços
     this.logger.log('📝 Registrando endereços...');
-    
     for (let i = 0; i < addresses.length; i++) {
       const addr = addresses[i];
-      
       try {
-        // Assinar mensagem dos termos
-        // Usar a account correta (0, 1, 2, ...) e sempre index 0 do endereço
-        const signature = await this.cardanoDerivation.signMessage(
-          message,
-          seedPhrase,
-          addr.account || i, // Account do endereço (0, 1, 2, ...)
-          0, // Sempre index 0 do endereço (0/0)
-        );
-
-        // Registrar endereço
+        const signature = await this.cardanoDerivation.signMessage(message, seedPhrase, addr.account || i, 0);
         await this.registerService.register(addr.address, signature, addr.pubkey);
-        
         this.logger.log(`✅ Endereço ${i + 1}/${addresses.length} registrado: ${addr.address.substring(0, 20)}...`);
-        
-        // Pequeno delay para não sobrecarregar
         await this.delay(100);
       } catch (error) {
-        // Se já registrado, continua
-        if (error.message?.includes('already registered') || 
-            error.message?.includes('Conflict')) {
+        if (error.message?.includes('already registered') || error.message?.includes('Conflict')) {
           this.logger.log(`⚠️  Endereço ${i + 1} já estava registrado`);
         } else {
           this.logger.error(`❌ Erro ao registrar endereço ${i + 1}: ${error.message}`);
@@ -143,219 +99,87 @@ export class AutoMinerService implements OnModuleInit {
 
     this.logger.log('✅ Todos os endereços registrados!');
     this.logger.log('⛏️  Iniciando mineração...');
-
-    // Aguardar um pouco antes de começar a minerar
     await this.delay(2000);
 
-    // Adicionar todos os endereços à fila
     this.pendingAddresses = addresses.map(addr => ({
       address: addr.address,
       index: addr.index,
     }));
 
-    this.logger.log(
-      `🚀 Iniciando mineração com pool de ${this.maxConcurrentWorkers} workers simultâneos...`
-    );
-    this.logger.log(
-      `📊 Total de ${addresses.length} endereços aguardando processamento`
-    );
-
-    // Iniciar o pool de workers (limita concorrência)
-    this.logger.log(`📊 Antes de iniciar pool: ${this.pendingAddresses.length} endereços na fila`);
+    this.logger.log(`🚀 Iniciando mineração com pool de ${this.maxConcurrentWorkers} workers simultâneos...`);
     this.startWorkerPool();
-    
-    // Log após um delay para verificar se iniciou
-    setTimeout(() => {
-      this.logger.log(
-        `📊 Status após iniciar: ${this.activeWorkers.size} workers ativos, ` +
-        `${this.pendingAddresses.length} na fila, ${this.miningWorkers.size} intervals criados`
-      );
-    }, 3000);
   }
 
-  /**
-   * Inicia o pool de workers com limite de concorrência
-   */
   private startWorkerPool() {
-    this.logger.log(
-      `🚀 Iniciando pool: ${this.pendingAddresses.length} endereços, ` +
-      `máximo ${this.maxConcurrentWorkers} workers simultâneos`
-    );
-
     const processNext = async () => {
-      if (!this.isMining) {
-        this.logger.debug('⏸️  Mineração pausada, parando processamento');
-        return;
-      }
+      if (!this.isMining) return;
 
-      // Se há espaço no pool e endereços na fila
-      if (
-        this.activeWorkers.size < this.maxConcurrentWorkers &&
-        this.pendingAddresses.length > 0
-      ) {
+      if (this.activeWorkers.size < this.maxConcurrentWorkers && this.pendingAddresses.length > 0) {
         const next = this.pendingAddresses.shift();
         if (next) {
-          this.logger.log(
-            `🎯 Adicionando worker ${this.activeWorkers.size + 1}/${this.maxConcurrentWorkers}: ` +
-            `endereço ${next.index + 1} (${next.address.substring(0, 20)}...)`
-          );
           this.activeWorkers.add(next.address);
           this.startMiningForAddress(next.address, next.index);
         }
       }
 
-      // Agendar próxima verificação se ainda houver endereços na fila
       if (this.isMining && (this.pendingAddresses.length > 0 || this.activeWorkers.size < this.maxConcurrentWorkers)) {
-        setTimeout(processNext, 500); // Verifica a cada 500ms se há espaço no pool
-      } else if (!this.isMining) {
-        this.logger.log('✅ Pool de workers finalizado');
+        setTimeout(processNext, 500);
       }
     };
 
-    // Processar inicialmente alguns workers
     const initialCount = Math.min(this.maxConcurrentWorkers, this.pendingAddresses.length);
-    this.logger.log(`📦 Iniciando ${initialCount} workers iniciais...`);
-    
     for (let i = 0; i < initialCount; i++) {
-      setTimeout(() => {
-        this.logger.debug(`⏰ Agendando worker inicial ${i + 1}/${initialCount}`);
-        processNext();
-      }, i * 200); // Espaçar início dos workers
+      setTimeout(() => processNext(), i * 200);
     }
-
-    // Também iniciar o loop contínuo para processar resto da fila
     setTimeout(() => processNext(), initialCount * 200 + 500);
   }
 
   private startMiningForAddress(address: string, index: number) {
-    this.logger.log(`⛏️  Iniciando worker para endereço ${index + 1}: ${address.substring(0, 20)}...`);
-    // ✅ Ajustado: Começar nonces próximos ao 0 para não perder soluções no início
-    // Browser normalmente começa do 0, então vamos fazer o mesmo
-    // Usar index * 10 para distribuir ligeiramente, mas não pular grandes ranges
-    let nonceCounter = BigInt(index * 10); // ✅ Ajustado: Começar próximo do 0
-    const increment = BigInt(1);
+     // define um baseNonce
+    let nonceCounter =  BigInt(81985529216486895) ;
     let isWorkerActive = true;
-    let attemptCount = 0;
-    let lastLogTime = Date.now();
-    
+
     const worker = async () => {
-      if (!this.isMining || !isWorkerActive) {
-        return;
-      }
+      if (!this.isMining || !isWorkerActive) return;
 
       try {
-        // Obter desafio atual
         const challenge = this.challengeService.getCurrentChallenge();
-        
-        if (challenge.code !== 'active') {
-          if (challenge.code === 'after') {
-            this.logger.log(`⏰ Mineração encerrada (período após término)`);
-            this.stopMining();
-          }
-          return;
-        }
-
-        if (!challenge.challenge) {
-          this.logger.debug(`⚠️  Worker ${index + 1}: Desafio não disponível`);
-          return;
-        }
+        if (challenge.code !== 'active' || !challenge.challenge) return;
 
         const challengeData = challenge.challenge;
-        
-        // ✅ Detectar mudança de challenge (por challenge_id ou no_pre_mine)
-        const challengeChanged = 
-          this.lastChallengeId !== challengeData.challenge_id || 
-          this.lastNoPreMine !== challengeData.no_pre_mine;
-        
+        const challengeChanged = this.lastChallengeId !== challengeData.challenge_id || this.lastNoPreMine !== challengeData.no_pre_mine;
         if (challengeChanged) {
           const oldChallengeId = this.lastChallengeId;
-          const oldNoPreMine = this.lastNoPreMine;
-          
-          // Log da mudança
-          if (oldChallengeId && oldChallengeId !== challengeData.challenge_id) {
-            this.logger.log(
-              `🔄 Challenge mudou: ${oldChallengeId} → ${challengeData.challenge_id} ` +
-              `(Hora: ${new Date().toISOString()})`
-            );
-            
-            // Notificar callbacks
-            this.challengeChangeCallbacks.forEach(callback => {
-              try {
-                callback(oldChallengeId, challengeData.challenge_id);
-              } catch (e) {
-                this.logger.error(`Erro em callback de mudança de challenge: ${e.message}`);
-              }
-            });
-          } else if (oldNoPreMine && oldNoPreMine !== challengeData.no_pre_mine) {
-            this.logger.log(
-              `🔄 no_pre_mine mudou para challenge ${challengeData.challenge_id} ` +
-              `(Hora: ${new Date().toISOString()})`
-            );
-          }
-          
-          // Limpar ROMs de desafios expirados quando o desafio muda
-          try {
-            const wasmService = this.ashmaizeService.wasmServiceForCleanup;
-            if (wasmService && typeof wasmService.clearExpiredRoms === 'function') {
-              if (oldNoPreMine) {
-                this.logger.log(`🗑️  Limpando ROM do challenge anterior: ${oldChallengeId || 'unknown'}`);
-                wasmService.clearExpiredRoms(challengeData.no_pre_mine);
-              }
-            }
-          } catch (e) {
-            this.logger.warn(`Erro ao limpar ROMs expiradas: ${e.message}`);
-          }
-          
-          // Atualizar rastreadores
           this.lastChallengeId = challengeData.challenge_id;
           this.lastNoPreMine = challengeData.no_pre_mine;
+
+          this.challengeChangeCallbacks.forEach(cb => {
+            try { cb(oldChallengeId, challengeData.challenge_id); } catch {}
+          });
+
+          try {
+            const wasmService = this.ashmaizeService.wasmServiceForCleanup;
+            if (wasmService?.clearExpiredRoms && oldChallengeId) {
+              wasmService.clearExpiredRoms(challengeData.no_pre_mine);
+            }
+          } catch {}
         }
 
-        // Verificar prazo
         const currentTime = new Date();
-        const latestSubmission = new Date(challengeData.latest_submission);
-        if (currentTime > latestSubmission) {
-          this.logger.log(`⏰ Prazo expirado para desafio ${challengeData.challenge_id}`);
+        if (currentTime > new Date(challengeData.latest_submission)) {
           isWorkerActive = false;
           this.activeWorkers.delete(address);
           return;
         }
 
-        // Verificar se já submeteu solução para este desafio
-        const existingSolution = this.storageService.getSolution(
-          address,
-          challengeData.challenge_id,
-        );
-        if (existingSolution) {
-          // Já encontrou solução, pode parar este worker
-          this.logger.log(`✅ Endereço ${index + 1} já submeteu solução, parando worker`);
+        if (this.storageService.getSolution(address, challengeData.challenge_id)) {
           isWorkerActive = false;
           this.activeWorkers.delete(address);
-          const timeoutId = this.miningWorkers.get(address);
-          if (timeoutId) {
-            clearTimeout(timeoutId);
-            this.miningWorkers.delete(address);
-          }
           return;
         }
 
-        // Gerar nonce incremental
         const nonce = this.generateIncrementalNonce(nonceCounter);
-        const nonceValue = nonceCounter.toString(); // Para debug
-        nonceCounter += increment;
-        attemptCount++;
-
-        // Log a cada 1000 tentativas ou a cada 10 segundos
-        const currentTimestamp = Date.now();
-        if (attemptCount % 1000 === 0 || (currentTimestamp - lastLogTime) > 10000) {
-          this.logger.debug(
-            `🔍 Worker ${index + 1}: ${attemptCount.toLocaleString()} tentativas, ` +
-            `nonce hex: ${nonce}, nonce decimal: ${nonceValue}, próximo será: ${nonceCounter.toString()}`
-          );
-          lastLogTime = currentTimestamp;
-        }
-
-        // Construir preimage
+        nonceCounter += BigInt(1);
         const preimage = this.buildPreimage(
           nonce,
           address,
@@ -366,182 +190,45 @@ export class AutoMinerService implements OnModuleInit {
           challengeData.no_pre_mine_hour,
         );
 
-        // Validar solução usando AshMaize real
-        let isValid = false;
-        let validationStart = Date.now();
-        let hashSample = '';
-        try {
-          isValid = await this.ashmaizeService.validateSolution(
-            preimage,
-            challengeData.no_pre_mine,
-            challengeData.difficulty,
-          );
-          const validationTime = Date.now() - validationStart;
-          
-          // Obter hash para debug (apenas a cada 1000 tentativas para não impactar performance)
-          if (attemptCount % 1000 === 0) {
-            try {
-              // Obter hash através do serviço AshMaize
-              hashSample = await this.ashmaizeService.computeHash(preimage, challengeData.no_pre_mine);
-              hashSample = hashSample.substring(0, 16); // Primeiros 8 bytes (16 hex chars)
-            } catch (e) {
-              // Ignorar erro ao obter hash para debug
-            }
-            
-            this.logger.debug(
-              `🔍 Worker ${index + 1}: ${attemptCount.toLocaleString()} tentativas, ` +
-              `validação levou ${validationTime}ms, ` +
-              `difficulty: ${challengeData.difficulty}, ` +
-              `nonce: ${nonce} (decimal: ${nonceValue}), ` +
-              `${hashSample ? `hash prefix: ${hashSample}, ` : ''}` +
-              `resultado: ${isValid ? '✅ VÁLIDO!' : '❌ inválido'}`
-            );
-          }
-          
-          // Se encontrar solução válida, logar imediatamente
-          if (isValid) {
-            this.logger.log(
-              `🎉🎉🎉 SOLUÇÃO ENCONTRADA! Worker ${index + 1}, ` +
-              `nonce: ${nonce}, ` +
-              `preimage length: ${preimage.length}, ` +
-              `validação levou ${validationTime}ms`
-            );
-          }
-        } catch (validationError: any) {
-          const validationTime = Date.now() - validationStart;
-          // Log erros de validação (mas não para cada tentativa que falha)
-          if (attemptCount % 1000 === 0) {
-            this.logger.warn(
-              `⚠️  Worker ${index + 1}: Erro na validação após ${validationTime}ms: ${validationError.message}`
-            );
-          }
-          // Continuar tentando mesmo se houver erro
-        }
-
+        const isValid = await this.ashmaizeService.validateSolution(preimage, challengeData.no_pre_mine, challengeData.difficulty);
         if (isValid) {
-          // Submeter solução
-          try {
-            await this.solutionService.submitSolution(
-              address,
-              challengeData.challenge_id,
-              nonce,
-            );
-            
-            this.logger.log(
-              `✅ Solução encontrada e submetida! Endereço ${index + 1}/${this.activeWorkers.size}, Nonce: ${nonce}`
-            );
-            
-            // Solução encontrada, parar este worker
+            this.logger.log(`🎉 Challenge encontrado pelo endereço ${address}! Nonce: ${nonce}`);
+            await this.solutionService.submitSolution(address, challengeData.challenge_id, nonce);
             isWorkerActive = false;
             this.activeWorkers.delete(address);
-            const timeoutId = this.miningWorkers.get(address);
-            if (timeoutId) {
-              clearTimeout(timeoutId);
-              this.miningWorkers.delete(address);
-            }
-            
-            // Adicionar próximo endereço da fila ao pool
+
+            // inicia próximo endereço se houver
             if (this.pendingAddresses.length > 0) {
-              const next = this.pendingAddresses.shift();
-              if (next) {
-                this.activeWorkers.add(next.address);
-                this.startMiningForAddress(next.address, next.index);
-              }
-            }
-          } catch (error) {
-            // Se já foi submetida, parar worker
-            if (error.message?.includes('already')) {
-              this.logger.log(`ℹ️  Endereço ${index + 1} já tinha solução submetida`);
-              isWorkerActive = false;
-              this.activeWorkers.delete(address);
-              const timeoutId = this.miningWorkers.get(address);
-              if (timeoutId) {
-                clearTimeout(timeoutId);
-                this.miningWorkers.delete(address);
-              }
-              
-              // Adicionar próximo endereço da fila
-              if (this.pendingAddresses.length > 0) {
                 const next = this.pendingAddresses.shift();
                 if (next) {
-                  this.activeWorkers.add(next.address);
-                  this.startMiningForAddress(next.address, next.index);
+                    this.activeWorkers.add(next.address);
+                    this.startMiningForAddress(next.address, next.index);
                 }
-              }
-            } else if (!error.message?.includes('not meet difficulty')) {
-              this.logger.debug(`Erro ao submeter solução: ${error.message}`);
             }
-          }
         }
-      } catch (error: any) {
-        // Log erros importantes (mas não spam de "does not meet difficulty")
-        const errorMsg = error?.message || String(error);
-        if (!errorMsg?.includes('not registered') && 
-            !errorMsg?.includes('does not meet') &&
-            !errorMsg?.includes('Challenge not found')) {
-          // Log apenas a cada 1000 tentativas para não spammar
-          if (attemptCount % 1000 === 0) {
-            this.logger.warn(`⚠️  Erro no worker ${index + 1}: ${errorMsg}`);
-          }
-        }
-      }
+
+      } catch {}
     };
 
-    // IMPORTANTE: Usar setTimeout recursivo ao invés de setInterval
-    // Isso garante que o próximo worker só roda DEPOIS que o anterior terminou
     const runWorker = async () => {
-      if (!this.isMining || !isWorkerActive) {
-        const existingTimeout = this.miningWorkers.get(address);
-        if (existingTimeout) {
-          clearTimeout(existingTimeout);
-          this.miningWorkers.delete(address);
-        }
-        return;
-      }
-      
+      if (!this.isMining || !isWorkerActive) return;
       await worker();
-      
-      // Agendar próxima execução APENAS se ainda estiver ativo
       if (this.isMining && isWorkerActive) {
         const timeoutId = setTimeout(runWorker, this.miningInterval);
         this.miningWorkers.set(address, timeoutId);
       }
     };
 
-    // Iniciar primeiro worker
-    runWorker().catch(error => {
-      this.logger.error(`Unhandled error in worker for address ${address}: ${error.message}`);
-    });
+    runWorker().catch(() => {});
   }
 
-  private buildPreimage(
-    nonce: string,
-    address: string,
-    challengeId: string,
-    difficulty: string,
-    noPreMine: string,
-    latestSubmission: string,
-    noPreMineHour: string,
-  ): string {
-    // Conforme especificação: nonce + address + challenge_id + difficulty + no_pre_mine + latest_submission + no_pre_mine_hour
+  private buildPreimage(nonce: string, address: string, challengeId: string, difficulty: string, noPreMine: string, latestSubmission: string, noPreMineHour: string): string {
     return `${nonce}${address}${challengeId}${difficulty}${noPreMine}${latestSubmission}${noPreMineHour}`;
   }
 
-  private generateNonce(): string {
-    // Gerar nonce aleatório de 64 bits (16 hex chars)
-    const crypto = require('crypto');
-    const randomBytes = crypto.randomBytes(8);
-    return randomBytes.toString('hex');
-  }
-
-  /**
-   * Gera nonce incremental para mineração mais eficiente
-   * ✅ Sempre retorna 16 caracteres hex (conforme teste de validação)
-   */
   private generateIncrementalNonce(baseNonce: bigint): string {
-    // ✅ Garantir sempre 16 caracteres hex (64 bits) - conforme teste
     const hex = baseNonce.toString(16);
-    return hex.padStart(16, '0').substring(0, 16); // Garantir máximo de 16 chars
+    return hex.padStart(16, '0').substring(0, 16);
   }
 
   private delay(ms: number): Promise<void> {
@@ -550,12 +237,14 @@ export class AutoMinerService implements OnModuleInit {
 
   stopMining() {
     this.isMining = false;
-    this.miningWorkers.forEach((timeoutId) => clearTimeout(timeoutId));
+    this.miningWorkers.forEach(timeoutId => clearTimeout(timeoutId));
     this.miningWorkers.clear();
     this.activeWorkers.clear();
     this.pendingAddresses = [];
     this.logger.log('⛏️  Mineração parada');
   }
+
+  // ================= MÉTODOS DE STATUS ================= //
 
   getMiningStatus() {
     return {
@@ -572,51 +261,35 @@ export class AutoMinerService implements OnModuleInit {
     return this.activeWorkers;
   }
 
-  /**
-   * Verifica se o challenge mudou desde a última verificação
-   */
-  hasChallengeChanged(): boolean {
+  getChallengeInfo() {
     try {
       const challenge = this.challengeService.getCurrentChallenge();
-      if (challenge.code !== 'active' || !challenge.challenge) {
-        return false;
-      }
-      
-      return this.lastChallengeId !== challenge.challenge.challenge_id;
+      const currentChallengeId = challenge.challenge?.challenge_id || null;
+      return {
+        currentChallengeId,
+        lastChallengeId: this.lastChallengeId,
+        hasChanged: this.lastChallengeId !== null && this.lastChallengeId !== currentChallengeId,
+        lastNoPreMine: this.lastNoPreMine,
+        currentNoPreMine: challenge.challenge?.no_pre_mine || null,
+        challenge,
+      };
     } catch {
-      return false;
+      return {
+        currentChallengeId: null,
+        lastChallengeId: this.lastChallengeId,
+        hasChanged: false,
+        lastNoPreMine: this.lastNoPreMine,
+        currentNoPreMine: null,
+        challenge: null,
+      };
     }
   }
 
-  /**
-   * Obtém o challenge atual e informações de mudança
-   */
-  getChallengeInfo() {
-    const challenge = this.challengeService.getCurrentChallenge();
-    const currentChallengeId = challenge.challenge?.challenge_id || null;
-    
-    return {
-      currentChallengeId,
-      lastChallengeId: this.lastChallengeId,
-      hasChanged: this.lastChallengeId !== null && this.lastChallengeId !== currentChallengeId,
-      lastNoPreMine: this.lastNoPreMine,
-      currentNoPreMine: challenge.challenge?.no_pre_mine || null,
-      challenge,
-    };
-  }
-
-  /**
-   * Registra callback para ser chamado quando o challenge mudar
-   */
   onChallengeChange(callback: (oldChallengeId: string | null, newChallengeId: string) => void) {
     this.challengeChangeCallbacks.push(callback);
-    
-    // Retornar função para remover callback
     return () => {
       const index = this.challengeChangeCallbacks.indexOf(callback);
-      if (index > -1) {
-        this.challengeChangeCallbacks.splice(index, 1);
-      }
+      if (index > -1) this.challengeChangeCallbacks.splice(index, 1);
     };
   }
 }

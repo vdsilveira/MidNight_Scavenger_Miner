@@ -13,7 +13,7 @@ export class AshmaizeService {
     private readonly native?: AshmaizeNativeService,
   ) {}
 
-  // ✅ Getter público para compatibilidade com auto-miner
+  // Getter público para compatibilidade com auto-miner
   get wasmServiceForCleanup(): AshmaizeWasmService {
     return this.wasm;
   }
@@ -23,23 +23,47 @@ export class AshmaizeService {
     noPreMine: string,
     difficulty: string,
   ): Promise<boolean> {
-    // ✅ Try WASM first (global ROM)
+    let valid = false;
+
     if (this.useWasm) {
       try {
-        return this.wasm.validateSolution(preimage, noPreMine, difficulty);
+        valid = this.wasm.validateSolution(preimage, noPreMine, difficulty);
+
+        // 🔹 Log de debug para ver se o hash atende à dificuldade
+        const hash = await this.computeHash(preimage, noPreMine);
+        // this.logger.debug(
+        //   `[DEBUG HASH] preimage=${preimage}, hash=${hash}, difficulty=${difficulty}, meetsDifficulty=${valid}`,
+        // );
+
+        return valid;
       } catch {
         this.logger.warn('WASM failed — switching to native');
         this.useWasm = false;
       }
     }
 
-    // ✅ Native fallback (still uses noPreMine for now until Rust patch)
     if (this.native) {
-      return await this.native.validateSolution(preimage, noPreMine, difficulty);
+      valid = await this.native.validateSolution(preimage, noPreMine, difficulty);
+
+      // 🔹 Log de debug para Native
+      const hash = await this.computeHash(preimage, noPreMine);
+      this.logger.debug(
+        `[DEBUG HASH - Native] preimage=${preimage}, hash=${hash}, difficulty=${difficulty}, meetsDifficulty=${valid}`,
+      );
+
+      return valid;
     }
 
-    // ✅ Final fallback simulation
-    return this.simulate(preimage, difficulty);
+    // Fallback simulation
+    valid = this.simulate(preimage, difficulty);
+
+    // 🔹 Log de debug para fallback
+    const hash = this.simHash(preimage);
+    this.logger.debug(
+      `[DEBUG HASH - Sim] preimage=${preimage}, hash=${hash}, difficulty=${difficulty}, meetsDifficulty=${valid}`,
+    );
+
+    return valid;
   }
 
   async computeHash(preimage: string, noPreMine: string): Promise<string> {

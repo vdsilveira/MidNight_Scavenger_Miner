@@ -20,7 +20,7 @@ export class AshmaizeWasmService {
   private getOrCreateRom(noPreMine: string): Rom {
     // ✅ ROM compartilhada: verificar se já existe no cache
     if (this.romCache.has(noPreMine)) {
-      this.logger.debug(`♻️  Reusing cached ROM for ${noPreMine.substring(0, 16)}...`);
+      // this.logger.debug(`♻️  Reusing cached ROM for ${noPreMine.substring(0, 16)}...`);
       return this.romCache.get(noPreMine)!;
     }
 
