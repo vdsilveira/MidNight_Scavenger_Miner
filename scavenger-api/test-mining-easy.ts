@@ -49,7 +49,7 @@ async function main() {
 
   const ch = current.challenge;
   // Reduced difficulty: require last 4 bits zero (≈1/16)
-  const easyDifficulty = 'FFFFFFF0';
+  const easyDifficulty = 'FFFFF000';
 
   // Dummy address for testing; replace with a registered one if needed
   const address = 'addr1qtestaddressforhashingonly';
