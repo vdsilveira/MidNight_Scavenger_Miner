@@ -23,7 +23,8 @@
     "sync-wallets": "ts-node tools/sync-wallets.ts",
     "test:challenge": "ts-node test-challenge-validation.ts",
     "test:hash": "ts-node test-hash-validation.ts",
-    "test:mining": "ts-node test-mining-performance.ts"
+    "test:mining": "ts-node test-mining-performance.ts",
+    "test:browser": "ts-node test-browser-comparison.ts"
   },
   "dependencies": {
     "@bitcoin-js/tiny-secp256k1-asmjs": "^2.2.4",

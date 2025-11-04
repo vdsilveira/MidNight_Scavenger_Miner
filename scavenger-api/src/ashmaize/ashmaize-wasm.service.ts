@@ -9,9 +9,9 @@ export class AshmaizeWasmService {
 
   private readonly NB_LOOPS = 8;
   private readonly NB_INSTRS = 256;
-  private readonly PRE_SIZE = 16 * 1024; // 16 KB (align with ashmaize-web tests)
+  private readonly PRE_SIZE = 16 * 1024 * 1024; // 16 MB (como no browser: 16 * MB)
   private readonly MIXING_NUMBERS = 4;
-  private readonly ROM_SIZE = 10 * 1024 * 1024; // 10 MB (align with ashmaize-web tests)
+  private readonly ROM_SIZE = 1024 * 1024 * 1024; // 1 GB (como no browser: 1024 * MB)
 
   private getOrCreateRom(noPreMine: string): Rom {
     if (this.wasmDisabled) throw new Error('WASM disabled');
@@ -25,7 +25,9 @@ export class AshmaizeWasmService {
     }
 
     this.logger.log(`🔨 Building ROM for challenge ${noPreMine.slice(0, 16)}...`);
-    const seed = Buffer.from(noPreMine, 'hex');
+    // ✅ IMPORTANTE: no_pre_mine deve ser tratado como STRING UTF-8, não como hex bytes!
+    // Conforme mine-session.work.js linha 82: builder.key(new TextEncoder().encode(no_pre_mine));
+    const seed = new TextEncoder().encode(noPreMine);
 
     const builder = Rom.builder();
     builder.key(seed);
@@ -40,10 +42,20 @@ export class AshmaizeWasmService {
   validateSolution(preimage: string | Uint8Array, noPreMine: string, difficulty: string): boolean {
     try {
       const rom = this.getOrCreateRom(noPreMine);
+      // ✅ IMPORTANTE: No browser, o preimage vem como STRING e é codificado aqui
+      // Conforme getHexHash no mine-session.work.js: new TextEncoder().encode(preimage)
+      // Se já vier como Uint8Array, usar diretamente; se for string, codificar como UTF-8
       const bytes = preimage instanceof Uint8Array ? preimage : new TextEncoder().encode(preimage);
       const hashBytes = rom.hash(bytes, this.NB_LOOPS, this.NB_INSTRS);
-      const hex = Buffer.from(hashBytes).toString('hex');
-      return this.checkDifficulty(hex, difficulty);
+      
+      // ✅ Converter bytes para hex string EXATAMENTE como no browser (getHexHash linha 93-98)
+      let hexString = '';
+      for (let i = 0; i < hashBytes.length; i++) {
+        const byte = hashBytes[i];
+        hexString += byte.toString(16).padStart(2, '0');
+      }
+      
+      return this.checkDifficulty(hexString, difficulty);
     } catch (e: any) {
       this.logger.error(`❌ Error validating solution: ${e.message}`);
       this.wasmDisabled = true;
@@ -53,17 +65,28 @@ export class AshmaizeWasmService {
 
   computeHash(preimage: string | Uint8Array, noPreMine: string): string {
     const rom = this.getOrCreateRom(noPreMine);
+    // ✅ IMPORTANTE: No browser, o preimage vem como STRING e é codificado aqui
     const bytes = preimage instanceof Uint8Array ? preimage : new TextEncoder().encode(preimage);
     const hashBytes = rom.hash(bytes, this.NB_LOOPS, this.NB_INSTRS);
-    return Buffer.from(hashBytes).toString('hex');
+    
+    // ✅ Converter bytes para hex string EXATAMENTE como no browser (getHexHash linha 93-98)
+    let hexString = '';
+    for (let i = 0; i < hashBytes.length; i++) {
+      const byte = hashBytes[i];
+      hexString += byte.toString(16).padStart(2, '0');
+    }
+    return hexString;
   }
 
   private checkDifficulty(hash: string, difficulty: string): boolean {
+    // ✅ Usar EXATAMENTE a mesma lógica do browser (mine-session.work.js linha 164-172):
+    // Compare only the first 8 hex digits (32 bits) of the hash to the 4-byte (8 hex digit) difficulty target.
     if (hash.length < 8 || difficulty.length !== 8) return false;
-    const hashNum = parseInt(hash.substring(0, 8), 16) >>> 0;
-    const diffNum = parseInt(difficulty, 16) >>> 0;
-    const zeroMask = (~diffNum) >>> 0;
-    return (hashNum & zeroMask) === 0;
+    const hashPrefix = hash.slice(0, 8); // slice() como no browser
+    const hashValue = parseInt(hashPrefix, 16); // parseInt sem >>> 0 primeiro (como no browser linha 167)
+    const target = parseInt(difficulty, 16); // parseInt sem >>> 0 primeiro (como no browser linha 123)
+    // (hashValue | target) === target (exatamente como no browser linha 168)
+    return (hashValue | target) === target;
   }
 
   clearExpiredRoms(activeNoPreMine: string): void {

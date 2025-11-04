@@ -25,21 +25,22 @@ export class AshmaizeService {
    * @param difficulty string hex da dificuldade
    */
   async validateSolution(
-    preimage: string,
+    preimage: string | Uint8Array,
     noPreMine: string,
     difficulty: string,
   ): Promise<boolean> {
-    // Converte preimage para bytes UTF-8 para WASM
-    const preimageBytes = new TextEncoder().encode(preimage);
+    // ✅ IMPORTANTE: No browser, o preimage é passado como STRING e é codificado DENTRO do getHexHash
+    // Não devemos codificar aqui - deixar o wasm fazer isso (como no browser)
 
     let valid = false;
 
     if (this.useWasm) {
       try {
-        valid = this.wasm.validateSolution(preimageBytes, noPreMine, difficulty);
+        // ✅ Passar preimage diretamente (string ou Uint8Array) - o wasm vai codificar se necessário
+        valid = this.wasm.validateSolution(preimage, noPreMine, difficulty);
 
         // Opcional: log de debug
-        const hash = await this.computeHash(preimageBytes, noPreMine);
+        const hash = await this.computeHash(preimage, noPreMine);
         // this.logger.debug(`[DEBUG HASH - WASM] preimage=${preimage}, hash=${hash}, difficulty=${difficulty}, meetsDifficulty=${valid}`);
 
         return valid;
@@ -50,45 +51,50 @@ export class AshmaizeService {
     }
 
     if (this.native) {
-      // Para Native, podemos enviar string diretamente
-      valid = await this.native.validateSolution(preimage, noPreMine, difficulty);
+      // Para Native, converter para string se necessário
+      const preimageStr = preimage instanceof Uint8Array ? new TextDecoder().decode(preimage) : preimage;
+      valid = await this.native.validateSolution(preimageStr, noPreMine, difficulty);
 
       // Opcional: log de debug Native
-      const hash = await this.computeHash(new TextEncoder().encode(preimage), noPreMine);
-      this.logger.debug(`[DEBUG HASH - Native] preimage=${preimage}, hash=${hash}, difficulty=${difficulty}, meetsDifficulty=${valid}`);
+      const hash = await this.computeHash(preimage, noPreMine);
+      this.logger.debug(`[DEBUG HASH - Native] preimage=${preimageStr}, hash=${hash}, difficulty=${difficulty}, meetsDifficulty=${valid}`);
 
       return valid;
     }
 
     // Fallback de simulação
-    valid = this.simulate(preimage, difficulty);
+    const preimageStr = preimage instanceof Uint8Array ? new TextDecoder().decode(preimage) : preimage;
+    valid = this.simulate(preimageStr, difficulty);
 
     // Log fallback
-    const hash = this.simHash(preimage);
-    this.logger.debug(`[DEBUG HASH - Sim] preimage=${preimage}, hash=${hash}, difficulty=${difficulty}, meetsDifficulty=${valid}`);
+    const hash = this.simHash(preimageStr);
+    this.logger.debug(`[DEBUG HASH - Sim] preimage=${preimageStr}, hash=${hash}, difficulty=${difficulty}, meetsDifficulty=${valid}`);
 
     return valid;
   }
 
   /**
-   * Computa hash AshMaize para um preimage em bytes
-   * @param preimageBytes Uint8Array do preimage
+   * Computa hash AshMaize para um preimage
+   * @param preimage string ou Uint8Array do preimage
    * @param noPreMine string hex do desafio
    */
-  async computeHash(preimageBytes: Uint8Array, noPreMine: string): Promise<string> {
+  async computeHash(preimage: string | Uint8Array, noPreMine: string): Promise<string> {
     if (this.useWasm) {
       try {
-        return this.wasm.computeHash(preimageBytes, noPreMine);
+        // ✅ Passar preimage diretamente (string ou Uint8Array) - o wasm vai codificar se necessário
+        return this.wasm.computeHash(preimage, noPreMine);
       } catch {
         this.useWasm = false;
       }
     }
     if (this.native) {
-      // Native espera string, então convertemos bytes de volta para string UTF-8
-      return this.native.computeHash(new TextDecoder().decode(preimageBytes), noPreMine);
+      // Native espera string
+      const preimageStr = preimage instanceof Uint8Array ? new TextDecoder().decode(preimage) : preimage;
+      return this.native.computeHash(preimageStr, noPreMine);
     }
     // Fallback de simulação
-    return this.simHash(new TextDecoder().decode(preimageBytes));
+    const preimageStr = preimage instanceof Uint8Array ? new TextDecoder().decode(preimage) : preimage;
+    return this.simHash(preimageStr);
   }
 
   // ======== MÉTODOS AUXILIARES ======== //

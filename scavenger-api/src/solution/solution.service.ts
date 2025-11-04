@@ -55,8 +55,12 @@ export class SolutionService {
 
     const challenge = challengeResponse.challenge;
 
+    // ✅ Normalizar challenge_id: aceitar com ou sem ** prefixo
+    // O browser pode enviar com ou sem asteriscos, mas usamos o formato da API (com **) no preimage
+    const challengeIdWithoutAsterisks = challengeId.replace(/^\*\*/, '');
+
     // ✅ Validar formato do challenge_id (D##C##) - conforme teste
-    if (!/^D\d{2}C\d{2}$/.test(challengeId)) {
+    if (!/^D\d{2}C\d{2}$/.test(challengeIdWithoutAsterisks)) {
       throw new HttpException(
         {
           message: 'Invalid challenge_id format - must be D##C## (e.g., D01C01)',
@@ -67,8 +71,9 @@ export class SolutionService {
       );
     }
 
-    // Verificar se o challenge_id corresponde ao desafio atual
-    if (challenge.challenge_id !== challengeId) {
+    // Verificar se o challenge_id corresponde ao desafio atual (comparar sem asteriscos)
+    const challengeIdFromApi = challenge.challenge_id.replace(/^\*\*/, '');
+    if (challengeIdFromApi !== challengeIdWithoutAsterisks) {
       throw new NotFoundException(`Challenge not found: ${challengeId}`);
     }
 
@@ -97,10 +102,11 @@ export class SolutionService {
     }
 
     // ✅ Construir preimage (conforme especificação Midnight)
+    // IMPORTANTE: Usar challenge.challenge_id COM asteriscos (como vem da API e como o browser usa)
     const preimage = this.buildPreimage(
       nonce,
       address,
-      challenge.challenge_id,
+      challenge.challenge_id, // COM ** (como o browser usa no preimage)
       challenge.difficulty,
       challenge.no_pre_mine,
       challenge.latest_submission,
@@ -166,16 +172,20 @@ export class SolutionService {
   }
 
   /**
-   * Constrói o preimage conforme especificação Midnight
-   * Ordem: nonce + address + challenge_id + difficulty + no_pre_mine + latest_submission + no_pre_mine_hour
+   * Constrói o preimage EXATAMENTE como o browser worker faz:
+   * 1. Concatena todas as strings na ordem: nonce + address + challenge_id + difficulty + no_pre_mine + latest_submission + no_pre_mine_hour
+   * 2. O challenge_id deve vir COM ** (como a API retorna e como o browser usa)
+   * 3. Depois essa string é codificada como UTF-8 para o hash
    * 
-   * ✅ Conforme teste de validação: todos os componentes devem estar na ordem exata
-   * ✅ Sem separadores: concatenação direta sem espaços ou caracteres especiais
+   * Conforme mine-session.work.js (linhas 148-156):
+   * const preimage = [tryNonce, _address, _challengeId, _difficultyHex, 
+   *                   _noPreMine, _latestSubmission, _noPreMineHour].join('');
+   * const salt = new TextEncoder().encode(preimage);
    */
   private buildPreimage(
     nonce: string,
     address: string,
-    challengeId: string,
+    challengeId: string, // COM ** (como vem da API)
     difficulty: string,
     noPreMine: string,
     latestSubmission: string,
@@ -185,8 +195,10 @@ export class SolutionService {
     if (nonce.length !== 16) {
       throw new Error(`Invalid nonce length: expected 16, got ${nonce.length}`);
     }
-    if (challengeId.length !== 6 || !/^D\d{2}C\d{2}$/.test(challengeId)) {
-      throw new Error(`Invalid challengeId format: ${challengeId}`);
+    // challengeId pode ter 6 caracteres (D##C##) ou 8 (**D##C##)
+    const challengeIdWithoutAsterisks = challengeId.replace(/^\*\*/, '');
+    if (challengeIdWithoutAsterisks.length !== 6 || !/^D\d{2}C\d{2}$/.test(challengeIdWithoutAsterisks)) {
+      throw new Error(`Invalid challengeId format: ${challengeId} (expected **D##C## or D##C##)`);
     }
     if (difficulty.length !== 8) {
       throw new Error(`Invalid difficulty length: expected 8, got ${difficulty.length}`);
@@ -195,7 +207,8 @@ export class SolutionService {
       throw new Error(`Invalid noPreMine length: expected 64, got ${noPreMine.length}`);
     }
 
-    // ✅ Conforme especificação Midnight: concatenar na ordem exata (sem separadores)
+    // ✅ Conforme browser worker: concatenar TODAS as strings na ordem exata (sem separadores)
+    // O challenge_id DEVE incluir os asteriscos ** se presentes (como o browser usa)
     return `${nonce}${address}${challengeId}${difficulty}${noPreMine}${latestSubmission}${noPreMineHour}`;
   }
 
