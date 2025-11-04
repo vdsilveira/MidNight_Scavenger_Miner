@@ -13,6 +13,14 @@ interface PendingAddress {
   index: number;
 }
 
+interface ChallengeData {
+  challenge_id: string;
+  difficulty: string;
+  no_pre_mine: string;
+  latest_submission: string;
+  no_pre_mine_hour: string;
+}
+
 @Injectable()
 export class AutoMinerService implements OnModuleInit {
   private readonly logger = new Logger(AutoMinerService.name);
@@ -160,154 +168,66 @@ export class AutoMinerService implements OnModuleInit {
   }
 
   private resetForNewChallenge() {
-    if (this.isResetting) return;
-    this.isResetting = true;
-    try {
-      this.logger.log('🔁 Desafio mudou — resetando fila e workers para a ordem original de endereços');
-      // parar timeouts ativos dos workers atuais
-      this.miningWorkers.forEach(timeoutId => clearTimeout(timeoutId));
-      this.miningWorkers.clear();
-      this.activeWorkers.clear();
-      // repovoar fila com TODOS os endereços novamente (começar do início)
-      this.pendingAddresses = [...this.allAddresses];
-      this.logger.log(`📋 Fila resetada com ${this.allAddresses.length} endereços. Reiniciando workers...`);
-      // reiniciar o pool
-      this.startWorkerPool();
-    } finally {
-      this.isResetting = false;
-    }
+    this.logger.log('🔄 Reiniciando fila e workers para o novo desafio...');
+    this.miningWorkers.forEach(timeoutId => clearTimeout(timeoutId));
+    this.activeWorkers.clear();
+    // repovoar fila com TODOS os endereços novamente (começar do início)
+    this.pendingAddresses = [...this.allAddresses];
+    this.isResetting = false;
+    this.logger.log('✅ Fila e workers reiniciados. Aguardando novo desafio...');
   }
 
-  private startMiningForAddress(address: string, index: number) {
-    let isWorkerActive = true;
-
-    // ✅ Loop de mineração como no browser (mine-session.work.js linha 136-194)
-    // Executa múltiplas tentativas em lotes de ~200ms e depois agenda próxima execução
+  private async startMiningForAddress(address: string, index: number) {
     const runWorker = async () => {
-      if (!this.isMining || !isWorkerActive) return;
-      
-      // Verificar mudança de challenge
-      const challenge = this.challengeService.getCurrentChallenge();
-      if (challenge.code === 'active' && challenge.challenge) {
-        const challengeData = challenge.challenge;
-        const challengeChanged = this.lastChallengeId !== challengeData.challenge_id || this.lastNoPreMine !== challengeData.no_pre_mine;
-        if (challengeChanged) {
-          const oldChallengeId = this.lastChallengeId;
-          this.lastChallengeId = challengeData.challenge_id;
-          this.lastNoPreMine = challengeData.no_pre_mine;
+      const currentChallenge = this.challengeService.getCurrentChallenge();
+      const challengeData = currentChallenge.challenge;
 
-          this.challengeChangeCallbacks.forEach(cb => {
-            try { cb(oldChallengeId, challengeData.challenge_id); } catch {}
-          });
-        }
+      if (!challengeData || currentChallenge.code !== 'active') {
+        this.logger.log('⚠️ Desafio não está ativo. Pausando mineração...');
+        this.stopMining();
+        return;
       }
-      
-      const start = Date.now();
-      let localAttempts = 0;
-      let found = false;
-      
-      // Executar tentativas por ~200ms como no browser (mineLoop)
-      while (Date.now() - start < 200 && this.isMining && isWorkerActive && !found) {
-        try {
-          const currentChallenge = this.challengeService.getCurrentChallenge();
-          if (currentChallenge.code !== 'active' || !currentChallenge.challenge) {
-            found = true;
-            break;
-          }
 
-          const challengeData = currentChallenge.challenge;
-          const currentTime = new Date();
-          if (currentTime > new Date(challengeData.latest_submission)) {
-            found = true;
-            break;
-          }
-
-          if (this.storageService.getSolution(address, challengeData.challenge_id)) {
-            found = true;
-            break;
-          }
-
-          // ✅ Gerar nonce aleatório como no browser (mine-session.work.js linha 145-147)
-          const nonce = this.generateRandomNonce();
-
-          // ✅ Construir preimage EXATAMENTE como o browser worker faz (mine-session.work.js linhas 148-156)
-          // No browser, o preimage é uma STRING que é concatenada e depois codificada dentro do getHexHash
-          const preimageString = [
-            nonce,
-            address,
-            challengeData.challenge_id,
-            challengeData.difficulty,
-            challengeData.no_pre_mine,
-            challengeData.latest_submission,
-            challengeData.no_pre_mine_hour,
-          ].join('');
-
-          // ✅ Passar como STRING para que seja codificado dentro do validateSolution (como no browser)
-          const isValid = this.ashmaizeService.validateSolution(
-            preimageString,
-            challengeData.no_pre_mine,
-            challengeData.difficulty,
-          );
-
-          this.attemptsSinceLastLog += 1;
-          this.totalAttempts += 1;
-          localAttempts++;
-          
-          // Debug: logar hash a cada 100000 tentativas para verificar se está calculando
-          if (this.totalAttempts % 100000 === 0) {
-            const hashHex = this.ashmaizeService.wasmServiceForCleanup.computeHash(preimageString, challengeData.no_pre_mine);
-            const hashPrefix = hashHex.substring(0, 8);
-            const hashValue = parseInt(hashPrefix, 16);
-            const targetValue = parseInt(challengeData.difficulty, 16);
-            const meets = (hashValue | targetValue) === targetValue;
-            this.logger.log(
-              `[DEBUG HASH] address=${address.substring(0, 20)}... nonce=${nonce} ` +
-              `hash=${hashPrefix} (0x${hashValue.toString(16).padStart(8, '0')}) target=0x${targetValue.toString(16).padStart(8, '0')} ` +
-              `(hash|target)=0x${(hashValue | targetValue).toString(16).padStart(8, '0')} meets=${meets}`
-            );
-          }
-
-          if (isValid) {
-            found = true;
-            this.logger.log(`🎉 Challenge encontrado pelo endereço ${address}! Nonce: ${nonce}`);
-            this.totalValid += 1;
-            try {
-              await this.solutionService.submitSolution(
-                address,
-                challengeData.challenge_id,
-                nonce
-              );
-              this.logger.log(`✅ Solução submetida com sucesso para ${address.substring(0, 20)}...`);
-            } catch (e: any) {
-              this.logger.error(`❌ Erro ao submeter solução: ${e.message}`);
-            }
-            break;
-          }
-        } catch (e: any) {
-          this.logger.error(`Erro no worker ${address}: ${e.message}`);
-          found = true;
-          break;
-        }
-      }
-      
-      // Se encontrou solução ou precisa parar, substituir worker
-      if (found) {
+      // Verifica se já tem solução
+      if (this.storageService.getSolution(address, challengeData.challenge_id)) {
+        this.logger.log(`✅ Solução já conhecida para ${address.substring(0, 20)}... pulando...`);
         this.stopWorkerAndReplace(address);
         return;
       }
+
+      // Tenta minerar
+      const result = await this.mineForAddress(address, challengeData);
       
-      // Se worker ainda está ativo, agendar próxima execução (setTimeout(0) como no browser)
-      if (this.isMining && isWorkerActive) {
-        const timeoutId = setTimeout(runWorker, 0);
-        this.miningWorkers.set(address, timeoutId);
+      if (result.found) {
+        this.logger.log(`🎉 Challenge encontrado pelo endereço ${address}! Nonce: ${result.nonce}`);
+        this.totalValid += 1;
+        
+        // Salvar a solução
+        await this.solutionService.submitSolution(
+          address,
+          challengeData.challenge_id,
+          result.nonce!
+        );
+        
+        this.stopWorkerAndReplace(address);
+      } else {
+        // Agendar próxima tentativa se ainda estiver minerando
+        if (this.isMining) {
+          this.miningWorkers.set(
+            address,
+            setTimeout(() => runWorker(), this.miningInterval)
+          );
+        }
       }
     };
 
-    runWorker().catch(() => {});
+    runWorker().catch(error => {
+      this.logger.error(`Erro no worker para ${address}: ${error.message}`);
+    });
   }
 
   /**
-   * Para um worker e substitui imediatamente pelo próximo endereço da fila
+   * Para um worker e substitui imediatamente pelo próximo endereço da fila,
    * Se não houver mais endereços, apenas remove o worker
    */
   private stopWorkerAndReplace(address: string) {
@@ -316,9 +236,8 @@ export class AutoMinerService implements OnModuleInit {
     if (timeoutId) {
       clearTimeout(timeoutId);
       this.miningWorkers.delete(address);
+      this.activeWorkers.delete(address);
     }
-    this.activeWorkers.delete(address);
-
     // Substituir pelo próximo endereço da fila (se houver)
     if (this.pendingAddresses.length > 0 && this.isMining) {
       const next = this.pendingAddresses.shift();
@@ -333,43 +252,79 @@ export class AutoMinerService implements OnModuleInit {
     }
   }
 
-  /**
-   * Constrói o preimage como STRING concatenada
-   * EXATAMENTE como o browser faz em mine-session.work.js (linhas 148-156):
-   * const preimage = [tryNonce, _address, _challengeId, _difficultyHex, 
-   *                   _noPreMine, _latestSubmission, _noPreMineHour].join('');
-   * 
-   * A codificação para UTF-8 é feita DENTRO do getHexHash/validateSolution (como no browser)
-   */
-  private buildPreimageString(
-    nonce: string,
-    address: string,
-    challengeId: string,
-    difficulty: string,
-    noPreMine: string,
-    latestSubmission: string,
-    noPreMineHour: string,
-  ): string {
-    // ✅ IMPORTANTE: Concatena todas as strings (como no browser)
-    // A codificação para UTF-8 será feita dentro do validateSolution (como no getHexHash do browser)
-    return [
-      nonce,
-      address,
-      challengeId, // COM asteriscos se presente (como a API retorna)
-      difficulty,
-      noPreMine,
-      latestSubmission,
-      noPreMineHour,
-    ].join('');
-  }
-
-  /**
-   * Gera nonce aleatório como no browser (mine-session.work.js linha 145-147):
-   * Math.floor(Math.random() * 1e16).toString(16).padStart(16, '0')
-   */
+  // Gera nonce aleatório como no browser (mine-session.work.js linha 145-147):
+  // Math.floor(Math.random() * 1e16).toString(16).padStart(16, '0')
   private generateRandomNonce(): string {
     const randomValue = Math.floor(Math.random() * 1e16);
     return randomValue.toString(16).padStart(16, '0');
+  }
+
+  private validateHashAgainstTarget(hashHex: string, targetDifficulty: string): boolean {
+    // Pega apenas os primeiros 8 caracteres (32 bits) do hash
+    const hashPrefix = hashHex.slice(0, 8);
+    
+    // Converte para números unsigned de 32 bits
+    const hashValue = parseInt(hashPrefix, 16) >>> 0;
+    const target = parseInt(targetDifficulty, 16) >>> 0;
+    
+    // Faz OR bit a bit e garante que o resultado é unsigned
+    const orResult = (hashValue | target) >>> 0;
+    
+    // A solução é válida se o OR com o target resultar exatamente no target
+    // Isso significa que todos os bits 0 no target também são 0 no hash
+    return orResult === target;
+  }
+
+  private async mineForAddress(
+    address: string,
+    challengeData: ChallengeData,
+  ): Promise<{ found: boolean; nonce?: string; hash?: string }> {
+    const start = Date.now();
+    let localAttempts = 0;
+    
+    while (Date.now() - start < 200) { // mesmo timeout do worker
+      const nonce = this.generateRandomNonce();
+      const preimageString = [
+        nonce,
+        address,
+        challengeData.challenge_id,
+        challengeData.difficulty,
+        challengeData.no_pre_mine,
+        challengeData.latest_submission,
+        challengeData.no_pre_mine_hour,
+      ].join('');
+
+      const hashHex = this.ashmaizeService.computeHash(preimageString, challengeData.no_pre_mine);
+      localAttempts++;
+      this.attemptsSinceLastLog += 1;
+      this.totalAttempts += 1;
+
+      if (this.totalAttempts % 100000 === 0) {
+        const hashPrefix = hashHex.slice(0, 8);
+        const hashValue = parseInt(hashPrefix, 16) >>> 0;
+        const targetValue = parseInt(challengeData.difficulty, 16) >>> 0;
+        const orResult = (hashValue | targetValue) >>> 0;
+        const meetsTarget = orResult === targetValue;
+        
+        this.logger.log(
+          `[DEBUG HASH] address=${address.substring(0, 20)}... nonce=${nonce}\n` +
+          `hash=${hashPrefix} (0x${hashValue.toString(16).padStart(8, '0')})\n` +
+          `target=0x${targetValue.toString(16).padStart(8, '0')}\n` +
+          `(hash|target)=0x${orResult.toString(16).padStart(8, '0')}\n` +
+          `meets_target=${meetsTarget}`
+        );
+      }
+      
+      if (this.validateHashAgainstTarget(hashHex, challengeData.difficulty)) {
+        return {
+          found: true,
+          nonce,
+          hash: hashHex
+        };
+      }
+    }
+    
+    return { found: false };
   }
 
   private delay(ms: number): Promise<void> {
@@ -431,4 +386,5 @@ export class AutoMinerService implements OnModuleInit {
       this.attemptsSinceLastLog = 0;
     }, this.statsIntervalMs);
   }
+
 }

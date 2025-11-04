@@ -5,6 +5,7 @@ export interface RegisteredAddress {
   pubkey: string;
   signature: string;
   registeredAt: Date;
+  nightEarned: number; // Novo campo para rastrear NIGHTs
 }
 
 export interface SubmittedSolution {
@@ -13,6 +14,7 @@ export interface SubmittedSolution {
   nonce: string;
   preimage: string;
   timestamp: Date;
+  nightEarned: number; // NIGHTs ganhos por esta solução
 }
 
 export interface Donation {
@@ -27,13 +29,17 @@ export class StorageService {
   private registeredAddresses: Map<string, RegisteredAddress> = new Map();
   private solutions: Map<string, SubmittedSolution[]> = new Map(); // address -> solutions
   private donations: Map<string, Donation> = new Map(); // originalAddress -> donation
+  private readonly NIGHT_PER_SOLUTION = 32.005; // Taxa fixa de NIGHTs por solução
 
   registerAddress(
     address: string,
     pubkey: string,
     signature: string,
   ): void {
+    console.log(`📝 Registrando endereço ${address}`);
+    
     if (this.registeredAddresses.has(address)) {
+      console.warn(`⚠️ Endereço ${address} já registrado`);
       throw new Error('Address already registered');
     }
 
@@ -42,7 +48,10 @@ export class StorageService {
       pubkey,
       signature,
       registeredAt: new Date(),
+      nightEarned: 0, // Começa com 0 NIGHTs
     });
+    
+    console.log(`✅ Endereço ${address} registrado com sucesso`);
   }
 
   isRegistered(address: string): boolean {
@@ -66,15 +75,32 @@ export class StorageService {
     nonce: string,
     preimage: string,
   ): void {
+    console.log(`📝 Adicionando solução para endereço ${address}`);
+    console.log(`Challenge ID: ${challengeId}`);
+    console.log(`Nonce: ${nonce}`);
+    
     const solutions = this.solutions.get(address) || [];
+    const nightEarned = this.NIGHT_PER_SOLUTION;
+
     solutions.push({
       address,
       challengeId,
       nonce,
       preimage,
       timestamp: new Date(),
+      nightEarned,
     });
     this.solutions.set(address, solutions);
+
+    // Atualizar o total de NIGHTs da carteira
+    const addressInfo = this.registeredAddresses.get(address);
+    if (addressInfo) {
+      addressInfo.nightEarned += nightEarned;
+      this.registeredAddresses.set(address, addressInfo);
+      console.log(`✅ NIGHTs atualizados: ${addressInfo.nightEarned} NIGHT para ${address}`);
+    } else {
+      console.warn(`⚠️ Endereço ${address} não registrado ao adicionar solução`);
+    }
   }
 
   getSolutionsForAddress(address: string): SubmittedSolution[] {
@@ -165,7 +191,9 @@ export class StorageService {
     const allSolutions: SubmittedSolution[] = [];
     
     for (const [address, solutions] of this.solutions.entries()) {
-      const challengeSolutions = solutions.filter(s => s.challengeId === challengeId);
+      const challengeSolutions = solutions.filter(
+        (s) => s.challengeId === challengeId,
+      );
       allSolutions.push(...challengeSolutions);
     }
 
@@ -213,6 +241,47 @@ export class StorageService {
     }
 
     return Array.from(addresses);
+  }
+
+  /**
+   * Obtém o total de NIGHTs ganhos por um endereço
+   */
+  getNightEarned(address: string): number {
+    const addressInfo = this.registeredAddresses.get(address);
+    if (!addressInfo) return 0;
+    return addressInfo.nightEarned;
+  }
+
+  /**
+   * Obtém o total de NIGHTs ganhos por todas as carteiras
+   */
+  getTotalNightEarned(): number {
+    let total = 0;
+    
+    for (const info of this.registeredAddresses.values()) {
+      total += info.nightEarned;
+    }
+    
+    return total;
+  }
+
+  /**
+   * Obtém o total de NIGHTs ganhos consolidado por um endereço
+   * (inclui NIGHTs de carteiras que doaram para este endereço)
+   */
+  getConsolidatedNightEarned(address: string): number {
+    const destination = this.getDestinationAddress(address);
+    let totalNight = 0;
+
+    // Somar NIGHTs de todos os endereços que apontam para o mesmo destino
+    for (const [addr, info] of this.registeredAddresses.entries()) {
+      const addrDest = this.getDestinationAddress(addr);
+      if (addrDest === destination) {
+        totalNight += info.nightEarned;
+      }
+    }
+
+    return totalNight;
   }
 }
 

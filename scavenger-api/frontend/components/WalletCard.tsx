@@ -102,9 +102,27 @@ export default function WalletCard({ wallet }: WalletCardProps) {
             <span className="font-bold text-white">{wallet.submissions}</span>
           </div>
 
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-gray-500 uppercase tracking-wider">NIGHT Earned</span>
-            <span className="font-bold text-[#00ff88]">{Number.parseFloat(wallet.nightEarned).toFixed(3)}</span>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-500 uppercase tracking-wider">NIGHT Earned</span>
+              <span className="font-bold text-[#00ff88]">{Number.parseFloat(wallet.nightEarned).toFixed(3)}</span>
+            </div>
+
+            {wallet.consolidatedNightEarned && Number(wallet.consolidatedNightEarned) > Number(wallet.nightEarned) && (
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-500 uppercase tracking-wider">Total (Consolidated)</span>
+                <span className="font-bold text-orange-400">{Number.parseFloat(wallet.consolidatedNightEarned).toFixed(3)}</span>
+              </div>
+            )}
+
+            {wallet.destinationAddress && wallet.destinationAddress !== wallet.address && (
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-500 uppercase tracking-wider">Destination</span>
+                <span className="text-xs font-mono text-orange-400">
+                  {`${wallet.destinationAddress.substring(0, 6)}...${wallet.destinationAddress.substring(wallet.destinationAddress.length - 4)}`}
+                </span>
+              </div>
+            )}
           </div>
 
           {wallet.lastSubmission && (

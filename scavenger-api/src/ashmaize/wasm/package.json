@@ -1,0 +1,11 @@
+{
+  "name": "ashmaize-web",
+  "version": "1.0.0",
+  "main": "ashmaize.web.js",
+  "types": "ashmaize.web.d.ts",
+  "files": [
+    "ashmaize_web_bg.wasm",
+    "ashmaize.web.js",
+    "ashmaize.web.d.ts"
+  ]
+}

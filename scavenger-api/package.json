@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build && mkdir -p dist/ashmaize && cp -r src/ashmaize/* dist/ashmaize/",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -24,7 +24,8 @@
     "test:challenge": "ts-node test-challenge-validation.ts",
     "test:hash": "ts-node test-hash-validation.ts",
     "test:mining": "ts-node test-mining-performance.ts",
-    "test:browser": "ts-node test-browser-comparison.ts"
+    "test:browser": "ts-node test-browser-comparison.ts",
+    "test:browser-hash": "ts-node test-hash-browser.ts"
   },
   "dependencies": {
     "@bitcoin-js/tiny-secp256k1-asmjs": "^2.2.4",
@@ -36,7 +37,7 @@
     "@types/bip32": "^1.0.2",
     "@types/bip39": "^2.4.2",
     "@types/crypto-js": "^4.2.2",
-    "ashmaize-web": "file:../ce-ashmaize/crates/ashmaize-web/pkg",
+    "ashmaize-web": "file:./src/ashmaize/wasm",
     "bip32": "^5.0.0",
     "bip39": "^3.1.0",
     "class-transformer": "^0.5.1",

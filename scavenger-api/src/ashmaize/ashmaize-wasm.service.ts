@@ -79,13 +79,12 @@ export class AshmaizeWasmService {
   }
 
   private checkDifficulty(hash: string, difficulty: string): boolean {
-    // ✅ Usar EXATAMENTE a mesma lógica do browser (mine-session.work.js linha 164-172):
-    // Compare only the first 8 hex digits (32 bits) of the hash to the 4-byte (8 hex digit) difficulty target.
+    // ✅ Usar EXATAMENTE a mesma lógica do browser (mine-session.work.js)
     if (hash.length < 8 || difficulty.length !== 8) return false;
-    const hashPrefix = hash.slice(0, 8); // slice() como no browser
-    const hashValue = parseInt(hashPrefix, 16); // parseInt sem >>> 0 primeiro (como no browser linha 167)
-    const target = parseInt(difficulty, 16); // parseInt sem >>> 0 primeiro (como no browser linha 123)
-    // (hashValue | target) === target (exatamente como no browser linha 168)
+    const hashPrefix = hash.slice(0, 8);
+    const hashValue = parseInt(hashPrefix, 16);
+    const target = parseInt(difficulty, 16);
+    // Usar exatamente a mesma comparação do browser
     return (hashValue | target) === target;
   }
 

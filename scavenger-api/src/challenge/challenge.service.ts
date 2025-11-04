@@ -14,15 +14,17 @@ export class ChallengeService {
     const nowLocal = new Date();
 
     // Converte para UTC de forma consistente
-    const nowUTC = new Date(Date.UTC(
-      nowLocal.getUTCFullYear(),
-      nowLocal.getUTCMonth(),
-      nowLocal.getUTCDate(),
-      nowLocal.getUTCHours(),
-      nowLocal.getUTCMinutes(),
-      nowLocal.getUTCSeconds(),
-      nowLocal.getUTCMilliseconds()
-    ));
+    const nowUTC = new Date(
+      Date.UTC(
+        nowLocal.getUTCFullYear(),
+        nowLocal.getUTCMonth(),
+        nowLocal.getUTCDate(),
+        nowLocal.getUTCHours(),
+        nowLocal.getUTCMinutes(),
+        nowLocal.getUTCSeconds(),
+        nowLocal.getUTCMilliseconds(),
+      ),
+    );
 
     const startDate = new Date(Date.UTC(2025, 9, 30, 0, 0, 0));
     const endDate = new Date(Date.UTC(2025, 10, 20, 23, 59, 59));
@@ -41,8 +43,8 @@ export class ChallengeService {
     }
 
     const daysSinceStart = Math.floor(
-      (nowUTC.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-    ) + 1;
+        (nowUTC.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+      ) + 1;
 
     const currentDay = Math.min(Math.max(1, daysSinceStart), this.maxDay);
     const challengeNumber = this.calculateChallengeNumber(nowUTC);
@@ -54,7 +56,9 @@ export class ChallengeService {
     // ✅ no_pre_mine fixo (sem asteriscos para cálculo)
     const noPreMine = this.generateNoPreMine(challengeId);
 
-    const latestSubmission = new Date(startDate.getTime() + (currentDay - 1) * 24 * 60 * 60 * 1000);
+    const latestSubmission = new Date(
+      startDate.getTime() + (currentDay - 1) * 24 * 60 * 60 * 1000,
+    );
     latestSubmission.setUTCHours(23, 59, 59, 0);
 
     const challenge = {
@@ -98,11 +102,13 @@ export class ChallengeService {
    */
   private calculateDifficulty(day: number): string {
     if (day < 1 || day > this.maxDay) {
-      throw new Error(`Invalid day: ${day} (must be between 1 and ${this.maxDay})`);
+      throw new Error(
+        `Invalid day: ${day} (must be between 1 and ${this.maxDay})`,
+      );
     }
 
     const baseDifficulty = 0x000000ff;
-    const difficulty = Math.min(baseDifficulty + (day * 0x10), 0xffffffff);
+    const difficulty = Math.min(baseDifficulty + day * 0x10, 0xffffffff);
     const hex = difficulty.toString(16).padStart(8, '0').toUpperCase();
     
     // ✅ Validar formato (8 hex chars, maiúsculas) - conforme teste
@@ -130,7 +136,9 @@ export class ChallengeService {
     
     // ✅ Garantir que sempre retorna 64 caracteres (conforme teste)
     if (hash.length !== 64) {
-      throw new Error(`Generated no_pre_mine has invalid length: ${hash.length}, expected 64`);
+      throw new Error(
+        `Generated no_pre_mine has invalid length: ${hash.length}, expected 64`,
+      );
     }
     
     return hash;

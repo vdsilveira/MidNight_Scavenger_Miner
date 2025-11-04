@@ -32,7 +32,7 @@ import { SolutionStatsService } from './solution/solution-stats.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env', '../.env'],
+      envFilePath: '../.env',  // Usar apenas o .env da raiz
     }),
   ],
   controllers: [

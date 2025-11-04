@@ -23,14 +23,14 @@ async function testRealBrowserSolution() {
   const challengeService = new ChallengeService();
   const wasm = new AshmaizeWasmService();
 
-  // ✅ Dados EXATOS da solução que funcionou no browser (D05C20)
-  const address = 'addr1q9xr32r260axe665guaezenawgqcq279wdzm4errtrm0a98n93mnaljlx5leqqw8r69hc3gzp0dac6s03v8llu99t4gqkn0qzd';
-  const nonce = '000516aab60ae713'; // salt do browser
-  const challengeId = '**D05C20'; // COM asteriscos (como a API retorna)
-  const difficulty = '00001FFF';
-  const noPreMine = '033849ee29371141f2a9e546d8f4c0e84cab90a95230ef39823e84dacfc57b9a';
-  const latestSubmission = '2025-11-04T18:59:59.000Z';
-  const noPreMineHour = '529096956'; // String numérica
+  // ✅ Dados EXATOS da solução que funcionou no browser (D06C09)
+  const address = 'addr1q8zylq27r648tnznc2cq0nwf3p8n4g8k4dedwymk6pynh6kjnpzk098kj20fmpep2s7p2pjvpymmktfk8tqcx2kl9w6s50wjhd';
+  const nonce = '0002006ec1059a77'; // salt que realmente funcionou
+  const challengeId = '**D06C09'; // COM asteriscos (como a API retorna)
+  const difficulty = '00001FFF'; // Dificuldade real do challenge
+  const noPreMine = '2195117868fda6589768280c95b23819f0f6e28e61d580fd7c7b8f181769fb45';
+  const latestSubmission = '2025-11-05T07:59:59.000Z';
+  const noPreMineHour = '424085764'; // String numérica
 
   // Hash esperado do browser (começa com zeros - válido para difficulty 00001FFF)
   // O hash no JSON pode não ser o hash do preimage, mas vamos tentar encontrar

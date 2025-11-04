@@ -31,6 +31,8 @@ export interface Wallet {
   status: "mining" | "submitted" | "pending"
   submissions: number
   nightEarned: string
+  consolidatedNightEarned: string
   lastSubmission?: string | null
   pubkey?: string
+  destinationAddress?: string
 }

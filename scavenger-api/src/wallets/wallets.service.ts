@@ -39,6 +39,10 @@ export class WalletsService {
       } else {
         status = 'pending';
       }
+
+      // Obter NIGHTs ganhos do StorageService
+      const nightEarned = this.storageService.getNightEarned(address);
+      const consolidatedNightEarned = this.storageService.getConsolidatedNightEarned(address);
       
       return {
         id: `wallet-${address.substring(0, 10)}`,
@@ -46,14 +50,17 @@ export class WalletsService {
         pubkey: this.storageService.getPubkey(address) || '',
         submissions: submissionsCount,
         status,
-        nightEarned: (submissionsCount * 32.005).toFixed(3),
+        nightEarned: nightEarned.toFixed(3),
+        consolidatedNightEarned: consolidatedNightEarned.toFixed(3),
         lastSubmission: solutions.length > 0 ? solutions[0].timestamp.toISOString() : null,
+        destinationAddress: this.storageService.getDestinationAddress(address),
       };
     });
     
     return {
       wallets,
       total: wallets.length,
+      totalNightEarned: this.storageService.getTotalNightEarned(),
     };
   }
 
@@ -74,14 +81,13 @@ export class WalletsService {
       addresses.add(address);
     }
 
-    // Calcular NIGHT (mock - em produção usar taxa real)
-    const nightRate = 32.005; // Por solução (mock)
-    const totalNight = totalSubmissions * nightRate;
+    // Obter total de NIGHTs do StorageService
+    const totalNightEarned = this.storageService.getTotalNightEarned();
 
     return {
       totalWallets: addresses.size,
       totalSubmissions,
-      totalNightEarned: totalNight,
+      totalNightEarned: totalNightEarned, // Return as number, let frontend handle formatting
       status: 'connected', // ✅ Status sempre "connected" se a API está rodando
       addresses: Array.from(addresses),
     };

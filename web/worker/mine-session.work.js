@@ -214,4 +214,3 @@ onmessage = async function (e) {
     }
   }
 };
-
