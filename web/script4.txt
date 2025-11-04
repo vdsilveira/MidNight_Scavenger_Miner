@@ -1,0 +1,558 @@
+"use strict";
+(self.webpackChunk_N_E = self.webpackChunk_N_E || []).push([[3488], {
+    3159: (e, t, n) => {
+        n.d(t, {
+            P: () => s
+        });
+        var s = function(e) {
+            return e.ACTIVE = "ACTIVE",
+            e.ENDED = "ENDED",
+            e.INACTIVE = "INACTIVE",
+            e.PAUSED = "PAUSED",
+            e.SOLVED = "SOLVED",
+            e.STALLED = "STALLED",
+            e
+        }({})
+    }
+    ,
+    3488: (e, t, n) => {
+        n.d(t, {
+            C: () => w,
+            K: () => m
+        });
+        var s = n(5155)
+          , r = n(2115)
+          , a = n(9967)
+          , l = n(7034)
+          , i = n(3159);
+        let u = n(7358).env.NEXT_PUBLIC_HASH_ALGORITHM || "ashmaize"
+          , o = {
+            status: i.P.INACTIVE,
+            attempts: 0,
+            startTime: null,
+            elapsed: 0,
+            hashRate: 0,
+            puzzleId: void 0,
+            difficulty: void 0,
+            noPreMine: void 0,
+            noPreMineHour: void 0,
+            latestSubmission: void 0,
+            nonce: void 0,
+            hash: void 0,
+            miningTask: void 0
+        };
+        function d(e) {
+            let {setSession: t, setError: n, status: s, error: r=null, activeChallenge: a, updateChallenge: l, workerRef: u, miningActiveRef: d, setActiveChallenge: c, setPendingMining: f} = e;
+            t( () => ({
+                ...o,
+                status: s
+            })),
+            n(r),
+            s === i.P.STALLED && (u && u.current && (u.current.terminate(),
+            u.current = null),
+            d && (d.current = !1),
+            c && c(void 0),
+            f && f(!1),
+            a && l && l(a.challengeId, {
+                status: "available"
+            }))
+        }
+        let c = async (e, t, n, s, r, a, l, u, o, c, f) => {
+            if ("PROGRESS" === e.type)
+                r(t => ({
+                    ...t,
+                    attempts: e.attempts,
+                    hashRate: e.rate
+                }));
+            else if ("SOLUTION_FOUND" === e.type) {
+                r(t => ({
+                    ...t,
+                    status: i.P.SOLVED,
+                    nonce: e.foundNonce,
+                    hash: e.hash
+                }));
+                let a = t.challengeId;
+                await n(a, {
+                    status: "solved",
+                    solvedAt: new Date
+                }),
+                s.current = {
+                    challengeId: a,
+                    foundNonce: e.foundNonce,
+                    hash: e.hash
+                }
+            } else
+                ("SOLUTION_FAILED" === e.type || "ERROR" === e.type) && d({
+                    setSession: r,
+                    setError: null != o ? o : () => {}
+                    ,
+                    status: i.P.STALLED,
+                    error: "Mining worker failed.",
+                    activeChallenge: u,
+                    updateChallenge: n,
+                    workerRef: a,
+                    miningActiveRef: l,
+                    setActiveChallenge: c,
+                    setPendingMining: f
+                })
+        }
+          , f = async (e, t, n, s, r, a, l, o, d, f, v, S, E, g, h) => {
+            var w, m, A, p, I, P;
+            let D;
+            if (!e)
+                return;
+            if (t.current)
+                return void o(!1);
+            t.current = !0;
+            let L = (null == n ? void 0 : n.state.walletAddress) || "";
+            for (let e = 0; e < s.length; e++) {
+                let t = s[e];
+                if ("available" === t.status) {
+                    if (h(t)) {
+                        await r(t.challengeId, {
+                            status: "lapsed",
+                            acceptedAt: new Date
+                        });
+                        continue
+                    }
+                    D = t;
+                    break
+                }
+            }
+            if (!D) {
+                a({
+                    ...v,
+                    status: i.P.ACTIVE,
+                    miningTask: "waiting"
+                }),
+                l("No available challenge in the queue."),
+                o(!1),
+                t.current = !1,
+                d(void 0);
+                return
+            }
+            let T = await r(D.challengeId, {
+                status: "started",
+                acceptedAt: new Date
+            });
+            T && (d(T),
+            a({
+                status: i.P.ACTIVE,
+                attempts: 0,
+                startTime: Date.now(),
+                elapsed: 0,
+                hashRate: 0,
+                puzzleId: T.challengeId,
+                difficulty: T.difficulty,
+                noPreMine: null != (w = T.noPreMine) ? w : void 0,
+                noPreMineHour: null != (m = T.noPreMineHour) ? m : void 0,
+                latestSubmission: String(null != (A = T.latestSubmission) ? A : ""),
+                nonce: void 0,
+                hash: void 0,
+                miningTask: "mining"
+            }),
+            S.current = 0,
+            E.current = 0,
+            f.current && (f.current.terminate(),
+            f.current = null),
+            f.current = new window.Worker("/workers/mining-session.worker.js",{
+                type: "module"
+            }),
+            f.current.onmessage = async e => {
+                await c(e.data, T, r, g, a, f, t)
+            }
+            ,
+            f.current.postMessage({
+                type: "START_SOLVING",
+                challenge_id: String(T.challengeId),
+                difficulty: String(T.difficulty),
+                no_pre_mine: String(null != (p = T.noPreMine) ? p : ""),
+                no_pre_mine_hour: String(null != (I = T.noPreMineHour) ? I : ""),
+                latest_submission: T.latestSubmission instanceof Date ? T.latestSubmission.toISOString() : String(null != (P = T.latestSubmission) ? P : ""),
+                address: String(L),
+                hashAlgorithm: u
+            }),
+            o(!1))
+        }
+        ;
+        var v = n(7084)
+          , S = n(7334);
+        let E = async (e, t, n, s, r) => {
+            try {
+                let a = new Date
+                  , l = await S.K.post("/solution/".concat(s, "/").concat(e, "/").concat(t), {});
+                return await r(e, {
+                    validatedAt: new Date,
+                    status: "submitted",
+                    submittedAt: a
+                }),
+                {
+                    valid: !0,
+                    hash: n,
+                    cryptoReceipt: l.crypto_receipt,
+                    puzzleId: e,
+                    nonce: t
+                }
+            } catch (t) {
+                return console.error("[submitMiningSolution] Failed to submit solution", t),
+                await r(e, {
+                    validatedAt: new Date
+                }),
+                {
+                    error: "Failed to submit solution."
+                }
+            }
+        }
+          , g = n(7358).env.NEXT_PUBLIC_HASH_ALGORITHM || "ashmaize"
+          , h = (0,
+        r.createContext)(void 0)
+          , w = e => {
+            let {children: t} = e
+              , [n,u] = (0,
+            r.useState)(!1)
+              , [c,S] = (0,
+            r.useState)(!1)
+              , {error: w, refetch: m} = (0,
+            v.CM)()
+              , [A,p] = (0,
+            r.useState)(o)
+              , I = (0,
+            r.useRef)(null)
+              , [P,D] = (0,
+            r.useState)(null)
+              , L = (0,
+            r.useRef)(A.elapsed)
+              , T = (0,
+            r.useRef)(A.attempts)
+              , b = (0,
+            l.u)()
+              , {queue: y, updateChallenge: _, getNextAvailableChallenge: N, queueHydrated: C} = (0,
+            a.YP)()
+              , [k,M] = (0,
+            r.useState)(!1)
+              , R = (0,
+            r.useRef)(!1)
+              , [V,O] = (0,
+            r.useState)(void 0)
+              , [H,U] = (0,
+            r.useState)(!1)
+              , [z,F] = (0,
+            r.useState)(Date.now());
+            ( (e, t, n, s, a, l, u, o) => {
+                (0,
+                r.useEffect)( () => {
+                    let r = () => {
+                        d({
+                            setSession: e,
+                            setError: t,
+                            status: i.P.STALLED,
+                            error: "Network error",
+                            workerRef: n,
+                            miningActiveRef: s,
+                            setActiveChallenge: a,
+                            setPendingMining: l,
+                            activeChallenge: u,
+                            updateChallenge: o
+                        })
+                    }
+                      , c = () => {
+                        d({
+                            setSession: e,
+                            setError: t,
+                            status: i.P.INACTIVE
+                        })
+                    }
+                    ;
+                    return window.addEventListener("offline", r),
+                    window.addEventListener("online", c),
+                    () => {
+                        window.removeEventListener("offline", r),
+                        window.removeEventListener("online", c)
+                    }
+                }
+                , [e, t, n, s, a, l, u, o])
+            }
+            )(p, D, I, R, O, M, V, _),
+            (0,
+            r.useEffect)( () => {
+                if (A.status === i.P.ACTIVE && void 0 === V && y && y.length > 0) {
+                    let e = N();
+                    e && (O(e),
+                    p(o),
+                    M(!0))
+                }
+            }
+            , [A.status, V, y, N]),
+            (0,
+            r.useEffect)( () => {
+                if (C && !H && y && y.length > 0) {
+                    let e = y.find(e => ["started", "solved"].includes(e.status));
+                    e && _(e.challengeId, {
+                        status: "available"
+                    }),
+                    U(!0)
+                }
+            }
+            , [C, y, H]),
+            (0,
+            r.useEffect)( () => {
+                (null == b ? void 0 : b.state.walletAddress) && S(!0)
+            }
+            , [null == b ? void 0 : b.state.walletAddress]),
+            (0,
+            r.useEffect)( () => {
+                if (!c)
+                    return;
+                let e = null == b ? void 0 : b.state.walletAddress;
+                if (!e && A.status !== i.P.STALLED)
+                    return void d({
+                        setSession: p,
+                        setError: D,
+                        status: i.P.STALLED,
+                        error: "Please connect your wallet before starting to mine.",
+                        activeChallenge: V,
+                        updateChallenge: _,
+                        workerRef: I,
+                        miningActiveRef: R,
+                        setActiveChallenge: O,
+                        setPendingMining: M
+                    });
+                window.navigator.onLine && e && A.status === i.P.STALLED && d({
+                    setSession: p,
+                    setError: D,
+                    status: i.P.INACTIVE
+                })
+            }
+            , [c, null == b ? void 0 : b.state.walletAddress, A.status, V, _, P]),
+            (0,
+            r.useEffect)( () => {
+                let e = null;
+                return A.status === i.P.ACTIVE && (e = setInterval( () => {
+                    V ? p(e => ({
+                        ...e,
+                        elapsed: e.elapsed + 1
+                    })) : p(e => ({
+                        ...e,
+                        elapsed: 0
+                    }))
+                }
+                , 1e3)),
+                () => {
+                    e && clearInterval(e)
+                }
+            }
+            , [A.status, V]),
+            ( (e, t, n, s, a, l, u, o, c, f, v) => {
+                (0,
+                r.useEffect)( () => {
+                    if (e) {
+                        if (t) {
+                            d({
+                                setSession: a,
+                                setError: l,
+                                status: i.P.STALLED,
+                                error: "Network or server error",
+                                activeChallenge: n,
+                                updateChallenge: s,
+                                workerRef: c,
+                                miningActiveRef: f,
+                                setActiveChallenge: v,
+                                setPendingMining: u
+                            }),
+                            o(!1);
+                            return
+                        }
+                        u(!0),
+                        o(!1)
+                    }
+                }
+                , [e, t, n, s, a, l, u, o, c, f, v])
+            }
+            )(n, w, V, _, p, D, M, u, I, R, O);
+            let G = (0,
+            r.useRef)(A);
+            (0,
+            r.useEffect)( () => {
+                G.current = A
+            }
+            , [A]),
+            (0,
+            r.useEffect)( () => () => {
+                I.current && (I.current.terminate(),
+                I.current = null),
+                R.current = !1
+            }
+            , []);
+            let x = (0,
+            r.useRef)(null)
+              , j = r.useCallback(async () => {
+                D(null),
+                await m(),
+                u(!0)
+            }
+            , [m])
+              , q = r.useCallback( () => {
+                I.current && I.current.postMessage({
+                    type: "PAUSE"
+                }),
+                p(e => ({
+                    ...e,
+                    status: i.P.PAUSED
+                })),
+                V && _(V.challengeId, {
+                    status: "available"
+                })
+            }
+            , [V, _])
+              , B = r.useCallback(async () => {
+                if (V && (0,
+                a.Dl)(V)) {
+                    await _(V.challengeId, {
+                        status: "lapsed",
+                        acceptedAt: new Date
+                    });
+                    let e = N();
+                    if (e) {
+                        O(e),
+                        p(o),
+                        M(!0);
+                        return
+                    }
+                    O(void 0),
+                    p(o),
+                    D("No available challenge in the queue.");
+                    return
+                }
+                if (p(e => ({
+                    ...e,
+                    status: i.P.ACTIVE
+                })),
+                V && _(V.challengeId, {
+                    status: "started"
+                }),
+                I.current) {
+                    var e, t, n;
+                    I.current.postMessage({
+                        type: "RESUME",
+                        attempts: T.current,
+                        challenge_id: String(null == V ? void 0 : V.challengeId),
+                        difficulty: String(null == V ? void 0 : V.difficulty),
+                        no_pre_mine: String(null != (e = null == V ? void 0 : V.noPreMine) ? e : ""),
+                        no_pre_mine_hour: String(null != (t = null == V ? void 0 : V.noPreMineHour) ? t : ""),
+                        latest_submission: (null == V ? void 0 : V.latestSubmission)instanceof Date ? null == V ? void 0 : V.latestSubmission.toISOString() : String(null != (n = null == V ? void 0 : V.latestSubmission) ? n : ""),
+                        address: String(null == b ? void 0 : b.state.walletAddress),
+                        hashAlgorithm: g
+                    })
+                }
+            }
+            , [V, _, N, O, p, M, D, I, T, null == b ? void 0 : b.state.walletAddress])
+              , K = r.useCallback(async () => {
+                let e = G.current;
+                if (!e || e.status !== i.P.SOLVED)
+                    return {
+                        error: "Not solved"
+                    };
+                let {puzzleId: t, nonce: n, hash: s} = e;
+                if (!t || !n || !s)
+                    return {
+                        error: "Missing solution data."
+                    };
+                let r = (null == b ? void 0 : b.state.walletAddress) || "";
+                if (!r)
+                    return {
+                        error: "No wallet address available."
+                    };
+                p(e => "submitting" !== e.miningTask ? {
+                    ...e,
+                    miningTask: "submitting"
+                } : e);
+                let a = await E(t, n, s, r, _);
+                return p(e => ({
+                    ...e,
+                    miningTask: void 0
+                })),
+                F(Date.now()),
+                "error"in a && d({
+                    setSession: p,
+                    setError: D,
+                    status: i.P.STALLED,
+                    error: "Network or server error.",
+                    activeChallenge: V,
+                    updateChallenge: _,
+                    workerRef: I,
+                    miningActiveRef: R,
+                    setActiveChallenge: O,
+                    setPendingMining: M
+                }),
+                a
+            }
+            , [null == b ? void 0 : b.state.walletAddress, V, _])
+              , X = r.useCallback( () => {
+                p({
+                    ...o,
+                    status: i.P.ENDED
+                }),
+                I.current && (I.current.terminate(),
+                I.current = null),
+                R.current = !1,
+                M(!1),
+                O(void 0)
+            }
+            , [p, I, R, M, O]);
+            (0,
+            r.useEffect)( () => {
+                f(k, R, b, y, _, p, D, M, O, I, o, L, T, x, a.Dl)
+            }
+            , [k, y, _, b, j, N, K]),
+            (0,
+            r.useEffect)( () => {
+                if (A.status === i.P.SOLVED && x.current) {
+                    let {challengeId: e, foundNonce: t, hash: n} = x.current;
+                    (async () => {
+                        let s = await K();
+                        "valid"in s && s.valid ? _(e, {
+                            status: "validated",
+                            salt: t,
+                            hash: n,
+                            cryptoReceipt: s.cryptoReceipt
+                        }) : _(e, {
+                            status: "invalid"
+                        }),
+                        I.current && (I.current.terminate(),
+                        I.current = null),
+                        R.current = !1,
+                        j(),
+                        x.current = null
+                    }
+                    )()
+                }
+            }
+            , [A.status, K, _, j]);
+            let W = (0,
+            r.useMemo)( () => ({
+                session: A,
+                startMining: j,
+                pauseMining: q,
+                resumeMining: B,
+                endMining: X,
+                submitSolution: K,
+                triggerStatisticsFetch: z,
+                error: P,
+                activeChallenge: V
+            }), [A, j, q, B, X, K, P, V, _, p, x, D, I, R, O, M, z]);
+            return (0,
+            s.jsx)(h.Provider, {
+                value: W,
+                children: t
+            })
+        }
+        ;
+        function m() {
+            let e = (0,
+            r.useContext)(h);
+            if (!e)
+                throw Error("useMiningSession must be used within MiningSessionProvider");
+            return e
+        }
+    }
+}]);

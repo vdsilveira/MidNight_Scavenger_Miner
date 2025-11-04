@@ -1,0 +1,31 @@
+"use strict";
+(self.webpackChunk_N_E = self.webpackChunk_N_E || []).push([[4777], {
+    308: (t, e, r) => {
+        r.d(e, {
+            UEL: () => i
+        });
+        var n = r(6724);
+        function i(t) {
+            return (0,
+            n.k5)({
+                tag: "svg",
+                attr: {
+                    fill: "none",
+                    viewBox: "0 0 24 24",
+                    strokeWidth: "2",
+                    stroke: "currentColor",
+                    "aria-hidden": "true"
+                },
+                child: [{
+                    tag: "path",
+                    attr: {
+                        strokeLinecap: "round",
+                        strokeLinejoin: "round",
+                        d: "M4 8h16M4 16h16"
+                    },
+                    child: []
+                }]
+            })(t)
+        }
+    }
+}]);

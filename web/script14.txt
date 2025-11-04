@@ -1,0 +1,1271 @@
+"use strict";
+(self.webpackChunk_N_E = self.webpackChunk_N_E || []).push([[8756], {
+    1345: (e, t, r) => {
+        r.d(t, {
+            WizardProvider: () => i,
+            C: () => c
+        });
+        var a = r(5155)
+          , l = r(2115);
+        let s = {
+            activeStep: 1
+        }
+          , n = (0,
+        l.createContext)(void 0)
+          , o = (e, t) => {
+            switch (t.type) {
+            case "SET_ACTIVE_STEP":
+                return {
+                    ...e,
+                    activeStep: t.payload
+                };
+            case "INCREMENT_STEP":
+                return {
+                    ...e,
+                    activeStep: e.activeStep < 4 ? e.activeStep + 1 : e.activeStep
+                };
+            case "DECREMENT_STEP":
+                return {
+                    ...e,
+                    activeStep: e.activeStep > 0 ? e.activeStep - 1 : e.activeStep
+                };
+            default:
+                return e
+            }
+        }
+          , i = e => {
+            let {children: t} = e
+              , [r,i] = (0,
+            l.useReducer)(o, s);
+            return (0,
+            a.jsx)(n.Provider, {
+                value: {
+                    state: r,
+                    dispatch: i,
+                    setFlag: (e, t) => {
+                        try {
+                            localStorage.setItem(e, t)
+                        } catch (e) {}
+                    }
+                    ,
+                    getFlag: e => {
+                        try {
+                            return localStorage.getItem(e)
+                        } catch (e) {
+                            return null
+                        }
+                    }
+                    ,
+                    exportChallengeData: () => {
+                        let e = (e => {
+                            let t = {};
+                            return e.forEach(e => {
+                                try {
+                                    let r = localStorage.getItem(e);
+                                    t[e] = r ? JSON.parse(r) : null
+                                } catch (r) {
+                                    t[e] = null
+                                }
+                            }
+                            ),
+                            t
+                        }
+                        )(["registration_receipt", "challenge_queue"])
+                          , t = "object" == typeof e.registration_receipt ? e.registration_receipt.walletAddress : void 0
+                          , r = "object" == typeof e.challenge_queue ? e.challenge_queue : void 0;
+                        t && r && t in r ? e.challenge_queue = r[t] : e.challenge_queue = [],
+                        ( (e, t) => {
+                            let r = new Blob([JSON.stringify(e, null, 2)],{
+                                type: "application/json"
+                            })
+                              , a = URL.createObjectURL(r)
+                              , l = document.createElement("a");
+                            l.href = a,
+                            l.download = t.endsWith(".json") ? t : "".concat(t, ".json"),
+                            document.body.appendChild(l),
+                            l.click(),
+                            document.body.removeChild(l),
+                            URL.revokeObjectURL(a)
+                        }
+                        )(e, "scavenger-mine-export-".concat(Date.now(), ".json"))
+                    }
+                },
+                children: t
+            })
+        }
+          , c = () => {
+            let e = (0,
+            l.useContext)(n);
+            if (!e)
+                throw Error("useWizardContext must be used within a WizardProvider");
+            return e
+        }
+    }
+    ,
+    1782: (e, t, r) => {
+        r.d(t, {
+            h: () => l
+        });
+        var a = r(7358);
+        let l = function() {
+            let e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : a.env.NEXT_PUBLIC_NOW_DATE_OVERRIDE
+              , t = new Date;
+            if (!e)
+                return {
+                    now: t,
+                    override: !1
+                };
+            let r = new Date(e);
+            return {
+                now: new Date(r.getFullYear(),r.getMonth(),r.getDate(),t.getHours(),t.getMinutes(),t.getSeconds(),t.getMilliseconds()),
+                override: !0
+            }
+        }
+    }
+    ,
+    2408: (e, t, r) => {
+        r.d(t, {
+            _: () => n
+        });
+        var a = r(2115)
+          , l = r(7334)
+          , s = r(3757);
+        let n = () => {
+            let {showError: e} = (0,
+            s.q)();
+            return {
+                callApi: (0,
+                a.useCallback)(async function(t) {
+                    let r = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}
+                      , {critical: a=!1, showInlineErrors: s=!0, customErrorHandler: n} = r;
+                    try {
+                        return await t()
+                    } catch (t) {
+                        if (t instanceof l.h && n)
+                            try {
+                                let r = null;
+                                try {
+                                    r = await t.getErrorData()
+                                } catch (e) {
+                                    try {
+                                        let e = t.response.clone();
+                                        r = await e.text()
+                                    } catch (e) {
+                                        r = null
+                                    }
+                                }
+                                let a = await n(t, t.status, r);
+                                switch (a.action) {
+                                case "redirect":
+                                    e(t, !0);
+                                    break;
+                                case "inline":
+                                    e(t, !1);
+                                    break;
+                                case "custom":
+                                    await a.handler()
+                                }
+                                return
+                            } catch (r) {
+                                console.error("Custom error handler failed:", r),
+                                e(t, a);
+                                return
+                            }
+                        t instanceof l.h || t instanceof Error ? a || !s ? e(t, a) : e(t, !1) : e(Error("An unexpected error occurred"), a);
+                        return
+                    }
+                }, [e])
+            }
+        }
+    }
+    ,
+    3757: (e, t, r) => {
+        r.d(t, {
+            ErrorProvider: () => i,
+            q: () => c
+        });
+        var a = r(5155)
+          , l = r(2115)
+          , s = r(63)
+          , n = r(7334);
+        let o = (0,
+        l.createContext)(void 0)
+          , i = e => {
+            let {children: t} = e
+              , r = (0,
+            s.useRouter)()
+              , [i,c] = (0,
+            l.useState)({
+                error: null,
+                isVisible: !1
+            })
+              , u = (0,
+            l.useCallback)(e => {
+                c({
+                    error: null,
+                    isVisible: !1
+                });
+                try {
+                    if (e instanceof n.h) {
+                        let t = e.status;
+                        r.push("/error?code=".concat(t))
+                    } else
+                        r.push("/error?code=500");
+                    return !0
+                } catch (e) {
+                    return console.error("Failed to navigate to error page:", e),
+                    !1
+                }
+            }
+            , [r])
+              , d = (0,
+            l.useCallback)(function(e) {
+                let t = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
+                t && u(e) || c({
+                    error: e,
+                    isVisible: !0
+                })
+            }, [u])
+              , h = (0,
+            l.useCallback)( () => {
+                c({
+                    error: null,
+                    isVisible: !1
+                })
+            }
+            , [])
+              , g = {
+                error: i.error,
+                isVisible: i.isVisible,
+                showError: d,
+                clearError: h,
+                navigateToErrorPage: u
+            };
+            return (0,
+            a.jsx)(o.Provider, {
+                value: g,
+                children: t
+            })
+        }
+          , c = () => {
+            let e = (0,
+            l.useContext)(o);
+            if (void 0 === e)
+                throw Error("useError must be used within an ErrorProvider");
+            return e
+        }
+    }
+    ,
+    4234: (e, t, r) => {
+        r(2115)
+    }
+    ,
+    4654: (e, t, r) => {
+        r.d(t, {
+            f: () => s,
+            V: () => n
+        });
+        var a = r(5155)
+          , l = r(5239);
+        r(2115);
+        let s = ["eternl", "lace", "yoroi", "exodus", "typhoncip30", "vespr", "gerowallet", "nufi"]
+          , n = {
+            eternl: {
+                name: "Eternl",
+                icon: (0,
+                a.jsx)(e => {
+                    let {alt: t="Eternl Logo", className: r="", width: s=24, height: n=24} = e;
+                    return (0,
+                    a.jsx)(l.default, {
+                        src: "/icons/eternl-wallet.svg",
+                        alt: t,
+                        className: r,
+                        width: s,
+                        height: n,
+                        style: {
+                            display: "inline-block"
+                        },
+                        priority: !0
+                    })
+                }
+                , {}),
+                baseUrl: "https://eternl.io/"
+            },
+            lace: {
+                name: "Lace",
+                icon: (0,
+                a.jsx)(e => {
+                    let {style: t} = e;
+                    return (0,
+                    a.jsx)(l.default, {
+                        src: "/icons/lace-wallet.svg",
+                        alt: "Lace Logo",
+                        width: 24,
+                        height: 24,
+                        style: t
+                    })
+                }
+                , {}),
+                baseUrl: "https://lace.io/"
+            },
+            yoroi: {
+                name: "Yoroi",
+                icon: (0,
+                a.jsx)(e => {
+                    let {alt: t="Yoroi Logo", className: r="", width: s=24, height: n=24} = e;
+                    return (0,
+                    a.jsx)(l.default, {
+                        src: "/icons/yoroi-wallet.svg",
+                        alt: t,
+                        className: "rounded-full ".concat(r),
+                        width: s,
+                        height: n,
+                        style: {
+                            display: "inline-block"
+                        },
+                        priority: !0
+                    })
+                }
+                , {}),
+                baseUrl: "https://yoroiwallet.com/"
+            },
+            exodus: {
+                name: "Exodus",
+                icon: (0,
+                a.jsx)(e => {
+                    let {style: t} = e;
+                    return (0,
+                    a.jsx)(l.default, {
+                        src: "/icons/exodus-wallet.svg",
+                        alt: "Exodus Logo",
+                        width: 24,
+                        height: 24,
+                        style: t
+                    })
+                }
+                , {}),
+                baseUrl: "https://www.exodus.com/"
+            },
+            typhoncip30: {
+                name: "Typhon",
+                icon: (0,
+                a.jsx)(e => {
+                    let {style: t} = e;
+                    return (0,
+                    a.jsx)(l.default, {
+                        src: "/icons/typhon-wallet.svg",
+                        alt: "Typhon Logo",
+                        width: 24,
+                        height: 24,
+                        style: t
+                    })
+                }
+                , {}),
+                baseUrl: "https://typhonwallet.io/"
+            },
+            vespr: {
+                name: "VESPR",
+                icon: (0,
+                a.jsx)(e => {
+                    let {style: t} = e;
+                    return (0,
+                    a.jsx)(l.default, {
+                        src: "/icons/vespr-wallet.svg",
+                        alt: "VESPR Logo",
+                        width: 24,
+                        height: 24,
+                        style: t
+                    })
+                }
+                , {}),
+                baseUrl: "https://vespr.xyz/"
+            },
+            gerowallet: {
+                name: "Gero",
+                icon: (0,
+                a.jsx)(e => {
+                    let {style: t} = e;
+                    return (0,
+                    a.jsx)(l.default, {
+                        src: "/icons/gero-wallet.svg",
+                        alt: "Gero Logo",
+                        width: 24,
+                        height: 24,
+                        style: t
+                    })
+                }
+                , {}),
+                baseUrl: "https://www.gerowallet.io/"
+            },
+            nufi: {
+                name: "NuFi",
+                icon: (0,
+                a.jsx)(e => {
+                    let {style: t} = e;
+                    return (0,
+                    a.jsx)(l.default, {
+                        src: "/icons/nufi-wallet.svg",
+                        alt: "NuFi Logo",
+                        width: 24,
+                        height: 24,
+                        style: t
+                    })
+                }
+                , {}),
+                baseUrl: "https://nu.fi/"
+            }
+        }
+    }
+    ,
+    5699: (e, t, r) => {
+        function a(e) {
+            return Array.from(new TextEncoder().encode(e)).map(e => e.toString(16).padStart(2, "0")).join("")
+        }
+        async function l(e) {
+            let t = new TextEncoder().encode(e);
+            return Array.from(new Uint8Array(await window.crypto.subtle.digest("SHA-256", t))).map(e => e.toString(16).padStart(2, "0")).join("")
+        }
+        function s(e) {
+            try {
+                if (64 === e.length && /^[0-9a-fA-F]+$/.test(e))
+                    return e.toLowerCase();
+                if (!/^[0-9a-fA-F]*$/i.test(e))
+                    return console.warn("Invalid hex string provided to extractPublicKeyFromCoseKey"),
+                    e.toLowerCase();
+                let t = (e.length % 2 == 0 ? e : "0" + e).match(/.{1,2}/g);
+                if (!t)
+                    return console.warn("Failed to parse hex string into pairs"),
+                    e.toLowerCase();
+                let r = new Uint8Array(t.map(e => parseInt(e, 16)));
+                for (let e = 0; e < r.length - 32; e++) {
+                    if (33 === r[e] && 88 === r[e + 1] && 32 === r[e + 2]) {
+                        let t = r.slice(e + 3, e + 35)
+                          , a = Array.from(t).map(e => e.toString(16).padStart(2, "0")).join("");
+                        if (64 === a.length)
+                            return a
+                    }
+                    if (33 === r[e] && e + 33 < r.length) {
+                        let t = r.slice(e + 1, e + 33)
+                          , a = t.every(e => 0 === e)
+                          , l = t.every(e => 255 === e);
+                        if (!a && !l && 32 === t.length) {
+                            let e = Array.from(t).map(e => e.toString(16).padStart(2, "0")).join("");
+                            if (64 === e.length)
+                                return e
+                        }
+                    }
+                }
+                for (let e = 0; e <= r.length - 32; e++) {
+                    let t = r.slice(e, e + 32)
+                      , a = t.every(e => 0 === e)
+                      , l = t.every(e => 255 === e);
+                    if (!a && !l) {
+                        let e = Array.from(t).map(e => e.toString(16).padStart(2, "0")).join("");
+                        if (64 === e.length)
+                            return e
+                    }
+                }
+                return console.warn("Could not extract public key from COSE_Key structure, using original"),
+                e.toLowerCase()
+            } catch (t) {
+                return console.warn("Failed to extract public key from COSE_Key, using original:", t),
+                e.toLowerCase()
+            }
+        }
+        function n(e, t) {
+            let r = "Unknown error";
+            if (e instanceof Error ? r = e.message : e && "object" == typeof e && (r = "info"in e && "string" == typeof e.info ? e.info : "message"in e && "string" == typeof e.message ? e.message : JSON.stringify(e)),
+            r.length > 0 && (r = r.charAt(0).toUpperCase() + r.slice(1),
+            t)) {
+                let e = t.charAt(0).toUpperCase() + t.slice(1)
+                  , a = RegExp(t, "gi");
+                r = r.replace(a, e)
+            }
+            return r
+        }
+        r.d(t, {
+            NR: () => n,
+            i3: () => a,
+            jH: () => l,
+            t7: () => s
+        })
+    }
+    ,
+    6638: (e, t, r) => {
+        r.d(t, {
+            yS: () => n,
+            Yq: () => a.Yq
+        });
+        var a = r(8387);
+        r(4234);
+        var l = r(644)
+          , s = r(1029).hp;
+        let n = e => e ? /^[0-9a-fA-F]+$/.test(e) ? (e => {
+            try {
+                if (e.startsWith("addr1") || e.startsWith("addr_test1"))
+                    return e;
+                let t = e.startsWith("0x") ? e.slice(2) : e
+                  , r = s.from(t, "hex")
+                  , a = r[0]
+                  , n = l.I.toWords(r);
+                return l.I.encode(1 == (15 & a) ? "addr" : "addr_test", n, 1023)
+            } catch (t) {
+                return console.error("Error converting hex address to Bech32:", t),
+                "addr1".concat(e.slice(0, 6), "...").concat(e.slice(-6))
+            }
+        }
+        )(e) : e : ""
+    }
+    ,
+    7034: (e, t, r) => {
+        r.d(t, {
+            WalletProvider: () => y,
+            u: () => m
+        });
+        var a = r(5155)
+          , l = r(2115)
+          , s = r(5699)
+          , n = r(6638)
+          , o = r(4654);
+        let i = {
+            wallets: {},
+            selectedWallet: void 0,
+            walletApi: void 0,
+            walletAddress: "",
+            availableAddresses: void 0,
+            isConnecting: !1,
+            isManualAddress: !1,
+            error: ""
+        }
+          , c = "scavenger_wallet_data"
+          , u = (e, t, r) => {
+            localStorage.setItem(c, JSON.stringify({
+                isManualAddress: r,
+                selectedWallet: e,
+                walletAddress: t
+            }))
+        }
+          , d = () => {
+            localStorage.removeItem(c)
+        }
+          , h = (0,
+        l.createContext)({})
+          , g = () => void 0 === window.cardano ? {} : Object.fromEntries(Object.keys(o.V).map(e => {
+            let t = window.cardano ? window.cardano[e] : void 0;
+            return [e, t]
+        }
+        ).filter(e => {
+            let[t,r] = e;
+            return "object" == typeof r && r
+        }
+        ).map(e => {
+            let[t] = e;
+            return [t, !0]
+        }
+        ))
+          , p = async function(e) {
+            let {timeoutMs: t=2e3, intervalMs: r=300} = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}
+              , a = Date.now()
+              , l = g();
+            if (!e || e && l[e])
+                return l;
+            for (; Date.now() - a < t && (await new Promise(e => setTimeout(e, r)),
+            !(l = g())[e]); )
+                ;
+            return l
+        }
+          , w = async e => {
+            if (!window.cardano)
+                return;
+            let t = window.cardano[e]
+              , r = await (null == t ? void 0 : t.enable());
+            return null != r ? r : void 0
+        }
+          , f = (e, t) => {
+            switch (t.type) {
+            case "SET_AVAILABLE_WALLETS":
+                return {
+                    ...e,
+                    wallets: t.payload
+                };
+            case "SELECT_WALLET":
+                var r;
+                return {
+                    ...e,
+                    selectedWallet: t.payload,
+                    isManualAddress: null != (r = t.isManualAddress) && r,
+                    walletApi: void 0,
+                    walletAddress: "",
+                    error: ""
+                };
+            case "CONNECT_START":
+                return {
+                    ...e,
+                    isConnecting: !0,
+                    error: ""
+                };
+            case "ADDRESSES_RECEIVED":
+                return {
+                    ...e,
+                    availableAddresses: t.payload
+                };
+            case "SET_WALLET_API":
+                return {
+                    ...e,
+                    walletApi: t.payload
+                };
+            case "CONNECT_SUCCESS":
+                return {
+                    ...e,
+                    walletAddress: t.payload.address,
+                    isConnecting: !1,
+                    isManualAddress: t.payload.isManualAddress
+                };
+            case "CONNECT_ERROR":
+                return {
+                    ...e,
+                    error: t.payload,
+                    isConnecting: !1
+                };
+            case "RESET_ERROR":
+                return {
+                    ...e,
+                    error: ""
+                };
+            case "DISCONNECT":
+                return {
+                    ...e,
+                    selectedWallet: void 0,
+                    availableAddresses: void 0,
+                    walletApi: void 0,
+                    walletAddress: "",
+                    isManualAddress: !1,
+                    error: ""
+                };
+            default:
+                return e
+            }
+        }
+          , y = e => {
+            let {children: t} = e
+              , [r,o] = (0,
+            l.useReducer)(f, i)
+              , [y,m] = (0,
+            l.useState)(!1)
+              , [v,S] = (0,
+            l.useState)(!0);
+            (0,
+            l.useEffect)( () => {
+                let e;
+                return e = setTimeout(async () => {
+                    o({
+                        type: "SET_AVAILABLE_WALLETS",
+                        payload: g()
+                    })
+                }
+                , 300),
+                () => clearTimeout(e)
+            }
+            , [y]);
+            let E = (0,
+            l.useCallback)(async e => {
+                try {
+                    o({
+                        type: "CONNECT_START"
+                    });
+                    let t = await w(e);
+                    if (!t)
+                        return o({
+                            type: "CONNECT_ERROR",
+                            payload: "Wallet API not available."
+                        }),
+                        !1;
+                    let r = await t.getUnusedAddresses();
+                    if (r && 0 !== r.length || "function" != typeof t.getUsedAddresses || (r = await t.getUsedAddresses()),
+                    !r || 0 === r.length)
+                        return o({
+                            type: "CONNECT_ERROR",
+                            payload: "No Cardano address found in wallet."
+                        }),
+                        !1;
+                    let a = r.map(e => (0,
+                    n.yS)(e));
+                    return o({
+                        type: "ADDRESSES_RECEIVED",
+                        payload: a
+                    }),
+                    o({
+                        type: "SET_WALLET_API",
+                        payload: t
+                    }),
+                    !0
+                } catch (t) {
+                    return o({
+                        type: "CONNECT_ERROR",
+                        payload: (0,
+                        s.NR)(t, e)
+                    }),
+                    !1
+                }
+            }
+            , [])
+              , _ = (0,
+            l.useCallback)( (e, t) => {
+                o({
+                    type: "SELECT_WALLET",
+                    payload: e,
+                    isManualAddress: t
+                })
+            }
+            , [])
+              , C = (0,
+            l.useCallback)(async () => r.selectedWallet ? !!r.isManualAddress || E(r.selectedWallet) : (o({
+                type: "CONNECT_ERROR",
+                payload: "Please select a wallet."
+            }),
+            !1), [r.isManualAddress, r.selectedWallet, E])
+              , A = (0,
+            l.useCallback)( () => {
+                o({
+                    type: "DISCONNECT"
+                }),
+                d()
+            }
+            , [])
+              , b = (0,
+            l.useCallback)( () => r.walletApi, [r.walletApi])
+              , T = (0,
+            l.useCallback)(async e => {
+                if (!r.walletApi || !r.walletAddress)
+                    throw Error("Wallet not connected");
+                let t = (0,
+                s.i3)(e);
+                return await r.walletApi.signData(r.walletAddress, t)
+            }
+            , [r.walletApi, r.walletAddress]);
+            return (0,
+            l.useEffect)( () => {
+                (async () => {
+                    if (!v)
+                        return;
+                    let e = ( () => {
+                        let e = localStorage.getItem(c);
+                        if (!e)
+                            return null;
+                        try {
+                            return JSON.parse(e)
+                        } catch (e) {
+                            return console.error("Failed to parse stored wallet data:", e),
+                            null
+                        }
+                    }
+                    )();
+                    if (!e)
+                        return S(!1);
+                    o({
+                        type: "SELECT_WALLET",
+                        payload: e.selectedWallet,
+                        isManualAddress: e.isManualAddress
+                    });
+                    let t = await p(e.selectedWallet);
+                    if (o({
+                        type: "SET_AVAILABLE_WALLETS",
+                        payload: t
+                    }),
+                    !t[e.selectedWallet] && !e.isManualAddress) {
+                        d(),
+                        S(!1);
+                        return
+                    }
+                    e.isManualAddress ? (o({
+                        type: "CONNECT_START"
+                    }),
+                    o({
+                        type: "CONNECT_SUCCESS",
+                        payload: {
+                            address: e.walletAddress,
+                            isManualAddress: e.isManualAddress
+                        }
+                    })) : await E(e.selectedWallet) && o({
+                        type: "CONNECT_SUCCESS",
+                        payload: {
+                            address: e.walletAddress,
+                            isManualAddress: !1
+                        }
+                    }),
+                    S(!1)
+                }
+                )()
+            }
+            , [E, v]),
+            (0,
+            a.jsx)(h.Provider, {
+                value: {
+                    state: r,
+                    dispatch: o,
+                    selectWallet: _,
+                    connectWallet: C,
+                    disconnectWallet: A,
+                    getWalletApi: b,
+                    signData: T,
+                    refreshWallets: () => {
+                        m(!y)
+                    }
+                    ,
+                    saveWalletToStorage: u
+                },
+                children: t
+            })
+        }
+          , m = () => {
+            let e = (0,
+            l.useContext)(h);
+            if (void 0 === e)
+                throw Error("useWalletContext must be used within a WalletProvider");
+            return e
+        }
+    }
+    ,
+    7084: (e, t, r) => {
+        r.d(t, {
+            DS: () => d,
+            gP: () => h,
+            LatestChallengeProvider: () => g,
+            CM: () => p
+        });
+        var a = r(5155)
+          , l = r(2115)
+          , s = r(1782)
+          , n = r(7334);
+        let o = async () => {
+            let {now: e, override: t} = (0,
+            s.h)()
+              , r = await n.K.get("/challenge", {
+                queryParams: t ? {
+                    now: e.toISOString()
+                } : void 0
+            });
+            if ("object" == typeof r && null !== r && "challenge"in r && "object" == typeof r.challenge) {
+                let {challenge: e, mining_period_ends: t, max_day: a, total_challenges: l, current_day: s, next_challenge_starts_at: n} = r;
+                return {
+                    code: "active",
+                    challenge: !!e && {
+                        ...e,
+                        issued_at: new Date(e.issued_at),
+                        latest_submission: new Date(e.latest_submission)
+                    },
+                    mining_period_ends: new Date(t),
+                    max_day: a,
+                    total_challenges: l,
+                    current_day: s,
+                    next_challenge_starts_at: n ? new Date(n) : null
+                }
+            }
+            if ("code"in r)
+                switch (r.code) {
+                case "before":
+                    return {
+                        ...r,
+                        starts_at: new Date(r.starts_at)
+                    };
+                case "after":
+                    return r;
+                default:
+                    throw Error("Unexpected challenge code: ".concat(r.code))
+                }
+            throw Error("Unexpected response from /challenge endpoint")
+        }
+        ;
+        var i = r(9967)
+          , c = r(2408);
+        let u = (0,
+        l.createContext)(void 0)
+          , d = "active_challenge"
+          , h = "challenge_stats"
+          , g = e => {
+            var t;
+            let {children: r, prerequisiteFunction: s} = e
+              , [n,g] = (0,
+            l.useState)({
+                data: null,
+                loading: !1,
+                loaded: !1,
+                error: null
+            })
+              , {addChallenges: p, createChallengeQueueItem: w} = (0,
+            i.YP)()
+              , {callApi: f} = (0,
+            c._)()
+              , y = (0,
+            l.useCallback)(async () => {
+                g(e => ({
+                    ...e,
+                    loading: !0,
+                    error: null
+                }));
+                let e = await f(async () => (s && await s(),
+                await o()));
+                e ? ("active" === e.code ? (localStorage.setItem(d, "true"),
+                function(e) {
+                    var t, r, a, l, s;
+                    localStorage.setItem(h, JSON.stringify({
+                        max_day: null != (t = e.max_day) ? t : 0,
+                        mining_period_ends: e.mining_period_ends instanceof Date ? e.mining_period_ends.toISOString() : null != (r = e.mining_period_ends) ? r : "",
+                        total_challenges: null != (a = e.total_challenges) ? a : 0,
+                        current_day: null != (l = e.current_day) ? l : 0,
+                        next_challenge_starts_at: e.next_challenge_starts_at instanceof Date ? e.next_challenge_starts_at.toISOString() : null != (s = e.next_challenge_starts_at) ? s : ""
+                    }))
+                }(e),
+                e.challenge && p([w(e.challenge, e)])) : "after" === e.code && localStorage.setItem(d, "false"),
+                g({
+                    data: e,
+                    loading: !1,
+                    loaded: !0,
+                    error: null
+                })) : g({
+                    data: null,
+                    loading: !1,
+                    loaded: !1,
+                    error: "Failed to fetch latest challenge"
+                })
+            }
+            , [s, p, w, f])
+              , m = (0,
+            l.useCallback)(async () => {
+                await y()
+            }
+            , [y]);
+            (0,
+            l.useEffect)( () => {
+                y()
+            }
+            , [y]),
+            (0,
+            l.useEffect)( () => {
+                var e;
+                if ((null == (e = n.data) ? void 0 : e.code) !== "active")
+                    return;
+                let t = setInterval( () => {
+                    m()
+                }
+                , 6e4);
+                return () => {
+                    clearInterval(t)
+                }
+            }
+            , [m, null == (t = n.data) ? void 0 : t.code]);
+            let v = {
+                ...n,
+                refetch: m
+            };
+            return (0,
+            a.jsx)(u.Provider, {
+                value: v,
+                children: r
+            })
+        }
+          , p = () => {
+            let e = (0,
+            l.useContext)(u);
+            if (void 0 === e)
+                throw Error("useLatestChallenge must be used within a LatestChallengeProvider");
+            return e
+        }
+    }
+    ,
+    7334: (e, t, r) => {
+        r.d(t, {
+            K: () => o,
+            h: () => l
+        });
+        var a = r(9284);
+        class l extends Error {
+            async getErrorData() {
+                try {
+                    let e = this.response.clone();
+                    return await e.json()
+                } catch (e) {
+                    return null
+                }
+            }
+            async getUserFriendlyMessage() {
+                let e = await this.getErrorData();
+                if (e && "string" == typeof e.message)
+                    return e.message;
+                switch (this.status) {
+                case 401:
+                    return "Authentication required. Please sign in.";
+                case 403:
+                    return "You do not have permission to perform this action.";
+                case 404:
+                    return "The requested resource was not found.";
+                case 422:
+                    return "The submitted data is invalid.";
+                case 500:
+                    return "A server error occurred. Please try again later.";
+                default:
+                    return "Error ".concat(this.status, ": ").concat(this.statusText)
+                }
+            }
+            constructor(e, t) {
+                super(e),
+                this.name = "ApiError",
+                this.status = t.status,
+                this.statusText = t.statusText,
+                this.url = t.url,
+                this.response = t
+            }
+        }
+        let s = e => "".concat(a.c.apiBaseUrl).concat(e)
+          , n = () => ({})
+          , o = {
+            async post(e, t) {
+                let r = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
+                try {
+                    let a = {
+                        "Content-Type": "application/json",
+                        ...r.headers,
+                        ...r.authRequired ? n() : {}
+                    }
+                      , o = new URL(s(e),location.origin);
+                    r.queryParams && Object.entries(r.queryParams).forEach(e => {
+                        let[t,r] = e;
+                        o.searchParams.append(t, String(r))
+                    }
+                    );
+                    let i = await fetch(o, {
+                        method: "POST",
+                        headers: a,
+                        body: JSON.stringify(t)
+                    });
+                    if (!i.ok) {
+                        let e = new l("API error: ".concat(i.status, " ").concat(i.statusText),i);
+                        throw console.error("API error details:", {
+                            status: e.status,
+                            statusText: e.statusText,
+                            url: e.url
+                        }),
+                        e
+                    }
+                    return await i.json()
+                } catch (e) {
+                    if (e instanceof l)
+                        throw e;
+                    throw console.error("API request failed:", e),
+                    e
+                }
+            },
+            async get(e) {
+                let t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {};
+                try {
+                    let r = {
+                        "Content-Type": "application/json",
+                        ...t.headers,
+                        ...t.authRequired ? n() : {}
+                    }
+                      , a = new URL(s(e),location.origin);
+                    t.queryParams && Object.entries(t.queryParams).forEach(e => {
+                        let[t,r] = e;
+                        a.searchParams.append(t, String(r))
+                    }
+                    );
+                    let o = await fetch(a, {
+                        method: "GET",
+                        headers: r
+                    });
+                    if (!o.ok) {
+                        let e = new l("API error: ".concat(o.status, " ").concat(o.statusText),o);
+                        throw console.error("API error details:", {
+                            status: e.status,
+                            statusText: e.statusText,
+                            url: e.url
+                        }),
+                        e
+                    }
+                    return await o.json()
+                } catch (e) {
+                    if (e instanceof l)
+                        throw e;
+                    throw console.error("API request failed:", e),
+                    e
+                }
+            }
+        }
+    }
+    ,
+    8387: (e, t, r) => {
+        r.d(t, {
+            B9: () => s,
+            Yq: () => a,
+            a3: () => l
+        });
+        let a = (e, t, r) => (e instanceof Date ? e : new Date(e)).toLocaleDateString(t || navigator.language, r || {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        })
+          , l = e => {
+            let t = Math.floor(e / 3600).toString().padStart(2, "0")
+              , r = Math.floor(e % 3600 / 60).toString().padStart(2, "0")
+              , a = Math.floor(e % 60).toString().padStart(2, "0");
+            return "".concat(t, ":").concat(r, ":").concat(a)
+        }
+          , s = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)
+    }
+    ,
+    9284: (e, t, r) => {
+        r.d(t, {
+            c: () => a
+        });
+        let a = {
+            apiBaseUrl: r(7358).env.NEXT_API_BASE_URL || "/api",
+            faqUrl: "https://www.midnight.gd/faq"
+        }
+    }
+    ,
+    9967: (e, t, r) => {
+        r.d(t, {
+            ChallengeQueueProvider: () => c,
+            Dl: () => d,
+            YP: () => u
+        });
+        var a = r(5155)
+          , l = r(2115)
+          , s = r(7034);
+        let n = "challenge_queue"
+          , o = (e, t) => {
+            try {
+                let r = localStorage.getItem(n)
+                  , a = {};
+                if (r)
+                    try {
+                        a = JSON.parse(r)
+                    } catch (e) {
+                        a = {}
+                    }
+                e && (a[e] = t,
+                localStorage.setItem(n, JSON.stringify(a)))
+            } catch (e) {
+                console.error("Failed to save challenge queue to localStorage", e)
+            }
+        }
+          , i = (0,
+        l.createContext)(void 0)
+          , c = e => {
+            var t;
+            let {children: r} = e
+              , {state: c} = (0,
+            s.u)()
+              , u = null != (t = c.walletAddress) ? t : null
+              , [d,h] = (0,
+            l.useState)([])
+              , [g,p] = (0,
+            l.useState)(!1)
+              , w = (0,
+            l.useRef)(!1)
+              , f = (0,
+            l.useCallback)( (e, t) => {
+                let r = Date.now()
+                  , a = e.latest_submission instanceof Date ? e.latest_submission.getTime() : new Date(e.latest_submission).getTime();
+                return {
+                    challengeId: e.challenge_id,
+                    challengeNumber: (e.day - 1) * 24 + e.challenge_number,
+                    challengeTotal: t.total_challenges,
+                    campaignDay: e.day,
+                    difficulty: e.difficulty,
+                    status: r > a ? "lapsed" : "available",
+                    noPreMine: e.no_pre_mine,
+                    noPreMineHour: e.no_pre_mine_hour,
+                    latestSubmission: e.latest_submission,
+                    availableAt: e.issued_at
+                }
+            }
+            , []);
+            (0,
+            l.useEffect)( () => {
+                if (u) {
+                    let e = localStorage.getItem(n);
+                    if (e)
+                        try {
+                            let t = JSON.parse(e);
+                            h(Array.isArray(t[u]) ? t[u] : [])
+                        } catch (e) {
+                            h([])
+                        }
+                    p(!0),
+                    w.current = !0
+                } else
+                    h([]),
+                    p(!1)
+            }
+            , [u]);
+            let y = (0,
+            l.useCallback)(e => {
+                h(t => {
+                    let r = [...t, e];
+                    return o(u, r),
+                    r
+                }
+                )
+            }
+            , [u])
+              , m = (0,
+            l.useCallback)(e => {
+                w.current && h(t => {
+                    let r = new Set(t.map(e => e.challengeId))
+                      , a = [...t, ...e.filter(e => !r.has(e.challengeId))].sort( (e, t) => t.challengeNumber - e.challengeNumber);
+                    return o(u, a),
+                    a
+                }
+                )
+            }
+            , [u])
+              , v = (0,
+            l.useCallback)( (e, t) => new Promise(r => {
+                h(a => {
+                    let l = a.map(r => r.challengeId === e ? {
+                        ...r,
+                        ...t
+                    } : r);
+                    o(u, l);
+                    let s = l.find(t => t.challengeId === e);
+                    return setTimeout( () => r(s), 0),
+                    l
+                }
+                )
+            }
+            ), [u])
+              , S = (0,
+            l.useCallback)( () => {
+                h([]),
+                o(u, [])
+            }
+            , [u])
+              , E = (0,
+            l.useCallback)( () => d.find(e => "available" === e.status && (!e.latestSubmission || Date.now() <= (e.latestSubmission instanceof Date ? e.latestSubmission.getTime() : new Date(e.latestSubmission).getTime()))), [d]);
+            return (0,
+            a.jsx)(i.Provider, {
+                value: {
+                    queue: d,
+                    addChallenge: y,
+                    addChallenges: m,
+                    updateChallenge: v,
+                    clearQueue: S,
+                    getNextAvailableChallenge: E,
+                    createChallengeQueueItem: f,
+                    queueHydrated: g
+                },
+                children: r
+            })
+        }
+          , u = () => {
+            let e = (0,
+            l.useContext)(i);
+            if (!e)
+                throw Error("useChallengeQueue must be used within a ChallengeQueueProvider");
+            return e
+        }
+          , d = e => !!e.latestSubmission && Date.now() > (e.latestSubmission instanceof Date ? e.latestSubmission.getTime() : new Date(e.latestSubmission).getTime())
+    }
+}]);
+

@@ -1,0 +1,1835 @@
+(self.webpackChunk_N_E = self.webpackChunk_N_E || []).push([[6698], {
+    263: (e, t, s) => {
+        "use strict";
+        s.d(t, {
+            A: () => w
+        });
+        var a = s(5155)
+          , l = s(2115)
+          , r = s(5239);
+        let i = {
+            src: "/_next/static/media/info.7da3941a.svg"
+        };
+        var n = s(5203)
+          , o = s.n(n)
+          , c = s(8122)
+          , d = s(2136);
+        let x = (0,
+        a.jsx)("svg", {
+            role: "img",
+            "aria-label": "Info",
+            xmlns: "http://www.w3.org/2000/svg",
+            width: "24",
+            height: "24",
+            viewBox: "0 0 24 24",
+            fill: "none",
+            children: (0,
+            a.jsx)("path", {
+                d: "M11.25 16.75H12.75V11H11.25V16.75ZM12 9.2885C12.2288 9.2885 12.4207 9.21108 12.5755 9.05625C12.7303 8.90142 12.8077 8.70958 12.8077 8.48075C12.8077 8.25192 12.7303 8.06008 12.5755 7.90525C12.4207 7.75058 12.2288 7.67325 12 7.67325C11.7712 7.67325 11.5793 7.75058 11.4245 7.90525C11.2697 8.06008 11.1923 8.25192 11.1923 8.48075C11.1923 8.70958 11.2697 8.90142 11.4245 9.05625C11.5793 9.21108 11.7712 9.2885 12 9.2885ZM12.0017 21.5C10.6877 21.5 9.45267 21.2507 8.2965 20.752C7.14033 20.2533 6.13467 19.5766 5.2795 18.7218C4.42433 17.8669 3.74725 16.8617 3.24825 15.706C2.74942 14.5503 2.5 13.3156 2.5 12.0017C2.5 10.6877 2.74933 9.45267 3.248 8.2965C3.74667 7.14033 4.42342 6.13467 5.27825 5.2795C6.13308 4.42433 7.13833 3.74725 8.294 3.24825C9.44967 2.74942 10.6844 2.5 11.9983 2.5C13.3123 2.5 14.5473 2.74933 15.7035 3.248C16.8597 3.74667 17.8653 4.42342 18.7205 5.27825C19.5757 6.13308 20.2528 7.13833 20.7518 8.294C21.2506 9.44967 21.5 10.6844 21.5 11.9983C21.5 13.3123 21.2507 14.5473 20.752 15.7035C20.2533 16.8597 19.5766 17.8653 18.7218 18.7205C17.8669 19.5757 16.8617 20.2528 15.706 20.7518C14.5503 21.2506 13.3156 21.5 12.0017 21.5ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z",
+                fill: "#666666"
+            })
+        })
+          , m = (0,
+        a.jsx)("svg", {
+            role: "img",
+            "aria-label": "Circle Checkmark",
+            xmlns: "http://www.w3.org/2000/svg",
+            width: "24",
+            height: "24",
+            viewBox: "0 0 24 24",
+            fill: "none",
+            children: (0,
+            a.jsx)("path", {
+                d: "M10.5808 16.2538L17.3038 9.53075L16.25 8.477L10.5808 14.1463L7.73075 11.2963L6.677 12.35L10.5808 16.2538ZM12.0017 21.5C10.6877 21.5 9.45267 21.2507 8.2965 20.752C7.14033 20.2533 6.13467 19.5766 5.2795 18.7218C4.42433 17.8669 3.74725 16.8617 3.24825 15.706C2.74942 14.5503 2.5 13.3156 2.5 12.0017C2.5 10.6877 2.74933 9.45267 3.248 8.2965C3.74667 7.14033 4.42342 6.13467 5.27825 5.2795C6.13308 4.42433 7.13833 3.74725 8.294 3.24825C9.44967 2.74942 10.6844 2.5 11.9983 2.5C13.3123 2.5 14.5473 2.74933 15.7035 3.248C16.8597 3.74667 17.8653 4.42342 18.7205 5.27825C19.5757 6.13308 20.2528 7.13833 20.7518 8.294C21.2506 9.44967 21.5 10.6844 21.5 11.9983C21.5 13.3123 21.2507 14.5473 20.752 15.7035C20.2533 16.8597 19.5766 17.8653 18.7218 18.7205C17.8669 19.5757 16.8617 20.2528 15.706 20.7518C14.5503 21.2506 13.3156 21.5 12.0017 21.5ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z",
+                fill: "#357335"
+            })
+        })
+          , u = (0,
+        a.jsx)("svg", {
+            role: "img",
+            "aria-label": "Circle Alert",
+            xmlns: "http://www.w3.org/2000/svg",
+            width: "24",
+            height: "24",
+            viewBox: "0 0 24 24",
+            fill: "none",
+            children: (0,
+            a.jsx)("path", {
+                d: "M12 16.7308C12.2288 16.7308 12.4207 16.6533 12.5755 16.4985C12.7303 16.3437 12.8077 16.1518 12.8077 15.923C12.8077 15.6942 12.7303 15.5023 12.5755 15.3475C12.4207 15.1928 12.2288 15.1155 12 15.1155C11.7712 15.1155 11.5793 15.1928 11.4245 15.3475C11.2697 15.5023 11.1923 15.6942 11.1923 15.923C11.1923 16.1518 11.2697 16.3437 11.4245 16.4985C11.5793 16.6533 11.7712 16.7308 12 16.7308ZM11.25 13.077H12.75V7.077H11.25V13.077ZM12.0017 21.5C10.6877 21.5 9.45267 21.2507 8.2965 20.752C7.14033 20.2533 6.13467 19.5766 5.2795 18.7218C4.42433 17.8669 3.74725 16.8617 3.24825 15.706C2.74942 14.5503 2.5 13.3156 2.5 12.0017C2.5 10.6877 2.74933 9.45267 3.248 8.2965C3.74667 7.14033 4.42342 6.13467 5.27825 5.2795C6.13308 4.42433 7.13833 3.74725 8.294 3.24825C9.44967 2.74942 10.6844 2.5 11.9983 2.5C13.3123 2.5 14.5473 2.74933 15.7035 3.248C16.8597 3.74667 17.8653 4.42342 18.7205 5.27825C19.5757 6.13308 20.2528 7.13833 20.7518 8.294C21.2506 9.44967 21.5 10.6844 21.5 11.9983C21.5 13.3123 21.2507 14.5473 20.752 15.7035C20.2533 16.8597 19.5766 17.8653 18.7218 18.7205C17.8669 19.5757 16.8617 20.2528 15.706 20.7518C14.5503 21.2506 13.3156 21.5 12.0017 21.5ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z",
+                fill: "#F54D4D"
+            })
+        })
+          , h = (0,
+        a.jsx)("svg", {
+            role: "img",
+            "aria-label": "Triangle Alert",
+            xmlns: "http://www.w3.org/2000/svg",
+            width: "24",
+            height: "24",
+            viewBox: "0 0 24 24",
+            fill: "none",
+            children: (0,
+            a.jsx)("path", {
+                d: "M1.86523 20.5L11.9997 3L22.1342 20.5H1.86523ZM4.44973 19H19.5497L11.9997 6L4.44973 19ZM11.9997 17.8077C12.2286 17.8077 12.4204 17.7303 12.5752 17.5755C12.7301 17.4207 12.8075 17.2288 12.8075 17C12.8075 16.7712 12.7301 16.5793 12.5752 16.4245C12.4204 16.2697 12.2286 16.1923 11.9997 16.1923C11.7709 16.1923 11.5791 16.2697 11.4242 16.4245C11.2694 16.5793 11.192 16.7712 11.192 17C11.192 17.2288 11.2694 17.4207 11.4242 17.5755C11.5791 17.7303 11.7709 17.8077 11.9997 17.8077ZM11.2497 15.1923H12.7497V10.1923H11.2497V15.1923Z",
+                fill: "#A94C0A"
+            })
+        })
+          , C = e => {
+            let {title: t, rightText: s, rightValue: r, variant: i="default", detailRows: n=[], initialExpanded: C=!1, className: f, showChevron: b=!0} = e
+              , [p,g] = (0,
+            l.useState)(C)
+              , {borderColor: j, bgColor: y, textColor: v, valueTextColor: w, icon: N} = {
+                default: {
+                    borderColor: "border-border-border-divider",
+                    bgColor: "bg-transparent",
+                    textColor: "text-text-text-secondary",
+                    valueTextColor: "text-color-text-primary",
+                    icon: x
+                },
+                success: {
+                    borderColor: "border-border-border-success",
+                    bgColor: "bg-color-alert-success-100",
+                    textColor: "text-text-text-secondary",
+                    valueTextColor: "text-color-text-primary",
+                    icon: m
+                },
+                warning: {
+                    borderColor: "border-border-border-warning",
+                    bgColor: "bg-color-alert-warning-warning-10",
+                    textColor: "text-text-text-secondary",
+                    valueTextColor: "text-color-text-primary",
+                    icon: h
+                },
+                error: {
+                    borderColor: "border-color-stalled",
+                    bgColor: "bg-alert-stalled-15",
+                    textColor: "text-text-text-secondary",
+                    valueTextColor: "text-color-text-primary",
+                    icon: u
+                },
+                start: {
+                    borderColor: "border-border-border-accent",
+                    bgColor: "bg-border-border-accent-05",
+                    textColor: "text-text-text-secondary",
+                    valueTextColor: "text-color-text-primary",
+                    icon: ""
+                }
+            }[i]
+              , S = o()(y, j, "border border-solid", f)
+              , A = (0,
+            a.jsxs)("div", {
+                className: o()("flex justify-between items-center w-full h-full", {
+                    "cursor-pointer": b
+                }),
+                onClick: () => {
+                    g(e => !e)
+                }
+                ,
+                children: [(0,
+                a.jsxs)("div", {
+                    className: "flex items-center",
+                    children: [(0,
+                    a.jsx)("div", {
+                        className: "mr-2",
+                        children: N
+                    }), (0,
+                    a.jsx)("div", {
+                        className: "flex items-center",
+                        children: (0,
+                        a.jsx)("span", {
+                            className: o()("font-medium text-xs leading-none", v),
+                            children: t
+                        })
+                    })]
+                }), (0,
+                a.jsxs)("div", {
+                    className: "flex items-center",
+                    children: [s && (0,
+                    a.jsxs)("div", {
+                        className: "text-right flex flex-row justify-center min-w-[150px]",
+                        children: [(0,
+                        a.jsxs)("div", {
+                            className: o()("text-xs leading-tight min-w-[80px] text-right"),
+                            children: [s, "\xa0"]
+                        }), r && (0,
+                        a.jsx)("div", {
+                            className: o()("text-xs leading-tight min-w-[55px] text-left ml-[3px]", w),
+                            children: r
+                        })]
+                    }), b && (0,
+                    a.jsx)("button", {
+                        className: "focus:outline-none flex items-center justify-center",
+                        "aria-label": p ? "Collapse" : "Expand",
+                        children: p ? (0,
+                        a.jsx)(c.wAb, {
+                            size: "1.25rem",
+                            className: v
+                        }) : (0,
+                        a.jsx)(c.fK4, {
+                            size: "1.25rem",
+                            className: v
+                        })
+                    })]
+                })]
+            });
+            return (0,
+            a.jsx)(d.A, {
+                padding: "medium",
+                variant: "default",
+                showHeaderBorder: !1,
+                showFooterBorder: !1,
+                className: o()(S, "flex items-center", p ? "h-auto" : "h-[56px]"),
+                bodyClassName: "pt-0",
+                header: A,
+                children: p && (0,
+                a.jsx)("div", {
+                    className: "space-y-3 mt-2",
+                    children: n.map( (e, t) => (0,
+                    a.jsxs)("div", {
+                        className: "flex justify-between items-center text-xs",
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "".concat(v, " flex items-center"),
+                            children: "string" == typeof e.label ? "".concat(e.label, ":") : e.label
+                        }), (0,
+                        a.jsx)("div", {
+                            className: "".concat(w, " flex items-center"),
+                            children: e.value
+                        })]
+                    }, t))
+                })
+            })
+        }
+        ;
+        var f = s(3e3);
+        let b = e => {
+            let {countdownTo: t, initialSeconds: s, countdownFormat: r="HH:MM:SS", onCountdownComplete: i, isPaused: n=!1, rightText: o="Time left:", ...c} = e
+              , {formattedTime: d, remainingSeconds: x} = (0,
+            f.A)({
+                targetDate: t,
+                initialSeconds: s,
+                format: r,
+                isPaused: n
+            });
+            return (0,
+            l.useEffect)( () => {
+                0 === x && i && i()
+            }
+            , [x, i]),
+            (0,
+            a.jsx)(C, {
+                rightText: o,
+                rightValue: d,
+                ...c
+            })
+        }
+        ;
+        var p = s(2191)
+          , g = s(8387);
+        let j = e => e ? (0,
+        g.Yq)(e, "en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: !1
+        }).replace(",", " –") : ""
+          , y = e => {
+            let t = [];
+            return "failed" === e.status && e.validatedAt && t.push({
+                label: "Solution invalid",
+                value: j(e.validatedAt)
+            }),
+            e.submittedAt && t.push({
+                label: "Solution submitted",
+                value: j(e.submittedAt)
+            }),
+            e.solvedAt && t.push({
+                label: "Solution found",
+                value: j(e.solvedAt)
+            }),
+            e.acceptedAt && t.push({
+                label: "Challenge accepted",
+                value: j(e.acceptedAt)
+            }),
+            e.availableAt && t.push({
+                label: "Challenge available",
+                value: j(e.availableAt)
+            }),
+            t
+        }
+        ;
+        var v = s(8168);
+        let w = e => {
+            let {events: t, currentDay: s, displayDay: n, totalDays: x, className: m, onDayChange: u, nextChallengeTime: h="--", hasPrevDayEvents: f, hasNextDayEvents: g, showEmptyState: j=!1, isBeforeState: w=!1, onExportClick: N, showExport: S=!0} = e
+              , {isSmallViewport: A} = (0,
+            v.vh)()
+              , [M,Z] = (0,
+            l.useState)(!1)
+              , E = (0,
+            l.useRef)(null)
+              , k = (0,
+            l.useMemo)( () => j || 0 === t.length, [j, t])
+              , H = (0,
+            l.useMemo)( () => k ? [] : M ? t : t.slice(0, 5), [k, M, t])
+              , _ = (0,
+            l.useMemo)( () => !k && t.length > 5, [k, t])
+              , B = (0,
+            l.useMemo)( () => k ? 0 : t.length, [k, t])
+              , D = (0,
+            l.useMemo)( () => k ? [] : t.filter(e => "submitted" === e.status), [k, t])
+              , V = (0,
+            l.useMemo)( () => k ? [] : t.filter(e => ["available", "started", "lapsed", "failed"].includes(e.status)), [k, t])
+              , F = (0,
+            l.useMemo)( () => void 0 !== f ? f : (0,
+            p.v7)(t, n), [f, t, n])
+              , L = (0,
+            l.useMemo)( () => void 0 !== g ? g : (0,
+            p.Jm)(t, n), [g, t, n])
+              , T = (0,
+            l.useMemo)( () => n <= 1 || !F, [n, F])
+              , z = (0,
+            l.useMemo)( () => n >= x || !L, [n, x, L])
+              , Y = (0,
+            l.useMemo)( () => n === s, [n, s])
+              , I = (0,
+            l.useMemo)( () => "--" !== h, [h])
+              , R = (0,
+            v.QV)(E, {
+                behavior: "smooth",
+                block: "start"
+            })
+              , P = (0,
+            l.useCallback)( () => {
+                Z(!M),
+                M && R()
+            }
+            , [M, R])
+              , O = (0,
+            l.useCallback)(e => {
+                u && u(e)
+            }
+            , [u])
+              , G = (0,
+            a.jsxs)("div", {
+                className: "flex justify-between items-center text-xs",
+                children: [(0,
+                a.jsx)("div", {
+                    className: "font-semibold text-text-text-primary pl-1",
+                    children: k ? "Day: --" : "Day: ".concat(n, " / ").concat(x)
+                }), (0,
+                a.jsxs)("div", {
+                    className: "flex items-center",
+                    children: [(0,
+                    a.jsx)("button", {
+                        className: "p-1 rounded-l-md bg-color-color-grayscale-100 hover:bg-color-color-grayscale-400 disabled:opacity-50",
+                        disabled: T,
+                        "aria-label": "Previous day",
+                        "data-testid": "prev-day-button",
+                        onClick: () => O(n - 1),
+                        children: (0,
+                        a.jsx)(c.irw, {
+                            size: "1.25rem",
+                            className: "text-text-text-primary"
+                        })
+                    }), (0,
+                    a.jsx)("button", {
+                        className: "px-2 py-1 bg-border-border-accent-05 text-text-text-accent rounded-md disabled:opacity-50 disabled:text-buttons-content-disabled",
+                        disabled: Y,
+                        "data-testid": "today-button",
+                        onClick: () => O(s),
+                        children: "Today"
+                    }), (0,
+                    a.jsx)("button", {
+                        className: "px-1 rounded-r-md bg-color-color-grayscale-100 hover:bg-color-color-grayscale-400 disabled:opacity-50",
+                        disabled: z,
+                        "aria-label": "Next day",
+                        "data-testid": "next-day-button",
+                        onClick: () => O(n + 1),
+                        children: (0,
+                        a.jsx)(c.fOo, {
+                            size: "1.25rem",
+                            className: "text-text-text-primary"
+                        })
+                    })]
+                })]
+            })
+              , K = (0,
+            a.jsxs)("div", {
+                className: "flex justify-between items-center px-2 pt-3 text-xs",
+                children: [(0,
+                a.jsx)("div", {
+                    className: "text-text-text-secondary",
+                    children: k ? "Showing 0 of 0 events" : "Showing ".concat(H.length, " of ").concat(t.length, " events")
+                }), (0,
+                a.jsxs)("div", {
+                    children: [(0,
+                    a.jsx)("button", {
+                        className: "text-text-text-accent underline hover:underline disabled:opacity-50 disabled:text-text-text-secondary cursor-pointer",
+                        onClick: P,
+                        disabled: k || !_,
+                        children: M ? "Show less" : "View all"
+                    }), S && (0,
+                    a.jsxs)(a.Fragment, {
+                        children: [(0,
+                        a.jsx)("span", {
+                            className: "mx-2 text-border-border-divider",
+                            children: "|"
+                        }), (0,
+                        a.jsx)("button", {
+                            className: "text-text-text-accent underline hover:underline disabled:opacity-50 disabled:text-text-text-secondary cursor-pointer",
+                            disabled: k || w,
+                            onClick: N,
+                            children: "Export"
+                        })]
+                    })]
+                })]
+            })
+              , W = () => (0,
+            a.jsxs)("div", {
+                className: "py-2 flex items-center",
+                children: [(0,
+                a.jsx)("span", {
+                    className: "text-text-text-secondary",
+                    children: "All"
+                }), " ", (0,
+                a.jsx)("span", {
+                    "data-testid": "all-count",
+                    className: "ml-2 inline-flex items-center justify-center w-6 h-6 bg-color-surface-z-2 text-text-text-primary rounded-full",
+                    children: B
+                })]
+            })
+              , J = () => (0,
+            a.jsxs)("div", {
+                className: "py-2 flex items-center",
+                children: [(0,
+                a.jsx)("span", {
+                    className: "text-text-text-secondary",
+                    children: "Solved"
+                }), " ", (0,
+                a.jsx)("span", {
+                    "data-testid": "solved-count",
+                    className: "ml-2 inline-flex items-center justify-center w-6 h-6 bg-color-surface-z-2 text-text-text-primary rounded-full",
+                    children: k ? 0 : D.length
+                })]
+            })
+              , U = () => (0,
+            a.jsxs)("div", {
+                className: "py-2 flex items-center",
+                children: [(0,
+                a.jsx)("span", {
+                    className: "text-text-text-secondary",
+                    children: "Unsolved"
+                }), " ", (0,
+                a.jsx)("span", {
+                    "data-testid": "unsolved-count",
+                    className: "ml-2 inline-flex items-center justify-center w-6 h-6 bg-color-surface-z-2 text-text-text-primary rounded-full",
+                    children: k ? 0 : V.length
+                })]
+            })
+              , Q = () => (0,
+            a.jsxs)("div", {
+                className: "flex-grow flex md:justify-end self-center text-text-text-secondary",
+                children: [(0,
+                a.jsx)("span", {
+                    className: "text-left",
+                    children: "Next challenge in:"
+                }), (0,
+                a.jsx)("span", {
+                    className: o()("text-text-text-primary text-right ml-1", {
+                        "min-w-[75px]": I
+                    }),
+                    children: h
+                })]
+            });
+            return (0,
+            a.jsxs)(d.A, {
+                ref: E,
+                className: o()("bg-color-surface-z-1", m),
+                variant: "default",
+                padding: A ? "medium" : "large",
+                showHeaderBorder: !0,
+                header: G,
+                children: [A ? (0,
+                a.jsxs)(a.Fragment, {
+                    children: [(0,
+                    a.jsxs)("div", {
+                        className: "flex justify-center mb-4 border-b border-border-border-divider pb-4 pt-0 px-1 text-xs",
+                        children: [W(), J(), U()]
+                    }), (0,
+                    a.jsx)("div", {
+                        className: "flex mb-4 border-b border-border-border-divider pb-4 pt-0 px-1 text-xs",
+                        children: Q()
+                    })]
+                }) : (0,
+                a.jsxs)("div", {
+                    className: "flex mb-4 space-x-4 border-b border-border-border-divider pb-2 pt-0 px-1 text-xs",
+                    children: [W(), J(), U(), Q()]
+                }), (0,
+                a.jsx)("div", {
+                    className: "space-y-3 min-h-[48px] flex flex-col items-center justify-center",
+                    children: w ? (0,
+                    a.jsxs)("div", {
+                        className: "flex flex-row items-center justify-center my-8 py-3 w-full text-center border border-border-border-divider rounded-lg",
+                        children: [(0,
+                        a.jsx)("span", {
+                            className: "flex items-center justify-center",
+                            children: (0,
+                            a.jsx)(r.default, {
+                                src: i.src,
+                                width: 24,
+                                height: 24,
+                                alt: "Icon",
+                                className: "mr-2"
+                            })
+                        }), (0,
+                        a.jsx)("span", {
+                            className: "text-text-text-secondary text-xs",
+                            children: "When new challenges become available they will appear here"
+                        })]
+                    }) : k ? (0,
+                    a.jsx)("div", {
+                        className: "text-2xl text-text-text-secondary py-8 w-full text-center",
+                        children: "--"
+                    }) : H.map(e => {
+                        let t = "started" === e.status
+                          , s = "available" === e.status;
+                        return (t || s) && e.timeRemaining ? (0,
+                        a.jsx)(b, {
+                            title: (0,
+                            p.cz)(e),
+                            countdownTo: e.timeRemaining,
+                            rightText: "Time left:",
+                            variant: (0,
+                            p.K2)(e.status),
+                            detailRows: y(e),
+                            isPaused: e.paused,
+                            className: "w-full"
+                        }, e.id) : (0,
+                        a.jsx)(C, {
+                            title: (0,
+                            p.cz)(e),
+                            variant: (0,
+                            p.K2)(e.status),
+                            detailRows: y(e),
+                            showChevron: !0,
+                            className: "w-full"
+                        }, e.id)
+                    }
+                    )
+                }), K]
+            })
+        }
+    }
+    ,
+    477: () => {}
+    ,
+    1510: (e, t, s) => {
+        "use strict";
+        s.d(t, {
+            Q: () => i
+        });
+        var a = s(2115)
+          , l = s(3761)
+          , r = s(2408);
+        let i = e => {
+            let {walletAddress: t, triggerStatisticsFetch: s} = e
+              , [i,n] = (0,
+            a.useState)(null)
+              , [o,c] = (0,
+            a.useState)(!1)
+              , [d,x] = (0,
+            a.useState)(null)
+              , {callApi: m} = (0,
+            r._)()
+              , u = (0,
+            a.useRef)(m);
+            u.current = m;
+            let h = (0,
+            a.useCallback)(async () => {
+                if (!t)
+                    return;
+                c(!0),
+                x(null);
+                let e = await u.current( () => (0,
+                l.b)(t));
+                e ? n(e) : x("Failed to fetch statistics"),
+                c(!1)
+            }
+            , [t, s]);
+            return (0,
+            a.useEffect)( () => {
+                h();
+                let e = setInterval(h, 36e5);
+                return () => {
+                    clearInterval(e)
+                }
+            }
+            , [h]),
+            {
+                data: i,
+                loading: o,
+                error: d,
+                fetchStatistics: h
+            }
+        }
+    }
+    ,
+    1728: (e, t, s) => {
+        "use strict";
+        s.d(t, {
+            I: () => l
+        });
+        var a = s(2115);
+        let l = e => {
+            let {statistics: t} = e;
+            return (0,
+            a.useMemo)( () => {
+                var e, s, a, l;
+                if (!t)
+                    return {
+                        estimatedClaim: "0 NIGHT",
+                        estimatedShare: "0.000%",
+                        submittedSolutions: "0",
+                        allSubmittedSolutions: "0"
+                    };
+                let r = null != (e = t.local.night_allocation) ? e : 0
+                  , i = "".concat((Number(r) / 1e6).toFixed(4), " NIGHT")
+                  , n = t.global.total_crypto_receipts > 0 ? t.local.crypto_receipts / t.global.total_crypto_receipts * 100 : 0
+                  , o = "".concat(n.toFixed(3), "%");
+                return {
+                    estimatedClaim: i,
+                    estimatedShare: o,
+                    submittedSolutions: "".concat(null != (s = t.local.crypto_receipts) ? s : 0, " / ").concat(null != (a = t.global.total_challenges) ? a : 0),
+                    allSubmittedSolutions: "".concat(null != (l = t.global.total_crypto_receipts) ? l : 0)
+                }
+            }
+            , [JSON.stringify(t)])
+        }
+    }
+    ,
+    2058: (e, t, s) => {
+        "use strict";
+        s.d(t, {
+            A: () => u
+        });
+        var a = s(5155)
+          , l = s(2115)
+          , r = s(1345)
+          , i = s(263)
+          , n = s(3e3)
+          , o = s(7084)
+          , c = s(9967);
+        let d = {
+            started: "started",
+            solved: "started",
+            available: "available",
+            submitted: "submitted",
+            validated: "submitted",
+            lapsed: "lapsed",
+            failed: "failed",
+            invalid: "failed"
+        }
+          , x = e => {
+            var t;
+            let {challengeId: s, latestSubmission: a, status: l, ...r} = e
+              , i = null != (t = d[l]) ? t : "available"
+              , n = {
+                ...r,
+                id: s,
+                status: i,
+                timeRemaining: "string" == typeof a ? a : a instanceof Date ? a.toISOString() : new Date(a).toISOString()
+            };
+            return "lapsed" === i && (n.acceptedAt = new Date),
+            n
+        }
+        ;
+        var m = s(2191);
+        let u = e => {
+            let {className: t, onDayChange: s, showEmptyState: d, showNextChallenge: u=!0, showExport: h=!0} = e
+              , {exportChallengeData: C} = (0,
+            r.C)()
+              , [f,b] = (0,
+            l.useState)(1)
+              , [p,g] = (0,
+            l.useState)(1)
+              , [j,y] = (0,
+            l.useState)(1)
+              , [v,w] = (0,
+            l.useState)(void 0)
+              , {data: N, refetch: S} = (0,
+            o.CM)()
+              , A = (0,
+            l.useMemo)( () => {
+                let e = localStorage.getItem(o.gP);
+                return e ? JSON.parse(e) : null
+            }
+            , [])
+              , M = (0,
+            l.useMemo)( () => N && "current_day"in N && "number" == typeof N.current_day ? N.current_day : A && "number" == typeof A.current_day ? A.current_day : 1, [N, A])
+              , Z = (0,
+            l.useMemo)( () => N && "max_day"in N && "number" == typeof N.max_day ? N.max_day : A && "number" == typeof A.max_day ? A.max_day : 1, [N, A])
+              , E = (0,
+            l.useMemo)( () => N && "current_day"in N && "number" == typeof N.current_day ? N.current_day : A && "number" == typeof A.current_day ? A.current_day : 1, [N, A])
+              , k = (0,
+            l.useMemo)( () => N && "total_challenges"in N && "number" == typeof N.total_challenges ? N.total_challenges : A && "number" == typeof A.total_challenges ? A.total_challenges : void 0, [N, A])
+              , {queue: H} = (0,
+            c.YP)()
+              , _ = (0,
+            l.useMemo)( () => H.map(x), [H]);
+            (0,
+            l.useEffect)( () => {
+                b(M),
+                g(Z),
+                y(E),
+                w(k)
+            }
+            , [M, Z, E, k]);
+            let B = (0,
+            l.useMemo)( () => {
+                if (!u)
+                    return "--";
+                if (N && "code"in N) {
+                    if ("active" === N.code && N.next_challenge_starts_at)
+                        return N.next_challenge_starts_at;
+                    if ("before" === N.code && N.starts_at)
+                        return N.starts_at
+                }
+                return null
+            }
+            , [N, u])
+              , {remainingSeconds: D} = (0,
+            n.A)({
+                targetDate: B
+            });
+            (0,
+            l.useEffect)( () => {
+                if (0 === D) {
+                    let e = setTimeout( () => {
+                        S()
+                    }
+                    , 1e3);
+                    return () => clearTimeout(e)
+                }
+            }
+            , [D, S]);
+            let V = (0,
+            l.useMemo)( () => {
+                if (null == D || isNaN(D))
+                    return "--";
+                let e = Math.floor(D / 86400)
+                  , t = Math.floor(D % 86400 / 3600)
+                  , s = Math.floor(D % 3600 / 60)
+                  , a = D % 60
+                  , l = e => e.toString().padStart(2, "0");
+                return "".concat(l(e), ":").concat(l(t), ":").concat(l(s), ":").concat(l(a))
+            }
+            , [D])
+              , F = (0,
+            l.useMemo)( () => {
+                let e = (0,
+                m.xL)(_, f);
+                return void 0 !== v ? e.map(e => ({
+                    ...e,
+                    challengeTotal: v
+                })) : e
+            }
+            , [_, f, v])
+              , L = (0,
+            l.useMemo)( () => (0,
+            m.v7)(_, f), [_, f])
+              , T = (0,
+            l.useMemo)( () => (0,
+            m.Jm)(_, f), [_, f])
+              , z = (0,
+            l.useMemo)( () => !!(N && "code"in N && "before" === N.code), [N])
+              , Y = (0,
+            l.useCallback)(e => {
+                b(e),
+                s && s(e)
+            }
+            , [s]);
+            return (0,
+            a.jsx)(i.A, {
+                events: F,
+                displayDay: f,
+                totalDays: p,
+                currentDay: j,
+                nextChallengeTime: V,
+                hasPrevDayEvents: L,
+                hasNextDayEvents: T,
+                onDayChange: Y,
+                className: t,
+                showEmptyState: d,
+                isBeforeState: z,
+                onExportClick: C,
+                showExport: h
+            })
+        }
+    }
+    ,
+    2191: (e, t, s) => {
+        "use strict";
+        s.d(t, {
+            Jm: () => n,
+            K2: () => a,
+            cz: () => l,
+            v7: () => i,
+            xL: () => r
+        });
+        let a = e => {
+            switch (e) {
+            case "submitted":
+                return "success";
+            case "started":
+                return "start";
+            case "lapsed":
+                return "warning";
+            case "failed":
+                return "error";
+            default:
+                return "default"
+            }
+        }
+          , l = e => {
+            let t = "Challenge ".concat(e.challengeNumber, " / ").concat(e.challengeTotal);
+            switch (e.status) {
+            case "submitted":
+                return "".concat(t, ": Solution submitted");
+            case "started":
+                return e.paused ? "".concat(t, ": Mining paused") : "".concat(t, ": Finding a solution...");
+            case "lapsed":
+                return "".concat(t, ": Challenge lapsed");
+            case "failed":
+                return "".concat(t, ": Solution invalid");
+            case "available":
+                return "".concat(t, ": Available");
+            default:
+                return t
+            }
+        }
+          , r = (e, t) => e.filter(e => e.campaignDay === t || void 0 === e.campaignDay && 1 === t)
+          , i = (e, t) => e.some(e => void 0 !== e.campaignDay && e.campaignDay < t)
+          , n = (e, t) => e.some(e => void 0 !== e.campaignDay && e.campaignDay > t)
+    }
+    ,
+    3e3: (e, t, s) => {
+        "use strict";
+        s.d(t, {
+            A: () => l
+        });
+        var a = s(2115);
+        let l = function() {
+            let {targetDate: e=null, initialSeconds: t=0, autoStart: s=!0, isPaused: l=!1, format: r="HH:MM:SS"} = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {}
+              , i = (0,
+            a.useRef)(t)
+              , n = (0,
+            a.useRef)(e)
+              , o = (0,
+            a.useCallback)( () => {
+                if (n.current) {
+                    let e = n.current instanceof Date ? n.current : new Date(n.current)
+                      , t = new Date;
+                    return Math.max(0, Math.floor((e.getTime() - t.getTime()) / 1e3))
+                }
+                return i.current
+            }
+            , [])
+              , [c,d] = (0,
+            a.useState)(o())
+              , [x,m] = (0,
+            a.useState)(s && !l)
+              , u = (0,
+            a.useRef)(null)
+              , h = (0,
+            a.useCallback)(e => {
+                if (e <= 0)
+                    return "DD:HH:MM:SS" === r ? "00:00:00:00" : "00:00:00";
+                let t = Math.floor(e / 86400)
+                  , s = Math.floor(e % 86400 / 3600)
+                  , a = Math.floor(e % 3600 / 60)
+                  , l = Math.floor(e % 60)
+                  , i = e => e.toString().padStart(2, "0");
+                return "DD:HH:MM:SS" === r ? "".concat(i(t), ":").concat(i(s), ":").concat(i(a), ":").concat(i(l)) : "".concat(i(s), ":").concat(i(a), ":").concat(i(l))
+            }
+            , [r])
+              , C = (0,
+            a.useCallback)( () => {
+                d(o()),
+                x || l || m(!0)
+            }
+            , [o, x, l])
+              , f = (0,
+            a.useCallback)( () => {
+                m(!0)
+            }
+            , [])
+              , b = (0,
+            a.useCallback)( () => {
+                m(!1)
+            }
+            , []);
+            return (0,
+            a.useEffect)( () => {
+                i.current = t,
+                n.current = e,
+                d(o())
+            }
+            , [e, t, o]),
+            (0,
+            a.useEffect)( () => {
+                m(s && !l)
+            }
+            , [s, l]),
+            (0,
+            a.useEffect)( () => {
+                if (!x) {
+                    u.current && (clearInterval(u.current),
+                    u.current = null);
+                    return
+                }
+                return u.current = setInterval( () => {
+                    d(e => e <= 0 ? 0 : e - 1)
+                }
+                , 1e3),
+                () => {
+                    u.current && (clearInterval(u.current),
+                    u.current = null)
+                }
+            }
+            , [x]),
+            {
+                formattedTime: h(c),
+                remainingSeconds: c,
+                isRunning: x,
+                reset: C,
+                start: f,
+                pause: b
+            }
+        }
+    }
+    ,
+    3761: (e, t, s) => {
+        "use strict";
+        s.d(t, {
+            b: () => l
+        });
+        var a = s(7334);
+        let l = async e => a.K.get("/statistics/".concat(e))
+    }
+    ,
+    9599: (e, t, s) => {
+        "use strict";
+        s.d(t, {
+            V: () => k,
+            A: () => H
+        });
+        var a = s(5155)
+          , l = s(4311)
+          , r = s(5203)
+          , i = s.n(r)
+          , n = s(2136)
+          , o = s(7470)
+          , c = s(2713)
+          , d = s(2115)
+          , x = s(4117);
+        let m = () => (0,
+        a.jsxs)(x.BS, {
+            width: 104,
+            height: 21,
+            viewBox: "0 0 104 21",
+            children: [(0,
+            a.jsx)(x.lA, {
+                children: (0,
+                a.jsx)(x.Ce, {
+                    id: "clip0_9424_1698",
+                    children: (0,
+                    a.jsx)(x.rw, {
+                        width: 104,
+                        height: 21,
+                        fill: "white"
+                    })
+                })
+            }), (0,
+            a.jsxs)(x.G, {
+                clipPath: "url(#clip0_9424_1698)",
+                children: [(0,
+                a.jsx)(x.wA, {
+                    d: "M14.7226 9.03299L14.6783 8.5406H8.26713V10.9081H12.2846C12.0704 11.8261 11.6134 12.6569 10.9464 13.3367C9.99382 14.3055 8.72558 14.8386 7.3745 14.8386C6.02343 14.8386 4.75519 14.3055 3.80258 13.3367C1.83309 11.3337 1.83309 8.07435 3.80258 6.07138L4.95371 4.90068V6.71483L8.26713 3.34652L11.3249 6.45629L12.9673 4.78012L8.26713 0L5.84633 2.46196L4.95371 1.55416L2.15729 4.39812C-0.719098 7.32342 -0.719098 12.0832 2.15729 15.0085C3.59549 16.4712 5.485 17.2018 7.3745 17.2018C9.26401 17.2018 11.1535 16.4697 12.5917 15.0085C13.8014 13.7783 14.5569 12.1486 14.7183 10.4187C14.7611 9.95968 14.7626 9.49343 14.7226 9.03154V9.03299Z",
+                    fill: "#0000FE"
+                }), (0,
+                a.jsx)(x.wA, {
+                    d: "M18.2156 2.61328H16.0547V17.003H18.2156V2.61328Z",
+                    fill: "#0000FE"
+                }), (0,
+                a.jsx)(x.wA, {
+                    d: "M26.8421 8.47895C26.5708 8.15941 26.2466 7.89215 25.8695 7.68009C25.3125 7.36781 24.6741 7.21094 23.9543 7.21094C23.1031 7.21094 22.3333 7.43462 21.6449 7.88053C20.9565 8.32644 20.4138 8.92632 20.0139 9.67871C19.614 10.4311 19.4141 11.2808 19.4141 12.2264C19.4141 13.1719 19.614 14.0013 20.0139 14.7551C20.4138 15.5075 20.9565 16.1045 21.6449 16.5431C22.3333 16.9832 23.1017 17.2026 23.9543 17.2026C24.6741 17.2026 25.3168 17.0457 25.8795 16.7334C26.2551 16.5257 26.5751 16.2643 26.8421 15.952V17.0036H29.003V7.41138H26.8421V8.48041V8.47895ZM26.2423 14.3063C25.751 14.8524 25.1054 15.1255 24.3071 15.1255C23.7829 15.1255 23.3216 15.0021 22.9217 14.7551C22.5218 14.5082 22.2076 14.1654 21.9791 13.7253C21.7492 13.2852 21.6349 12.7798 21.6349 12.206C21.6349 11.6323 21.7492 11.1268 21.9791 10.6867C22.2076 10.2466 22.5233 9.90384 22.9217 9.65692C23.3216 9.41 23.7829 9.28654 24.3071 9.28654C24.8312 9.28654 25.3125 9.41 25.7124 9.65692C26.1123 9.90384 26.4237 10.2466 26.6465 10.6867C26.8693 11.1268 26.9807 11.6323 26.9807 12.206C26.9807 13.0586 26.735 13.7587 26.2437 14.3049L26.2423 14.3063Z",
+                    fill: "#0000FE"
+                }), (0,
+                a.jsx)(x.wA, {
+                    d: "M33.7899 9.69904C34.2026 9.45212 34.6768 9.32866 35.2138 9.32866C35.6723 9.32866 36.095 9.41145 36.4821 9.57848C36.8677 9.74552 37.199 9.99535 37.4747 10.328L38.89 8.86967C38.4444 8.33661 37.9045 7.92701 37.269 7.64087C36.6334 7.35473 35.9493 7.21094 35.2152 7.21094C34.2855 7.21094 33.4428 7.43026 32.6902 7.87036C31.9361 8.31047 31.3434 8.90598 30.9121 9.65837C30.4793 10.4108 30.2637 11.2605 30.2637 12.206C30.2637 13.1516 30.4793 13.9853 30.9121 14.745C31.3448 15.5046 31.9375 16.1045 32.6902 16.5431C33.4428 16.9832 34.2855 17.2026 35.2152 17.2026C35.9493 17.2026 36.6334 17.0588 37.269 16.7726C37.9045 16.4865 38.4444 16.0769 38.89 15.5438L37.4747 14.0855C37.199 14.4182 36.8691 14.668 36.4821 14.835C36.095 15.0021 35.6723 15.0848 35.2138 15.0848C34.6768 15.0848 34.2026 14.9614 33.7899 14.7145C33.3771 14.4675 33.0558 14.1277 32.8273 13.6948C32.5974 13.262 32.4831 12.7652 32.4831 12.206C32.4831 11.6468 32.5974 11.1341 32.8273 10.7071C33.0558 10.2815 33.3771 9.94451 33.7899 9.69759V9.69904Z",
+                    fill: "#0000FE"
+                }), (0,
+                a.jsx)(x.wA, {
+                    d: "M42.2702 7.41016H40.1094V17.0024H42.2702V7.41016Z",
+                    fill: "#0000FE"
+                }), (0,
+                a.jsx)(x.wA, {
+                    d: "M50.7727 7.83115C50.0972 7.41864 49.3217 7.21094 48.4448 7.21094C47.5678 7.21094 46.7181 7.43026 45.9783 7.87036C45.2384 8.31047 44.6515 8.90598 44.2187 9.65837C43.786 10.4108 43.5703 11.2605 43.5703 12.206C43.5703 13.1516 43.7903 14.0042 44.2287 14.7638C44.6672 15.5235 45.2627 16.119 46.0168 16.5533C46.7695 16.9861 47.6178 17.2026 48.5619 17.2026C49.296 17.2026 49.9901 17.0631 50.6442 16.7828C51.2997 16.5025 51.8553 16.09 52.3137 15.5438L50.9384 14.1248C50.6499 14.4574 50.3 14.7116 49.8872 14.8844C49.4745 15.0573 49.026 15.1444 48.5404 15.1444C47.9777 15.1444 47.4793 15.0209 47.0465 14.7755C46.6138 14.5285 46.281 14.1799 46.044 13.7268C45.9311 13.5104 45.8469 13.2765 45.7869 13.0267H52.8222C52.8607 12.8262 52.8907 12.6432 52.9107 12.4776C52.9307 12.3106 52.9407 12.1479 52.9407 11.9882C52.9407 11.0687 52.7479 10.2495 52.3609 9.53055C51.9738 8.81157 51.444 8.24511 50.7684 7.83115H50.7727ZM46.0268 10.5981C46.2496 10.1653 46.5638 9.82831 46.9694 9.58865C47.375 9.34899 47.8535 9.22844 48.4033 9.22844C48.9532 9.22844 49.3688 9.33592 49.7301 9.54798C50.09 9.7615 50.3685 10.068 50.5656 10.4674C50.6756 10.6911 50.7556 10.9453 50.8127 11.2271H45.7969C45.8526 11.0005 45.9283 10.7899 46.0268 10.5981Z",
+                    fill: "#0000FE"
+                }), (0,
+                a.jsx)(x.wA, {
+                    d: "M60.1974 7.47093C59.8175 7.29809 59.3919 7.21094 58.9206 7.21094C57.8466 7.21094 57.044 7.58713 56.5141 8.33952C56.497 8.36421 56.4813 8.39181 56.4655 8.4165V7.40993H54.3047V17.0021H56.4655V11.6657C56.4655 10.8392 56.6626 10.2336 57.0554 9.84719C57.4481 9.46083 57.9466 9.26765 58.5493 9.26765C58.8249 9.26765 59.0663 9.30832 59.2762 9.38821C59.4862 9.4681 59.6761 9.60172 59.8461 9.78764L61.2614 8.30901C60.9344 7.92265 60.5802 7.64232 60.2003 7.46948L60.1974 7.47093Z",
+                    fill: "#0000FE"
+                }), (0,
+                a.jsx)(x.wA, {
+                    d: "M72.6819 5.0205C72.0463 4.38867 71.3037 3.89483 70.451 3.54188C69.5998 3.18892 68.6758 3.01172 67.6803 3.01172H62.4531V17.0006H67.7189C68.7015 17.0006 69.6184 16.8248 70.4696 16.4704C71.3208 16.1175 72.062 15.6251 72.6905 14.9918C73.3189 14.3585 73.8102 13.6163 74.1644 12.7637C74.5186 11.9111 74.6942 10.9917 74.6942 10.0054C74.6942 9.01919 74.5171 8.08379 74.1644 7.23699C73.8102 6.39165 73.316 5.65233 72.6805 5.01905L72.6819 5.0205ZM71.7778 12.556C71.3779 13.2953 70.8209 13.8719 70.1083 14.2844C69.3942 14.6969 68.5658 14.9047 67.6218 14.9047H64.714V5.11056H67.6218C68.5515 5.11056 69.3742 5.31681 70.0883 5.73077C70.8024 6.14327 71.3622 6.717 71.7678 7.44905C72.1734 8.18256 72.3777 9.0279 72.3777 9.98654C72.3777 10.9452 72.1777 11.8152 71.7778 12.5545V12.556Z",
+                    fill: "#0000FE"
+                }), (0,
+                a.jsx)(x.wA, {
+                    d: "M82.047 7.47093C81.6671 7.29809 81.2415 7.21094 80.7702 7.21094C79.6962 7.21094 78.8936 7.58713 78.3637 8.33952C78.3466 8.36421 78.3309 8.39181 78.3152 8.4165V7.40993H76.1543V17.0021H78.3152V11.6657C78.3152 10.8392 78.5123 10.2336 78.905 9.84719C79.2978 9.46083 79.7962 9.26765 80.3989 9.26765C80.6745 9.26765 80.9159 9.30832 81.1259 9.38821C81.3358 9.4681 81.5258 9.60172 81.6957 9.78764L83.1111 8.30901C82.784 7.92265 82.4298 7.64232 82.0499 7.46948L82.047 7.47093Z",
+                    fill: "#0000FE"
+                }), (0,
+                a.jsx)(x.wA, {
+                    d: "M90.6361 7.87036C89.8891 7.43026 89.0508 7.21094 88.121 7.21094C87.1913 7.21094 86.3715 7.43462 85.626 7.88053C84.879 8.32644 84.2863 8.92341 83.8479 9.66854C83.4094 10.4151 83.1895 11.2547 83.1895 12.1871C83.1895 13.1196 83.4094 13.9664 83.8479 14.7246C84.2863 15.4843 84.879 16.0871 85.626 16.533C86.3729 16.9789 87.2041 17.2026 88.121 17.2026C89.0379 17.2026 89.8891 16.9803 90.6361 16.533C91.383 16.0871 91.9757 15.4843 92.4142 14.7246C92.8526 13.965 93.0726 13.1196 93.0726 12.1871C93.0726 11.2547 92.8526 10.4122 92.4142 9.65837C91.9757 8.90598 91.383 8.30901 90.6361 7.87036ZM90.5075 13.6861C90.2776 14.1262 89.9577 14.469 89.5449 14.7159C89.1322 14.9628 88.6566 15.0863 88.121 15.0863C87.5855 15.0863 87.1284 14.9628 86.7157 14.7159C86.3029 14.469 85.9816 14.1262 85.7531 13.6861C85.5231 13.246 85.4089 12.7463 85.4089 12.1871C85.4089 11.6279 85.5231 11.1355 85.7531 10.7085C85.9816 10.2829 86.3029 9.94596 86.7157 9.69904C87.1284 9.45212 87.5969 9.32866 88.121 9.32866C88.6452 9.32866 89.1293 9.45212 89.5364 9.69904C89.942 9.94596 90.2633 10.2815 90.499 10.7085C90.7346 11.1355 90.8532 11.6279 90.8532 12.1871C90.8532 12.7463 90.7389 13.246 90.509 13.6861H90.5075Z",
+                    fill: "#0000FE"
+                }), (0,
+                a.jsx)(x.wA, {
+                    d: "M103.401 9.67871C103.001 8.92632 102.458 8.32644 101.77 7.88053C101.081 7.43462 100.311 7.21094 99.4603 7.21094C98.7533 7.21094 98.1178 7.36781 97.5536 7.68009C97.1709 7.89215 96.8452 8.16086 96.571 8.48041V7.41138H94.4102V21.0008H96.571V15.952C96.8381 16.2643 97.1594 16.5257 97.5336 16.7334C98.0963 17.0457 98.739 17.2026 99.4588 17.2026C100.31 17.2026 101.08 16.9832 101.768 16.5431C102.457 16.103 102.999 15.5075 103.399 14.7551C103.799 14.0027 103.999 13.1603 103.999 12.2264C103.999 11.2924 103.799 10.4311 103.399 9.67871H103.401ZM101.437 13.7268C101.207 14.1669 100.893 14.5097 100.494 14.7566C100.094 15.0035 99.6331 15.127 99.1089 15.127C98.5848 15.127 98.1192 15.0035 97.7136 14.7566C97.308 14.5097 96.9923 14.1669 96.771 13.7268C96.5482 13.2867 96.4368 12.7812 96.4368 12.2075C96.4368 11.6337 96.5482 11.1283 96.771 10.6882C96.9938 10.2481 97.308 9.90529 97.7136 9.65837C98.1192 9.41145 98.5848 9.28799 99.1089 9.28799C99.6331 9.28799 100.094 9.41145 100.494 9.65837C100.894 9.90529 101.208 10.2481 101.437 10.6882C101.665 11.1283 101.781 11.6337 101.781 12.2075C101.781 12.7812 101.667 13.2867 101.437 13.7268Z",
+                    fill: "#0000FE"
+                }), (0,
+                a.jsx)(x.wA, {
+                    d: "M42.1228 3.36008L41.4602 2.68613L41.1888 2.41016L40.9174 2.68613L40.2548 3.36008C39.7406 3.88297 39.7406 4.73413 40.2548 5.25848C40.7689 5.78137 41.6058 5.78137 42.1214 5.25848C42.6356 4.73558 42.6356 3.88443 42.1214 3.36008H42.1228Z",
+                    fill: "#0000FE"
+                })]
+            })]
+        })
+          , u = () => (0,
+        a.jsxs)(x.BS, {
+            width: 18,
+            height: 18,
+            viewBox: "0 0 256 256",
+            children: [(0,
+            a.jsx)(x.jl, {
+                cx: 128,
+                cy: 128,
+                r: 128,
+                fill: "#3468d1"
+            }), (0,
+            a.jsx)(x.wA, {
+                d: "M265.727,717.735a12.652,12.652,0,1,1-12.654,12.652A12.654,12.654,0,0,1,265.727,717.735Zm30.546,0a12.652,12.652,0,1,1-12.655,12.652A12.654,12.654,0,0,1,296.273,717.735Zm0,53.226a12.652,12.652,0,1,1-12.655,12.652A12.653,12.653,0,0,1,296.273,770.961Zm-30.546,0a12.652,12.652,0,1,1-12.654,12.652A12.653,12.653,0,0,1,265.727,770.961Zm-15.709-26.177a12.652,12.652,0,1,1-12.654,12.652A12.654,12.654,0,0,1,250.018,744.784Zm61.964,0a12.652,12.652,0,1,1-12.655,12.652A12.653,12.653,0,0,1,311.982,744.784Zm14.4-21.813a7.853,7.853,0,1,1-7.855,7.853A7.853,7.853,0,0,1,326.382,722.971Zm0,52.352a7.853,7.853,0,1,1-7.855,7.853A7.853,7.853,0,0,1,326.382,775.323Zm-90.764,0a7.853,7.853,0,1,1-7.854,7.853A7.854,7.854,0,0,1,235.618,775.323Zm0-52.352a7.853,7.853,0,1,1-7.854,7.853A7.854,7.854,0,0,1,235.618,722.971ZM281,696.794a7.853,7.853,0,1,1-7.855,7.853A7.853,7.853,0,0,1,281,696.794ZM281,801.5a7.853,7.853,0,1,1-7.855,7.853A7.853,7.853,0,0,1,281,801.5Zm33.6,7.853a6.544,6.544,0,1,1-6.546,6.544A6.544,6.544,0,0,1,314.6,809.353Zm-67.2,0a6.544,6.544,0,1,1-6.546,6.544A6.544,6.544,0,0,1,247.4,809.353Zm0-117.794a6.544,6.544,0,1,1-6.546,6.544A6.544,6.544,0,0,1,247.4,691.559Zm67.2,0a6.544,6.544,0,1,1-6.546,6.544A6.544,6.544,0,0,1,314.6,691.559Zm34.036,58.461a6.544,6.544,0,1,1-6.545,6.544A6.545,6.545,0,0,1,348.636,750.02Zm-135.273,0a6.544,6.544,0,1,1-6.545,6.544A6.544,6.544,0,0,1,213.363,750.02Zm-4.8-40.138a5.236,5.236,0,1,1-5.236,5.235A5.236,5.236,0,0,1,208.563,709.882Zm0,83.765a5.236,5.236,0,1,1-5.236,5.235A5.236,5.236,0,0,1,208.563,793.647Zm144.873,0a5.236,5.236,0,1,1-5.236,5.235A5.236,5.236,0,0,1,353.436,793.647Zm0-83.765a5.236,5.236,0,1,1-5.236,5.235A5.236,5.236,0,0,1,353.436,709.882ZM281,668a5.236,5.236,0,1,1-5.237,5.235A5.235,5.235,0,0,1,281,668Zm0,167.529a5.236,5.236,0,1,1-5.237,5.236A5.236,5.236,0,0,1,281,835.529Zm46.254-3.49a4.363,4.363,0,1,1-4.363,4.363A4.363,4.363,0,0,1,327.254,832.039Zm-92.509,0a4.363,4.363,0,1,1-4.363,4.363A4.363,4.363,0,0,1,234.745,832.039Zm0-158.8a4.363,4.363,0,1,1-4.363,4.363A4.363,4.363,0,0,1,234.745,673.235Zm92.509,0a4.363,4.363,0,1,1-4.363,4.363A4.363,4.363,0,0,1,327.254,673.235Zm45.382,79.4A4.363,4.363,0,1,1,368.273,757,4.363,4.363,0,0,1,372.636,752.637Zm-183.273,0A4.363,4.363,0,1,1,185,757,4.363,4.363,0,0,1,189.363,752.637Z",
+                fill: "#fff",
+                fillRule: "evenodd",
+                transform: "translate(-152 -629)"
+            })]
+        })
+          , h = e => {
+            let {size: t=16, color: s="#666666"} = e;
+            return (0,
+            a.jsx)(x.BS, {
+                width: t,
+                height: t,
+                viewBox: "0 0 24 24",
+                children: (0,
+                a.jsx)(x.wA, {
+                    d: "M11.25 16.75H12.75V11H11.25V16.75ZM12 9.2885C12.2288 9.2885 12.4207 9.21108 12.5755 9.05625C12.7303 8.90142 12.8077 8.70958 12.8077 8.48075C12.8077 8.25192 12.7303 8.06008 12.5755 7.90525C12.4207 7.75058 12.2288 7.67325 12 7.67325C11.7712 7.67325 11.5793 7.75058 11.4245 7.90525C11.2697 8.06008 11.1923 8.25192 11.1923 8.48075C11.1923 8.70958 11.2697 8.90142 11.4245 9.05625C11.5793 9.21108 11.7712 9.2885 12 9.2885ZM12.0017 21.5C10.6877 21.5 9.45267 21.2507 8.2965 20.752C7.14033 20.2533 6.13467 19.5766 5.2795 18.7218C4.42433 17.8669 3.74725 16.8617 3.24825 15.706C2.74942 14.5503 2.5 13.3156 2.5 12.0017C2.5 10.6877 2.74933 9.45267 3.248 8.2965C3.74667 7.14033 4.42342 6.13467 5.27825 5.2795C6.13308 4.42433 7.13833 3.74725 8.294 3.24825C9.44967 2.74942 10.6844 2.5 11.9983 2.5C13.3123 2.5 14.5473 2.74933 15.7035 3.248C16.8597 3.74667 17.8653 4.42342 18.7205 5.27825C19.5757 6.13308 20.2528 7.13833 20.7518 8.294C21.2506 9.44967 21.5 10.6844 21.5 11.9983C21.5 13.3123 21.2507 14.5473 20.752 15.7035C20.2533 16.8597 19.5766 17.8653 18.7218 18.7205C17.8669 19.5757 16.8617 20.2528 15.706 20.7518C14.5503 21.2506 13.3156 21.5 12.0017 21.5ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z",
+                    fill: s
+                })
+            })
+        }
+        ;
+        x.KQ.register({
+            family: "Outfit",
+            fonts: [{
+                src: "/fonts/Outfit/static/Outfit-Regular.ttf",
+                fontWeight: "normal"
+            }, {
+                src: "/fonts/Outfit/static/Outfit-Bold.ttf",
+                fontWeight: "bold"
+            }]
+        }),
+        x.KQ.registerHyphenationCallback(e => /^[0-9a-zA-Z]{15,}$/.test(e) ? e.split("") : [e]);
+        let C = x.vv.create({
+            page: {
+                paddingHorizontal: 33,
+                paddingVertical: 39,
+                backgroundColor: "#F8F9FA",
+                fontFamily: "Outfit",
+                color: "#0A0A0A"
+            },
+            logoContainer: {
+                padding: 24
+            },
+            card: {
+                backgroundColor: "#fff",
+                borderRadius: 12
+            },
+            header: {
+                fontSize: 14,
+                marginBottom: 20
+            },
+            section: {
+                paddingTop: 24,
+                paddingHorizontal: 24,
+                paddingBottom: 12,
+                backgroundColor: "#F3F8F5",
+                borderRadius: 16,
+                marginBottom: 24
+            },
+            label: {
+                fontSize: 10,
+                color: "#666",
+                fontWeight: 500,
+                marginBottom: 2
+            },
+            valueBig: {
+                fontSize: 14,
+                marginBottom: 4
+            },
+            value: {
+                fontSize: 10,
+                marginBottom: 2
+            },
+            walletValue: {
+                fontSize: 10,
+                marginBottom: 2,
+                width: "100%"
+            },
+            row: {
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center"
+            },
+            info: {
+                fontSize: 10,
+                color: "#666"
+            },
+            nextHeader: {
+                fontSize: 14,
+                marginBottom: 10
+            },
+            nextText: {
+                fontSize: 10,
+                marginBottom: 0,
+                color: "#666"
+            },
+            logo: {
+                width: 120,
+                alignSelf: "center"
+            },
+            cardDivider: {
+                height: 1,
+                backgroundColor: "#E5E5E5",
+                marginVertical: 16
+            }
+        })
+          , f = e => {
+            let {estimatedClaim: t, estimatedShare: s, submittedSolutions: l, walletAddress: r} = e;
+            return (0,
+            a.jsx)(x.yo, {
+                children: (0,
+                a.jsx)(x.YW, {
+                    size: "A4",
+                    style: C.page,
+                    children: (0,
+                    a.jsxs)(x.Ss, {
+                        style: C.card,
+                        children: [(0,
+                        a.jsx)(x.Ss, {
+                            style: C.logoContainer,
+                            children: (0,
+                            a.jsx)(m, {})
+                        }), (0,
+                        a.jsx)(x.Ss, {
+                            style: {
+                                height: 1,
+                                backgroundColor: "#E5E5E5",
+                                marginBottom: 18,
+                                width: "100%"
+                            }
+                        }), (0,
+                        a.jsxs)(x.Ss, {
+                            style: {
+                                paddingHorizontal: 24,
+                                paddingBottom: 24
+                            },
+                            children: [(0,
+                            a.jsx)(x.EY, {
+                                style: C.header,
+                                children: "Scavenger Mine summary"
+                            }), (0,
+                            a.jsxs)(x.Ss, {
+                                style: C.section,
+                                children: [(0,
+                                a.jsxs)(x.Ss, {
+                                    style: C.row,
+                                    children: [(0,
+                                    a.jsxs)(x.Ss, {
+                                        children: [(0,
+                                        a.jsx)(x.EY, {
+                                            style: C.label,
+                                            children: "Your allocation:"
+                                        }), (0,
+                                        a.jsx)(x.EY, {
+                                            style: C.valueBig,
+                                            children: t
+                                        })]
+                                    }), (0,
+                                    a.jsxs)(x.Ss, {
+                                        children: [(0,
+                                        a.jsx)(x.EY, {
+                                            style: C.label,
+                                            children: "Your share:"
+                                        }), (0,
+                                        a.jsx)(x.EY, {
+                                            style: C.valueBig,
+                                            children: s
+                                        })]
+                                    })]
+                                }), (0,
+                                a.jsxs)(x.Ss, {
+                                    style: {
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: 6,
+                                        marginBottom: 8
+                                    },
+                                    children: [(0,
+                                    a.jsx)(h, {}), (0,
+                                    a.jsx)(x.EY, {
+                                        style: C.info,
+                                        children: "Based on your successful solutions"
+                                    })]
+                                }), (0,
+                                a.jsx)(x.Ss, {
+                                    style: {
+                                        height: 1,
+                                        backgroundColor: "#E5E5E5",
+                                        marginTop: 8,
+                                        marginBottom: 16
+                                    }
+                                }), (0,
+                                a.jsxs)(x.Ss, {
+                                    style: {
+                                        flexDirection: "row"
+                                    },
+                                    children: [(0,
+                                    a.jsx)(x.EY, {
+                                        style: C.label,
+                                        children: "Your successful solutions:\xa0\xa0"
+                                    }), (0,
+                                    a.jsx)(x.EY, {
+                                        style: C.value,
+                                        children: l
+                                    })]
+                                }), (0,
+                                a.jsx)(x.Ss, {
+                                    style: C.cardDivider
+                                }), (0,
+                                a.jsxs)(x.Ss, {
+                                    style: [C.row],
+                                    children: [(0,
+                                    a.jsx)(x.EY, {
+                                        style: C.label,
+                                        children: "Blockchain network:"
+                                    }), (0,
+                                    a.jsxs)(x.Ss, {
+                                        style: {
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                            gap: 4
+                                        },
+                                        children: [(0,
+                                        a.jsx)(u, {}), (0,
+                                        a.jsx)(x.EY, {
+                                            style: C.value,
+                                            children: "Cardano"
+                                        })]
+                                    })]
+                                }), (0,
+                                a.jsx)(x.Ss, {
+                                    style: C.cardDivider
+                                }), (0,
+                                a.jsx)(x.Ss, {
+                                    style: [C.row],
+                                    children: (0,
+                                    a.jsx)(x.EY, {
+                                        style: C.label,
+                                        children: "Destination address:"
+                                    })
+                                }), (0,
+                                a.jsx)(x.Ss, {
+                                    style: C.row,
+                                    break: !0,
+                                    children: (0,
+                                    a.jsx)(x.EY, {
+                                        style: C.walletValue,
+                                        children: r.replace(/(.{20})/g, "$1​")
+                                    })
+                                }), (0,
+                                a.jsx)(x.Ss, {
+                                    style: C.cardDivider
+                                })]
+                            }), (0,
+                            a.jsx)(x.EY, {
+                                style: C.nextHeader,
+                                children: "What happens next?"
+                            }), (0,
+                            a.jsx)(x.EY, {
+                                style: C.nextText,
+                                children: "After this claim phase ends, the Redemption period will start. You’ll then be able to redeem allocations you claimed during both Glacier Drop and Scavenger Mine."
+                            })]
+                        })]
+                    })
+                })
+            })
+        }
+        ;
+        var b = s(8282)
+          , p = s(9628)
+          , g = s(5438)
+          , j = s(6950)
+          , y = s(8387);
+        let v = e => {
+            let {setShowEmailModal: t, sendEmail: s} = e
+              , [r,i] = (0,
+            d.useState)("")
+              , [o,c] = (0,
+            d.useState)("")
+              , [x,m] = (0,
+            d.useState)(void 0)
+              , [u,h] = (0,
+            d.useState)(void 0)
+              , [C,f] = (0,
+            d.useState)(!1)
+              , [b,p] = (0,
+            d.useState)(!1);
+            return (0,
+            a.jsx)(g.A, {
+                isOpen: !0,
+                onClose: () => {
+                    t(!1)
+                }
+                ,
+                children: (0,
+                a.jsxs)(n.A, {
+                    title: "Receive an email receipt of your claim",
+                    footerButtons: [{
+                        text: "Cancel",
+                        variant: "outline",
+                        onClick: () => t(!1)
+                    }, {
+                        text: "Submit",
+                        onClick: () => {
+                            let e = !0;
+                            (0,
+                            y.B9)(r) || (m("Please enter a valid email address."),
+                            e = !1),
+                            (0,
+                            y.B9)(o) || (h("Please enter a valid email address."),
+                            e = !1),
+                            r !== o && (h("Make sure the email addresses match."),
+                            e = !1),
+                            e && s(r, b)
+                        }
+                        ,
+                        disabled: !C || !r || !o || !!x || !!u
+                    }],
+                    children: [(0,
+                    a.jsx)(j.A, {
+                        label: "Email",
+                        type: "email",
+                        value: r,
+                        onChange: e => {
+                            i(e.target.value),
+                            x && m(void 0),
+                            o && e.target.value !== o ? h("Emails do not match.") : h(void 0)
+                        }
+                        ,
+                        onBlur: () => {
+                            m((0,
+                            y.B9)(r) ? void 0 : "Please enter a valid email address.")
+                        }
+                        ,
+                        placeholder: "Enter your email",
+                        required: !0,
+                        error: x,
+                        className: "border border-color-text-text-warning py-4"
+                    }), (0,
+                    a.jsxs)("div", {
+                        className: "relative",
+                        children: [(0,
+                        a.jsx)(j.A, {
+                            label: "Confirm Email",
+                            type: "email",
+                            value: o,
+                            onChange: e => {
+                                c(e.target.value),
+                                u && h(void 0),
+                                r && e.target.value !== r ? h("Make sure the email addresses match") : h(void 0)
+                            }
+                            ,
+                            placeholder: "Confirm your email",
+                            required: !0,
+                            error: u,
+                            variant: u ? "error" : r && o && r === o ? "success" : "outlined",
+                            className: "py-4"
+                        }), (0,
+                        a.jsxs)(a.Fragment, {
+                            children: [r && o && r === o && (0,
+                            a.jsx)(l.iBF, {
+                                className: "absolute top-10 right-6 text-icon-icon-success",
+                                size: 24
+                            }), r && o && r !== o && (0,
+                            a.jsx)(l.$S7, {
+                                className: "absolute top-10 right-6 text-icon-icon-error",
+                                size: 24
+                            })]
+                        })]
+                    }), (0,
+                    a.jsx)("div", {
+                        className: "p-4 flex items-start gap-2 text-text-text-primary w-full",
+                        children: (0,
+                        a.jsxs)("label", {
+                            className: "flex gap-2 items-start cursor-pointer w-full",
+                            children: [(0,
+                            a.jsx)("input", {
+                                type: "checkbox",
+                                id: "accept-terms",
+                                checked: C,
+                                onChange: e => f(e.target.checked),
+                                className: "border-icon-icon-primary rounded accent-brand-midnight-blue-700 mt-1 w-4 h-4"
+                            }), (0,
+                            a.jsx)("span", {
+                                className: "text-xs text-text-text-primary text-justify w-full",
+                                children: "By checking this box, I agree to allow Midnight TGE to store and process the personal data submitted on this form in accordance with the Midnight TGE Privacy Policy. Note: emails will come from info@midnighttge.io for whitelisting purposes.*"
+                            })]
+                        })
+                    }), (0,
+                    a.jsx)("div", {
+                        className: "p-4 flex items-start gap-2 text-text-text-primary w-full",
+                        children: (0,
+                        a.jsxs)("label", {
+                            className: "flex gap-2 items-start cursor-pointer w-full",
+                            children: [(0,
+                            a.jsx)("input", {
+                                type: "checkbox",
+                                id: "accept-terms",
+                                checked: b,
+                                onChange: e => p(e.target.checked),
+                                className: "border-icon-icon-primary rounded accent-brand-midnight-blue-700 mt-1 w-4 h-4"
+                            }), (0,
+                            a.jsx)("span", {
+                                className: "text-xs text-text-text-primary text-justify w-full",
+                                children: "I would like to receive communications from Midnight TGE about claim updates and resources."
+                            })]
+                        })
+                    })]
+                })
+            })
+        }
+        ;
+        var w = s(898);
+        let N = e => {
+            let {email: t, hasSubscribed: s, onClose: l} = e
+              , r = (0,
+            a.jsxs)("div", {
+                className: "flex flex-row items-center gap-2 px-6 h-[71px]",
+                children: [(0,
+                a.jsx)(w.yjt, {
+                    className: "text-icon-icon-success"
+                }), (0,
+                a.jsx)("h2", {
+                    className: "text-lg font-semibold",
+                    children: "Thank you"
+                })]
+            });
+            return (0,
+            a.jsx)(g.A, {
+                isOpen: !0,
+                onClose: l,
+                children: (0,
+                a.jsxs)(n.A, {
+                    padding: "none",
+                    header: r,
+                    footerClassName: "p-6",
+                    footerButtons: [{
+                        text: "Close",
+                        onClick: l,
+                        variant: "outline"
+                    }],
+                    bodyClassName: "text-lg p-6",
+                    children: [(0,
+                    a.jsx)("div", {
+                        children: "A receipt of your claim has been sent to:"
+                    }), (0,
+                    a.jsx)("div", {
+                        className: "font-semibold",
+                        children: t
+                    }), s && (0,
+                    a.jsx)("div", {
+                        className: "mt-8",
+                        children: "You have also been successfully subscribed to Midnight TGE communications."
+                    })]
+                })
+            })
+        }
+        ;
+        var S = s(1345)
+          , A = s(2408)
+          , M = s(7334)
+          , Z = s(9778);
+        let E = e => {
+            let {estimatedClaim: t, estimatedShare: s, submittedSolutions: l, walletAddress: r} = e;
+            return (0,
+            a.jsx)(Z.A, {
+                pointer: !0,
+                fullWidth: !0,
+                startSlot: (0,
+                a.jsx)(x.XP, {
+                    document: (0,
+                    a.jsx)(f, {
+                        estimatedClaim: t,
+                        estimatedShare: s,
+                        submittedSolutions: l,
+                        walletAddress: r
+                    }),
+                    fileName: "ScavengerMineSummary.pdf",
+                    style: {
+                        textDecoration: "none",
+                        display: "block",
+                        width: "100%"
+                    },
+                    children: e => {
+                        let {loading: t, error: s} = e;
+                        return s ? "Error preparing PDF" : t ? "Preparing PDF..." : "Download"
+                    }
+                })
+            })
+        }
+          , k = e => {
+            let {estimatedClaim: t="0 NIGHT", estimatedShare: s="0.0%", submittedSolutions: r="0 / 720", allSubmittedSolutions: o="0", className: c, walletAddress: m=""} = e
+              , [u,h] = (0,
+            d.useState)(!1)
+              , [C,g] = (0,
+            d.useState)(!1)
+              , [j,y] = (0,
+            d.useState)("")
+              , [w,k] = (0,
+            d.useState)(!1)
+              , [H,_] = (0,
+            d.useState)(null)
+              , {callApi: B} = (0,
+            A._)()
+              , {callApi: D} = (0,
+            A._)()
+              , V = async function(e) {
+                let l = arguments.length > 1 && void 0 !== arguments[1] && arguments[1];
+                _(null);
+                try {
+                    let i, n = (0,
+                    a.jsx)(f, {
+                        estimatedClaim: t,
+                        estimatedShare: s,
+                        submittedSolutions: r,
+                        walletAddress: m
+                    }), o = await (0,
+                    x.x8)(n).toBlob(), c = await new Promise( (e, t) => {
+                        let s = new FileReader;
+                        s.onloadend = () => e(s.result),
+                        s.onerror = t,
+                        s.readAsDataURL(o)
+                    }
+                    ), d = await B( () => M.K.post("/receipt/send", {
+                        email: e,
+                        pdf: c
+                    }));
+                    if (l && (i = await D( () => M.K.post("/subscribe", {
+                        email: e
+                    }))),
+                    l && !i && _("Failed to subscribe to email notifications"),
+                    !d) {
+                        _("Failed to send email receipt"),
+                        h(!1);
+                        return
+                    }
+                    y(e),
+                    k(l && !!i),
+                    g(!0),
+                    h(!1)
+                } catch (e) {
+                    e instanceof Error ? _(e.message || "Unknown error sending email receipt") : _("Unknown error sending email receipt"),
+                    h(!1)
+                }
+            }
+              , {exportChallengeData: F} = (0,
+            S.C)();
+            return (0,
+            a.jsxs)(n.A, {
+                showFooterBorder: !1,
+                className: i()("bg-color-alert-success-50", c),
+                title: "Claim Overview",
+                children: [(0,
+                a.jsxs)("div", {
+                    className: "space-y-4",
+                    children: [(0,
+                    a.jsxs)("div", {
+                        className: "flex justify-between items-center border-b border-border-border-divider pb-4",
+                        children: [(0,
+                        a.jsxs)("div", {
+                            children: [(0,
+                            a.jsx)("span", {
+                                className: "block text-text-text-secondary text-xs mb-1",
+                                children: "Your claim:"
+                            }), (0,
+                            a.jsx)("span", {
+                                className: "text-text-text-primary text-base font-medium",
+                                children: t
+                            })]
+                        }), (0,
+                        a.jsxs)("div", {
+                            className: "text-right",
+                            children: [(0,
+                            a.jsx)("span", {
+                                className: "block text-text-text-secondary text-xs mb-1",
+                                children: "Your share:"
+                            }), (0,
+                            a.jsx)("span", {
+                                className: "text-text-text-primary text-base font-medium",
+                                children: s
+                            })]
+                        })]
+                    }), (0,
+                    a.jsxs)("div", {
+                        className: "flex justify-between items-center border-b border-border-border-divider pb-2",
+                        children: [(0,
+                        a.jsxs)("div", {
+                            className: "flex items-center text-xs",
+                            children: [(0,
+                            a.jsx)("span", {
+                                className: "text-text-text-secondary mr-1",
+                                children: "Your submitted solutions:"
+                            }), (0,
+                            a.jsx)("span", {
+                                className: "text-text-text-primary",
+                                children: r
+                            })]
+                        }), (0,
+                        a.jsxs)("div", {
+                            className: "flex items-center text-xs",
+                            children: [(0,
+                            a.jsx)("span", {
+                                className: "text-text-text-secondary mr-1",
+                                children: "All submitted solutions:"
+                            }), (0,
+                            a.jsx)("span", {
+                                className: "text-text-text-primary",
+                                children: o
+                            })]
+                        })]
+                    }), (0,
+                    a.jsxs)("div", {
+                        className: "flex justify-between items-center border-b border-border-border-divider pb-2",
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "flex items-center text-xs",
+                            children: (0,
+                            a.jsx)("span", {
+                                className: "text-text-text-secondary mr-1",
+                                children: "Destination address:"
+                            })
+                        }), (0,
+                        a.jsx)(p.A, {
+                            text: m,
+                            children: (0,
+                            a.jsx)(b.A, {
+                                startChars: 15,
+                                endChars: 3,
+                                text: m
+                            })
+                        })]
+                    })]
+                }), (0,
+                a.jsxs)("div", {
+                    className: "bg-white rounded-lg flex flex-col mt-6 p-6 gap-3",
+                    children: [(0,
+                    a.jsxs)("div", {
+                        className: "flex flex-col gap-3 ",
+                        children: [(0,
+                        a.jsx)("span", {
+                            className: "text-xs",
+                            children: "How would you like to receive a receipt of your claim? (Optional)"
+                        }), (0,
+                        a.jsxs)("div", {
+                            className: "flex gap-2",
+                            children: [(0,
+                            a.jsx)(E, {
+                                estimatedClaim: t,
+                                estimatedShare: s,
+                                submittedSolutions: r,
+                                walletAddress: m
+                            }), (0,
+                            a.jsx)(Z.A, {
+                                pointer: !0,
+                                fullWidth: !0,
+                                text: "Via email",
+                                variant: "outline",
+                                onClick: () => h(!0)
+                            })]
+                        })]
+                    }), (0,
+                    a.jsxs)("div", {
+                        className: "text-text-text-secondary text-xs flex flex-row gap-1 items-start pt-6",
+                        children: [(0,
+                        a.jsx)(l.$4v, {
+                            className: "inline-block mr-1",
+                            size: 24
+                        }), (0,
+                        a.jsxs)("div", {
+                            children: ["You can also", " ", (0,
+                            a.jsx)("a", {
+                                href: "#",
+                                onClick: F,
+                                className: "text-xs text-text-text-accent underline",
+                                children: "export"
+                            }), " ", "your mining records from your local storage as backup."]
+                        })]
+                    })]
+                }), u && (0,
+                a.jsx)(v, {
+                    setShowEmailModal: h,
+                    sendEmail: V
+                }), H && (0,
+                a.jsx)("div", {
+                    className: "text-red-600 text-xs mt-2",
+                    children: H
+                }), C && (0,
+                a.jsx)(N, {
+                    email: j,
+                    hasSubscribed: w,
+                    onClose: () => g(!1)
+                })]
+            })
+        }
+          , H = e => {
+            let {estimatedClaim: t="0 NIGHT", estimatedShare: s="0.0%", submittedSolutions: r="0 / 720", allSubmittedSolutions: d="0", updateInterval: x="Updated every 24 hours", className: m} = e
+              , {isSmallViewport: u} = (0,
+            c.A)();
+            return (0,
+            a.jsx)(n.A, {
+                showFooterBorder: !1,
+                className: i()("bg-color-surface-z-1", m),
+                header: (0,
+                a.jsxs)("div", {
+                    className: "flex justify-between items-center text-xs",
+                    children: [(0,
+                    a.jsx)("span", {
+                        className: "text-text-text-primary font-semibold",
+                        children: "Snapshot"
+                    }), (0,
+                    a.jsxs)("div", {
+                        className: "flex items-center",
+                        children: [(0,
+                        a.jsx)("span", {
+                            className: "text-text-text-secondary mr-1",
+                            children: x
+                        }), (0,
+                        a.jsx)(l.prl, {
+                            "data-tooltip-id": "snapshot-tooltip",
+                            className: "cursor-pointer",
+                            color: "var(--color-icon-icon-secondary)",
+                            size: "1.5rem"
+                        }), (0,
+                        a.jsx)(o.A, {
+                            id: "snapshot-tooltip",
+                            header: "Snapshot Information",
+                            children: (0,
+                            a.jsx)("div", {
+                                className: "py-6",
+                                children: "This snapshot shows your current mining statistics and estimated rewards based on your submitted solutions. Data is updated every 24 hours."
+                            })
+                        })]
+                    })]
+                }),
+                children: (0,
+                a.jsxs)("div", {
+                    className: "space-y-8 py-2",
+                    children: [(0,
+                    a.jsxs)("div", {
+                        className: "flex justify-between items-center border-b border-gray-200 pb-4",
+                        children: [(0,
+                        a.jsxs)("div", {
+                            children: [(0,
+                            a.jsx)("span", {
+                                className: "block text-text-text-secondary text-xs mb-1",
+                                children: "Your estimated claim:"
+                            }), (0,
+                            a.jsx)("span", {
+                                className: "text-text-text-primary text-base font-medium",
+                                children: t
+                            })]
+                        }), (0,
+                        a.jsxs)("div", {
+                            className: "text-right",
+                            children: [(0,
+                            a.jsx)("span", {
+                                className: "block text-text-text-secondary text-xs mb-1",
+                                children: "Your estimated share:"
+                            }), (0,
+                            a.jsx)("span", {
+                                className: "text-text-text-primary text-base font-medium",
+                                children: s
+                            })]
+                        })]
+                    }), (0,
+                    a.jsxs)("div", {
+                        className: "flex justify-between items-center pb-8 md:pb-2 border-b border-gray-200  md:border-0",
+                        children: [(0,
+                        a.jsxs)("div", {
+                            className: "flex items-center text-xs",
+                            children: [(0,
+                            a.jsx)("span", {
+                                className: "text-text-text-secondary mr-1",
+                                children: "Your submitted solutions:"
+                            }), (0,
+                            a.jsx)("span", {
+                                className: "text-text-text-primary",
+                                children: r
+                            })]
+                        }), !u && (0,
+                        a.jsxs)("div", {
+                            className: "flex items-center text-xs",
+                            children: [(0,
+                            a.jsx)("span", {
+                                className: "text-text-text-secondary mr-1",
+                                children: "All submitted solutions:"
+                            }), (0,
+                            a.jsx)("span", {
+                                className: "text-text-text-primary",
+                                children: d
+                            })]
+                        })]
+                    }), u && (0,
+                    a.jsx)("div", {
+                        className: "flex justify-between items-center pb-2",
+                        children: (0,
+                        a.jsxs)("div", {
+                            className: "flex items-center text-xs",
+                            children: [(0,
+                            a.jsx)("span", {
+                                className: "text-text-text-secondary mr-1",
+                                children: "All submitted solutions:"
+                            }), (0,
+                            a.jsx)("span", {
+                                className: "text-text-text-primary",
+                                children: d
+                            })]
+                        })
+                    })]
+                })
+            })
+        }
+    }
+}]);

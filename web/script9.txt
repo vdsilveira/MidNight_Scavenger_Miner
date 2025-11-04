@@ -1,0 +1,457 @@
+"use strict";
+(self.webpackChunk_N_E = self.webpackChunk_N_E || []).push([[6629], {
+    2132: (e, t, r) => {
+        r.d(t, {
+            default: () => d
+        });
+        var l = r(5155)
+          , n = r(5203)
+          , o = r.n(n)
+          , a = r(6784);
+        let i = {
+            primary: "rounded font-medium bg-buttons-fill-primary hover:bg-blue-700 text-white disabled:bg-buttons-fill-disabled disabled:text-buttons-content-disabled text-sm px-4 py-[13px]",
+            outline: "rounded font-medium border border-buttons-border-secondary bg-white hover:bg-gray-50 text-buttons-content-secondary focus:ring-blue-500 text-sm px-4 py-[12px]",
+            cta: "rounded font-medium bg-buttons-fill-primary hover:bg-blue-700 text-white disabled:bg-buttons-fill-disabled disabled:text-buttons-content-disabled text-sm px-4 py-[22px]",
+            link: "underline font-normal text-sm p-0 text-blue-600 hover:underline p-0 cursor-pointer",
+            plain: "font-normal text-text-text-accent border-buttons-border-secondary text-buttons-content-secondary cursor-pointer rounded-none text-xs px-4 py-[14px]",
+            "plain-md": "font-normal text-text-text-accent border-buttons-border-secondary text-buttons-content-secondary cursor-pointer rounded-none text-base"
+        }
+          , d = e => {
+            let {text: t, fullWidth: r, pointer: n, variant: d="primary", startSlot: s, gaTracking: c, ...u} = e;
+            return (0,
+            l.jsxs)("button", {
+                ...u,
+                className: o()("focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed gap-1", i[d], {
+                    "w-full": r,
+                    "cursor-pointer": n,
+                    "inline-flex items-center": s
+                }),
+                onClick: e => {
+                    if (c) {
+                        let {step: e, buttonName: t} = c;
+                        (0,
+                        a.sendGAEvent)("event", "".concat(e, "_").concat(t))
+                    }
+                    (null == u ? void 0 : u.onClick) && u.onClick(e)
+                }
+                ,
+                children: [s, t]
+            })
+        }
+    }
+    ,
+    2136: (e, t, r) => {
+        r.d(t, {
+            A: () => s
+        });
+        var l = r(5155)
+          , n = r(5203)
+          , o = r.n(n)
+          , a = r(2115)
+          , i = r(9778);
+        let d = (0,
+        a.forwardRef)( (e, t) => {
+            let {children: r, header: n, title: a, headerClassName: d, showHeaderBorder: s=!0, footer: c, footerButtons: u, showFooterBorder: x=!0, padding: m="large", variant: f="default", rounded: p=!0, scroll: b=!1, scrollBody: h=!1, indentBorders: g=!1, footerClassName: w, bodyClassName: v, className: y, stickyFooter: j=!1, ...k} = e
+              , N = null == y ? void 0 : y.includes("bg-")
+              , C = o()("flex flex-col", {
+                "rounded-lg": p,
+                "overflow-y-auto": b,
+                "overflow-hidden": !b
+            }, {
+                default: N ? "" : "bg-white",
+                bordered: "".concat(N ? "" : "bg-white", " border border-gray-200"),
+                elevated: "".concat(N ? "" : "bg-white", " shadow-md")
+            }[f], y)
+              , A = {
+                "p-6": "large" === m,
+                "p-4": "medium" === m,
+                "p-2": "small" === m,
+                "p-0": "none" === m
+            }
+              , E = o()({
+                ...A,
+                "w-full": !0,
+                "border-b border-gray-200": s && !g,
+                "relative after:absolute after:bottom-0 after:left-4 after:right-4 after:h-px after:bg-gray-200": s && g
+            }, d)
+              , S = o()({
+                ...A,
+                "w-full": !0,
+                "flex [&>*]:flex-1 gap-2": !0,
+                "border-t border-gray-200": x && !g,
+                "relative after:absolute after:top-0 after:left-4 after:right-4 after:h-px after:bg-gray-200": x && g,
+                "fixed bottom-0 left-0 right-0 bg-white": j
+            }, w)
+              , L = o()("w-full flex-1", A, {
+                "overflow-y-auto": h
+            }, v);
+            return (0,
+            l.jsxs)("div", {
+                ref: t,
+                className: C,
+                ...k,
+                children: [n && (0,
+                l.jsx)("div", {
+                    className: E,
+                    children: n
+                }), a && (0,
+                l.jsx)("div", {
+                    className: o()(E, "h-[71px]"),
+                    children: (0,
+                    l.jsx)("h2", {
+                        className: "text-lg text-left font-semibold leading-[24px]",
+                        children: a
+                    })
+                }), (0,
+                l.jsx)("div", {
+                    className: L,
+                    children: r
+                }), c && (0,
+                l.jsx)("div", {
+                    className: S,
+                    children: c
+                }), u && (0,
+                l.jsx)("div", {
+                    className: S,
+                    children: u.map( (e, t) => (0,
+                    l.jsx)(i.A, {
+                        ...e
+                    }, t))
+                })]
+            })
+        }
+        );
+        d.displayName = "Card";
+        let s = d
+    }
+    ,
+    2713: (e, t, r) => {
+        r.d(t, {
+            A: () => d
+        });
+        var l = r(2115);
+        let n = document.documentElement
+          , o = n ? parseFloat(getComputedStyle(document.documentElement).fontSize) : 16
+          , a = n && getComputedStyle(n).getPropertyValue("--breakpoint-md")
+          , i = a ? parseInt(a, 10) * o : 768
+          , d = () => {
+            let[e,t] = (0,
+            l.useState)({
+                width: 0,
+                height: 0,
+                isSmallViewport: !1
+            });
+            return (0,
+            l.useEffect)( () => {
+                let e = () => {
+                    t({
+                        width: window.innerWidth,
+                        height: window.innerHeight,
+                        isSmallViewport: window.innerWidth < i
+                    })
+                }
+                ;
+                return e(),
+                window.addEventListener("resize", e),
+                () => window.removeEventListener("resize", e)
+            }
+            , []),
+            e
+        }
+    }
+    ,
+    5438: (e, t, r) => {
+        r.d(t, {
+            A: () => s
+        });
+        var l = r(5155)
+          , n = r(8168)
+          , o = r(5203)
+          , a = r.n(o)
+          , i = r(2115)
+          , d = r(7650);
+        let s = e => {
+            let {children: t, closeOnOutsideClick: r=!0, hideCloseButton: o=!1, isOpen: s, onClose: c, position: u, size: x="md"} = e
+              , {isSmallViewport: m} = (0,
+            n.vh)()
+              , f = u || (m ? "bottom" : "center");
+            return ((0,
+            i.useEffect)( () => {
+                let e = e => {
+                    "Escape" === e.key && c()
+                }
+                ;
+                return s && (document.addEventListener("keydown", e),
+                document.body.style.overflow = "hidden"),
+                () => {
+                    document.removeEventListener("keydown", e),
+                    document.body.style.overflow = ""
+                }
+            }
+            , [s, c]),
+            s) ? (0,
+            d.createPortal)((0,
+            l.jsx)("div", {
+                className: a()("flex fixed inset-0 z-50 bg-black/50", {
+                    "items-center justify-center p-4": "center" === f,
+                    "justify-end": "right" === f,
+                    "items-end": "bottom" === f,
+                    "items-start": "top" === f
+                }),
+                onClick: e => {
+                    r && e.target === e.currentTarget && c()
+                }
+                ,
+                role: "dialog",
+                "aria-modal": "true",
+                children: (0,
+                l.jsxs)("div", {
+                    className: a()("relative shadow-xl text-text-text-primary", {
+                        "rounded-lg w-full scale-in max-h-full": "center" === f,
+                        "max-w-md": "center" === f && "sm" === x,
+                        "max-w-lg": "center" === f && "md" === x,
+                        "max-w-2xl": "center" === f && "lg" === x,
+                        "max-w-4xl": "center" === f && "xl" === x,
+                        "max-w-full mx-4": "center" === f && "full" === x,
+                        "h-full [&>*:not(button)]:h-full": "right" === f,
+                        "w-76": "right" === f && "sm" === x,
+                        "w-83": "right" === f && "md" === x,
+                        "w-[24rem]": "right" === f && "lg" === x,
+                        "w-[32rem]": "right" === f && "xl" === x,
+                        "w-full max-w-2xl": "right" === f && "full" === x,
+                        "w-full max-h-[95%] overflow-y-auto": "bottom" === f || "top" === f
+                    }),
+                    onClick: e => {
+                        let t = e.target;
+                        e.stopPropagation(),
+                        t.closest("[data-modal-close]") && c()
+                    }
+                    ,
+                    children: [t, !o && (0,
+                    l.jsx)("button", {
+                        type: "button",
+                        className: "absolute top-2.5 right-2.5 cursor-pointer text-icon-icon-primary focus:outline-none z-10",
+                        "aria-label": "Close modal",
+                        "data-modal-close": !0,
+                        children: (0,
+                        l.jsx)("svg", {
+                            className: "h-6 w-6",
+                            fill: "none",
+                            viewBox: "0 0 24 24",
+                            stroke: "currentColor",
+                            children: (0,
+                            l.jsx)("path", {
+                                strokeLinecap: "round",
+                                strokeLinejoin: "round",
+                                strokeWidth: 2,
+                                d: "M6 18L18 6M6 6l12 12"
+                            })
+                        })
+                    })]
+                })
+            }), document.body) : null
+        }
+    }
+    ,
+    6360: (e, t, r) => {
+        r.d(t, {
+            A: () => l.A
+        });
+        var l = r(2136)
+    }
+    ,
+    7470: (e, t, r) => {
+        r.d(t, {
+            A: () => i
+        });
+        var l = r(5155)
+          , n = r(5203)
+          , o = r.n(n)
+          , a = r(4424);
+        r(4205);
+        let i = e => {
+            let {children: t, footer: r, header: n, showFooterBorder: i, showHeaderBorder: d, ...s} = e;
+            return (0,
+            l.jsxs)(a.m_, {
+                place: "right-start",
+                variant: "light",
+                clickable: !0,
+                ...s,
+                style: {
+                    borderRadius: "4px",
+                    boxShadow: "0 0 20px rgba(0, 0, 0, 0.15), 0 0 6px rgba(0, 0, 0, 0.1)",
+                    padding: "0",
+                    width: "350px",
+                    zIndex: 1e3,
+                    ...s.style
+                },
+                children: [n && (0,
+                l.jsx)("div", {
+                    className: o()({
+                        "flex items-center gap-1 pt-6 px-4 text-base text-text-text-primary": !0,
+                        "border-b border-gray-200": d
+                    }),
+                    children: n
+                }), (0,
+                l.jsx)("div", {
+                    className: "flex-1 px-4 text-sm text-text-text-secondary",
+                    children: t
+                }), r && (0,
+                l.jsx)("div", {
+                    className: o()({
+                        "pb-6 px-4": !0,
+                        "flex [&>*]:flex-1 gap-2": !0,
+                        "border-t border-gray-200": i
+                    }),
+                    children: r
+                })]
+            })
+        }
+    }
+    ,
+    8168: (e, t, r) => {
+        r.d(t, {
+            QV: () => n,
+            vh: () => o.A
+        });
+        var l = r(2115);
+        let n = function(e) {
+            let t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {
+                behavior: "smooth",
+                block: "start",
+                inline: "nearest"
+            };
+            return (0,
+            l.useCallback)( () => {
+                e.current && "function" == typeof e.current.scrollIntoView && e.current.scrollIntoView(t)
+            }
+            , [e, t])
+        };
+        var o = r(2713)
+    }
+    ,
+    8263: (e, t, r) => {
+        r.d(t, {
+            A: () => l.A
+        });
+        var l = r(7470)
+    }
+    ,
+    8282: (e, t, r) => {
+        r.d(t, {
+            A: () => n
+        });
+        var l = r(5155);
+        let n = e => {
+            let {endChars: t=8, startChars: r=8, text: n, truncate: o="middle", truncatedText: a="..."} = e
+              , i = ( () => {
+                let e = n.length;
+                if ("middle" === o) {
+                    if (e <= r + t)
+                        return n;
+                    let l = 0 === r ? "" : n.slice(0, r)
+                      , o = 0 === t ? "" : n.slice(-t);
+                    return "".concat(l).concat(a).concat(o)
+                }
+                if ("start" === o) {
+                    if (e <= t)
+                        return n;
+                    if (0 === t)
+                        return a;
+                    let r = n.slice(-t);
+                    return "".concat(a).concat(r)
+                }
+                if ("end" === o) {
+                    if (e <= r)
+                        return n;
+                    if (0 === r)
+                        return a;
+                    let t = n.slice(0, r);
+                    return "".concat(t).concat(a)
+                }
+                return n
+            }
+            )();
+            return (0,
+            l.jsx)(l.Fragment, {
+                children: i
+            })
+        }
+    }
+    ,
+    9628: (e, t, r) => {
+        r.d(t, {
+            A: () => c
+        });
+        var l = r(5155)
+          , n = r(5203)
+          , o = r.n(n)
+          , a = r(5239)
+          , i = r(2115)
+          , d = r(8263);
+        let s = {
+            src: "/_next/static/media/copy.fdd71203.svg"
+        }
+          , c = e => {
+            let {children: t, className: r, clickMode: n="icon", iconPosition: c="end", icon: u, onCopyText: x="Copied!", resetTextDelay: m=2e3, text: f} = e
+              , [p,b] = (0,
+            i.useState)(!1)
+              , h = async () => {
+                try {
+                    await navigator.clipboard.writeText(f),
+                    b(!0),
+                    setTimeout( () => b(!1), m)
+                } catch (e) {
+                    console.error("Failed to copy text: ".concat(e))
+                }
+            }
+              , g = "full" === n && {
+                onClick: h
+            }
+              , w = (0,
+            l.jsx)("span", {
+                ..."icon" === n && {
+                    className: "cursor-pointer",
+                    onClick: h
+                },
+                children: null != u ? u : (0,
+                l.jsx)(a.default, {
+                    src: s.src,
+                    width: 24,
+                    height: 24,
+                    alt: "Copy to clipboard"
+                })
+            });
+            return (0,
+            l.jsxs)(l.Fragment, {
+                children: [(0,
+                l.jsxs)("div", {
+                    className: o()("flex items-center gap-2", {
+                        "cursor-pointer": "full" === n
+                    }, r),
+                    "data-tooltip-id": "copy-component-tooltip",
+                    ...g,
+                    children: ["start" === c && w, t, "end" === c && w]
+                }), (0,
+                l.jsx)(d.A, {
+                    id: "copy-component-tooltip",
+                    isOpen: p,
+                    place: "top",
+                    className: "!w-auto !max-w-none",
+                    children: (0,
+                    l.jsx)("div", {
+                        className: "p-2",
+                        children: x
+                    })
+                })]
+            })
+        }
+    }
+    ,
+    9778: (e, t, r) => {
+        r.d(t, {
+            A: () => l.default
+        });
+        var l = r(2132)
+    }
+}]);

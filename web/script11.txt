@@ -1,0 +1,942 @@
+"use strict";
+(self.webpackChunk_N_E = self.webpackChunk_N_E || []).push([[7035], {
+    2397: (e, t, s) => {
+        s.d(t, {
+            AA: () => u,
+            TermsAndConditionsProvider: () => h,
+            xO: () => d
+        });
+        var a = s(5155)
+          , r = s(2115)
+          , n = s(2408)
+          , l = s(7222)
+          , i = s(5699);
+        let d = "registration_receipt"
+          , c = {
+            content: "",
+            version: "",
+            hash: "",
+            agreementMessage: "",
+            isLoading: !1,
+            isLoaded: !1,
+            error: null
+        }
+          , o = (e, t) => {
+            switch (t.type) {
+            case "LOAD_START":
+                return {
+                    ...e,
+                    isLoading: !0,
+                    error: null
+                };
+            case "LOAD_SUCCESS":
+                return {
+                    ...e,
+                    content: t.payload.content,
+                    version: t.payload.version,
+                    hash: t.payload.hash,
+                    agreementMessage: t.payload.agreementMessage,
+                    isLoading: !1,
+                    isLoaded: !0,
+                    error: null
+                };
+            case "LOAD_ERROR":
+                return {
+                    ...e,
+                    isLoading: !1,
+                    error: t.payload
+                };
+            case "RESET":
+                return localStorage.removeItem(d),
+                {
+                    ...c
+                };
+            default:
+                return e
+            }
+        }
+          , x = (0,
+        r.createContext)(void 0)
+          , h = e => {
+            let {children: t} = e
+              , [s,h] = (0,
+            r.useReducer)(o, c)
+              , {callApi: u} = (0,
+            n._)()
+              , m = (0,
+            r.useCallback)(async () => {
+                if (!s.isLoaded || !s.content)
+                    try {
+                        h({
+                            type: "LOAD_START"
+                        });
+                        let e = await u(async () => await (0,
+                        l.X)(), {
+                            critical: !0
+                        });
+                        if (!e)
+                            throw Error("Failed to load terms and conditions");
+                        let {content: t, version: s, message: a} = e
+                          , r = await (0,
+                        i.jH)(t);
+                        h({
+                            type: "LOAD_SUCCESS",
+                            payload: {
+                                content: t,
+                                version: s,
+                                hash: r,
+                                agreementMessage: a
+                            }
+                        })
+                    } catch (t) {
+                        let e = "An unknown error occurred";
+                        if (t instanceof Error)
+                            if ("getUserFriendlyMessage"in t && "function" == typeof t.getUserFriendlyMessage)
+                                try {
+                                    e = await t.getUserFriendlyMessage()
+                                } catch (s) {
+                                    e = t.message
+                                }
+                            else
+                                e = t.message;
+                        h({
+                            type: "LOAD_ERROR",
+                            payload: e
+                        })
+                    }
+            }
+            , [s.isLoaded, s.content, u])
+              , g = (0,
+            r.useCallback)( () => {
+                h({
+                    type: "RESET"
+                })
+            }
+            , [])
+              , p = (0,
+            r.useCallback)( () => {
+                let e = localStorage.getItem(d);
+                if (e)
+                    try {
+                        return JSON.parse(e)
+                    } catch (e) {}
+                return !1
+            }
+            , [])
+              , f = (0,
+            r.useCallback)(e => {
+                localStorage.setItem(d, JSON.stringify(e))
+            }
+            , []);
+            return (0,
+            a.jsx)(x.Provider, {
+                value: {
+                    state: s,
+                    dispatch: h,
+                    loadTerms: m,
+                    resetTerms: g,
+                    loadReceipt: p,
+                    saveReceipt: f
+                },
+                children: t
+            })
+        }
+          , u = () => {
+            let e = (0,
+            r.useContext)(x);
+            if (void 0 === e)
+                throw Error("useTermsAndConditions must be used within a TermsAndConditionsProvider");
+            let {state: t, dispatch: s, loadTerms: a, resetTerms: n, loadReceipt: l, saveReceipt: i} = e;
+            return {
+                content: t.content,
+                version: t.version,
+                hash: t.hash,
+                agreementMessage: t.agreementMessage,
+                isLoading: t.isLoading,
+                isLoaded: t.isLoaded,
+                error: t.error,
+                dispatch: s,
+                loadTerms: a,
+                resetTerms: n,
+                loadReceipt: l,
+                saveReceipt: i
+            }
+        }
+    }
+    ,
+    5289: (e, t, s) => {
+        s.d(t, {
+            ResetSessionProvider: () => l,
+            Z: () => i
+        });
+        var a = s(5155)
+          , r = s(2115);
+        let n = (0,
+        r.createContext)(void 0)
+          , l = e => {
+            let {children: t} = e
+              , s = (0,
+            r.useRef)(new Set)
+              , l = (0,
+            r.useRef)(new Set)
+              , [i,d] = (0,
+            r.useState)(!1)
+              , c = (0,
+            r.useCallback)( () => {
+                s.current.forEach(e => {
+                    try {
+                        e()
+                    } catch (e) {
+                        console.error("Error in reset session callback:", e)
+                    }
+                }
+                )
+            }
+            , [])
+              , o = (0,
+            r.useCallback)(e => (s.current.add(e),
+            () => {
+                s.current.delete(e)
+            }
+            ), [])
+              , x = (0,
+            r.useCallback)( () => {
+                l.current.forEach(e => {
+                    try {
+                        e()
+                    } catch (e) {
+                        console.error("Error in disconnect modal callback:", e)
+                    }
+                }
+                )
+            }
+            , [])
+              , h = (0,
+            r.useCallback)(e => (l.current.add(e),
+            () => {
+                l.current.delete(e)
+            }
+            ), [])
+              , u = (0,
+            r.useCallback)( () => {
+                d(!0)
+            }
+            , [])
+              , m = (0,
+            r.useCallback)( () => {
+                d(!1)
+            }
+            , []);
+            return (0,
+            a.jsx)(n.Provider, {
+                value: {
+                    triggerResetSession: c,
+                    onResetSession: o,
+                    triggerDisconnectModal: x,
+                    onDisconnectModal: h,
+                    hasUserInteracted: i,
+                    markUserInteraction: u,
+                    resetUserInteraction: m
+                },
+                children: t
+            })
+        }
+          , i = () => {
+            let e = (0,
+            r.useContext)(n);
+            if (void 0 === e)
+                throw Error("useResetSession must be used within a ResetSessionProvider");
+            return e
+        }
+    }
+    ,
+    6862: (e, t, s) => {
+        s.d(t, {
+            A: () => i
+        });
+        var a = s(5155);
+        s(2115);
+        var r = s(4311)
+          , n = s(5203)
+          , l = s.n(n);
+        let i = e => {
+            let {children: t, className: s, fullWidth: n=!0, size: i="xs"} = e;
+            return (0,
+            a.jsxs)("div", {
+                className: l()("p-4 flex items-start gap-2 border rounded-sm border-border-border-warning bg-color-alert-warning-warning-10 text-text-text-warning", s, {
+                    "w-full": n
+                }),
+                children: [(0,
+                a.jsx)(r.jDV, {
+                    size: 24
+                }), (0,
+                a.jsx)("div", {
+                    className: l()("flex-1", {
+                        "text-xs": "xs" === i,
+                        "text-sm": "small" === i,
+                        "text-base": "medium" === i,
+                        "text-lg": "large" === i
+                    }),
+                    children: t
+                })]
+            })
+        }
+    }
+    ,
+    7035: (e, t, s) => {
+        s.d(t, {
+            fr: () => T,
+            bu: () => E,
+            ns: () => A,
+            n0: () => R,
+            bn: () => U,
+            Ay: () => M,
+            $g: () => D
+        });
+        var a = s(5155)
+          , r = s(6360)
+          , n = s(63)
+          , l = s(2115)
+          , i = s(5438)
+          , d = s(6862)
+          , c = s(2397)
+          , o = s(7034)
+          , x = s(1345)
+          , h = s(5289)
+          , u = s(9778)
+          , m = s(4311)
+          , g = s(9628)
+          , p = s(8282);
+        let f = () => {
+            let e = (0,
+            n.useRouter)()
+              , [t,s] = (0,
+            l.useState)(!1)
+              , {dispatch: f} = (0,
+            c.AA)()
+              , {state: {walletAddress: y}, disconnectWallet: j} = (0,
+            o.u)()
+              , {triggerResetSession: v, triggerDisconnectModal: b} = (0,
+            h.Z)()
+              , {dispatch: N} = (0,
+            x.C)();
+            return y ? (0,
+            a.jsxs)(a.Fragment, {
+                children: [(0,
+                a.jsx)(u.A, {
+                    variant: "link",
+                    onClick: () => s(!0),
+                    text: "Disconnect"
+                }), t && (0,
+                a.jsx)(i.A, {
+                    isOpen: t,
+                    onClose: () => s(!1),
+                    children: (0,
+                    a.jsx)(r.A, {
+                        title: "Are you sure you wish to disconnect your wallet?",
+                        footerButtons: [{
+                            onClick: () => s(!1),
+                            text: "Cancel",
+                            variant: "outline"
+                        }, {
+                            onClick: () => {
+                                j(),
+                                f({
+                                    type: "RESET"
+                                }),
+                                s(!1),
+                                N({
+                                    type: "SET_ACTIVE_STEP",
+                                    payload: A.id
+                                }),
+                                e.push(A.url),
+                                v(),
+                                b()
+                            }
+                            ,
+                            text: "Disconnect"
+                        }],
+                        children: (0,
+                        a.jsxs)("div", {
+                            className: "flex flex-col gap-6",
+                            children: [(0,
+                            a.jsx)("div", {
+                                className: "flex flex-col gap-6",
+                                children: (0,
+                                a.jsx)(d.A, {
+                                    children: "Your current session will remain active."
+                                })
+                            }), (0,
+                            a.jsxs)("div", {
+                                className: "p-4 flex rounded-lg text-xs bg-color-surface-z-1 text-text-text-primary",
+                                children: [(0,
+                                a.jsxs)("div", {
+                                    className: "flex flex-1 items-center gap-2",
+                                    children: [(0,
+                                    a.jsx)("div", {
+                                        children: "Destination address:"
+                                    }), (0,
+                                    a.jsx)(m.prl, {
+                                        className: "text-icon-icon-secondary",
+                                        size: 24
+                                    })]
+                                }), (0,
+                                a.jsx)(g.A, {
+                                    text: y,
+                                    children: (0,
+                                    a.jsx)(p.A, {
+                                        endChars: 3,
+                                        text: y
+                                    })
+                                })]
+                            })]
+                        })
+                    })
+                })]
+            }) : null
+        }
+          , y = () => {
+            let e = (0,
+            n.useRouter)()
+              , [t,s] = (0,
+            l.useState)(!1)
+              , {onDisconnectModal: d} = (0,
+            h.Z)();
+            (0,
+            l.useEffect)( () => d( () => {
+                s(!0)
+            }
+            ), [d]);
+            let c = () => {
+                s(!1),
+                e.push(A.url)
+            }
+            ;
+            return (0,
+            a.jsx)(i.A, {
+                isOpen: t,
+                onClose: c,
+                children: (0,
+                a.jsx)(r.A, {
+                    padding: "none",
+                    header: (0,
+                    a.jsxs)("div", {
+                        className: "flex items-center gap-1.5 px-6 h-[71px]",
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "flex items-center justify-center w-6 h-6 rounded-full",
+                            children: (0,
+                            a.jsx)(m.jh$, {
+                                className: "text-icon-icon-success size-6"
+                            })
+                        }), (0,
+                        a.jsx)("h3", {
+                            className: "text-lg font-semibold text-text-text-primary leading-6",
+                            children: "Wallet disconnected"
+                        })]
+                    }),
+                    bodyClassName: "p-6",
+                    footerClassName: "p-6",
+                    footerButtons: [{
+                        text: "Close",
+                        onClick: c,
+                        variant: "outline",
+                        "data-testid": "button-close"
+                    }],
+                    children: (0,
+                    a.jsx)("div", {
+                        className: "flex flex-col gap-4",
+                        children: (0,
+                        a.jsx)("p", {
+                            className: "text-base text-text-text-primary",
+                            children: "You can continue to mine without an active wallet connection. If you close your browser and return, you'll be taken back to this page."
+                        })
+                    })
+                })
+            })
+        }
+        ;
+        var j = s(5203)
+          , v = s.n(j);
+        let b = e => {
+            let {children: t, className: s, defaultExpanded: r=!1, title: n, topBorder: i=!1} = e
+              , [d,c] = (0,
+            l.useState)(r);
+            return (0,
+            a.jsxs)("div", {
+                className: v()("border-b border-border-border-divider py-4", {
+                    "border-t": i
+                }, s),
+                children: [(0,
+                a.jsxs)("button", {
+                    type: "button",
+                    className: "flex items-center gap-4 w-full text-left text-text-text-primary focus:outline-none",
+                    onClick: () => c(e => !e),
+                    "aria-expanded": d,
+                    "aria-label": d ? "Collapse ".concat(n) : "Expand ".concat(n),
+                    children: [(0,
+                    a.jsx)("div", {
+                        className: "text-icon-icon-primary",
+                        children: d ? (0,
+                        a.jsx)(m.NIP, {
+                            size: 24
+                        }) : (0,
+                        a.jsx)(m.tNe, {
+                            size: 24
+                        })
+                    }), (0,
+                    a.jsx)("div", {
+                        className: "flex-1 text-base",
+                        children: n
+                    })]
+                }), d && (0,
+                a.jsx)("div", {
+                    className: "ml-10 text-xs",
+                    children: t
+                })]
+            })
+        }
+        ;
+        var N = s(7084)
+          , w = s(9284);
+        let k = () => "false" === localStorage.getItem(N.DS)
+          , C = () => {
+            try {
+                var e;
+                let t = null != (e = localStorage.getItem(c.xO)) ? e : ""
+                  , s = JSON.parse(t);
+                if (!["walletAddress", "signature", "hash", "version", "timestamp"].every(e => e in s))
+                    return !1;
+                return !0
+            } catch (e) {
+                return !1
+            }
+        }
+          , S = () => {
+            try {
+                let e = localStorage.getItem("scavenger_wallet_data");
+                if (!e)
+                    return !1;
+                try {
+                    return JSON.parse(e),
+                    !0
+                } catch (e) {
+                    return !1
+                }
+            } catch (e) {
+                return !1
+            }
+        }
+          , A = {
+            id: 1,
+            status: "pending",
+            hasHelp: !0,
+            url: "/wizard/wallet",
+            title: (0,
+            a.jsx)( () => {
+                let e = (0,
+                o.u)();
+                return (0,
+                a.jsxs)(a.Fragment, {
+                    children: [(0,
+                    a.jsx)("div", {
+                        children: "Choose a Destination address"
+                    }), e && (0,
+                    a.jsx)(f, {}), (0,
+                    a.jsx)(y, {})]
+                })
+            }
+            , {}),
+            checks: [],
+            isCurrent: e => e.split("/").includes("wallet"),
+            renderHelp: (e, t) => (0,
+            a.jsxs)(r.A, {
+                scroll: !0,
+                bodyClassName: "flex flex-col gap-6 p-6 pt-0",
+                rounded: !1,
+                showHeaderBorder: t,
+                headerClassName: "!py-0 mb-6",
+                padding: "none",
+                header: (0,
+                a.jsx)("h3", {
+                    className: v()("px-6 pt-0", {
+                        "text-2xl": !t,
+                        "text-xl": t
+                    }),
+                    children: "Get help for this step"
+                }),
+                className: v()("!py-8", {
+                    "rounded-t-lg": t
+                }),
+                children: [(0,
+                a.jsxs)("h3", {
+                    className: v()("flex items-center gap-2 text-sm text-text-text-primary", {
+                        "mt-5": t
+                    }),
+                    children: [(0,
+                    a.jsx)("div", {
+                        className: "flex h-8 w-8 items-center justify-center rounded-full border-1",
+                        children: "1"
+                    }), "Choose a Destination address"]
+                }), (0,
+                a.jsx)("div", {
+                    className: "flex flex-col gap-2",
+                    children: (0,
+                    a.jsx)("div", {
+                        className: "text-xs leading-5",
+                        children: "A Destination Address is the registered location for the redemption of your claimed NIGHT allocations -- that is, for receiving your redeemed tokens. On Scavenger Mine, this address is also used to sign the unique claim message that demonstrates acceptance of terms and conditions."
+                    })
+                }), (0,
+                a.jsxs)("div", {
+                    children: [(0,
+                    a.jsx)("h3", {
+                        className: "text-base mb-2",
+                        children: "FAQs"
+                    }), (0,
+                    a.jsxs)(b, {
+                        title: "What is a Destination address?",
+                        topBorder: !0,
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "my-2 text-xs leading-5",
+                            children: "A Destination Address is the registered location for the redemption of your claimed NIGHT allocations -- that is, for receiving your redeemed tokens. Once you complete a claim, you cannot change your Destination address..."
+                        }), (0,
+                        a.jsx)("a", {
+                            className: "text-text-text-accent underline text-xs leading-5",
+                            href: w.c.faqUrl,
+                            target: "_blank",
+                            children: "Read more"
+                        })]
+                    }), (0,
+                    a.jsxs)(b, {
+                        title: "What does it mean to register a Destination address for Scavenger Mine?",
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "my-2 text-xs leading-5",
+                            children: "Registering a Destination address does two things: 1. Demonstrates one's acceptance of the Token End User Terms, and 2. Associates that Destination address with the current browser..."
+                        }), (0,
+                        a.jsx)("a", {
+                            className: "text-text-text-accent underline text-xs leading-5",
+                            href: w.c.faqUrl,
+                            target: "_blank",
+                            children: "Read more"
+                        })]
+                    }), (0,
+                    a.jsxs)(b, {
+                        title: "How does Scavenger Mine work?",
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "my-2 text-xs leading-5",
+                            children: "During Scavenger Mine, all tokens left unclaimed after Glacier Drop are reallocated between Scavenger Mine participants, core network constituents, and the Lost-and-Found claim phase. The 21-day Scavenger Mine claim phase is divided into 21 claim cycles, each lasting 24h. In addition to these, a day-0 pre-registration period allows participants to register their addresses in preparation for the first challenge."
+                        }), (0,
+                        a.jsx)("a", {
+                            className: "text-text-text-accent underline text-xs leading-5",
+                            href: w.c.faqUrl,
+                            target: "_blank",
+                            children: "Read more"
+                        })]
+                    })]
+                })]
+            })
+        }
+          , E = {
+            id: 2,
+            title: "Accept Token End User Terms",
+            status: "pending",
+            hasHelp: !0,
+            url: "/wizard/t-c",
+            checks: [S],
+            isCurrent: e => e.split("/").includes("t-c"),
+            renderHelp: (e, t) => (0,
+            a.jsxs)(r.A, {
+                scroll: !0,
+                bodyClassName: "flex flex-col gap-6 pt-0",
+                rounded: !1,
+                showHeaderBorder: t,
+                headerClassName: "!py-0 mb-6",
+                className: v()("!py-8", {
+                    "rounded-t-lg": t
+                }),
+                header: (0,
+                a.jsx)("h3", {
+                    className: "text-2xl",
+                    children: "Get help for this step"
+                }),
+                children: [(0,
+                a.jsxs)("h3", {
+                    className: v()("flex items-center gap-2 text-sm text-text-text-primary", {
+                        "mt-5": t
+                    }),
+                    children: [(0,
+                    a.jsx)("div", {
+                        className: "flex h-8 w-8 items-center justify-center rounded-full border-1",
+                        children: "2"
+                    }), "Accept Token End User Terms"]
+                }), (0,
+                a.jsx)("div", {
+                    className: "flex flex-col gap-2",
+                    children: (0,
+                    a.jsx)("div", {
+                        className: "text-xs leading-5",
+                        children: "You must accept the Token End User Terms and demonstrate acceptance by signing a unique claim message with your Destination address."
+                    })
+                }), (0,
+                a.jsxs)("div", {
+                    children: [(0,
+                    a.jsx)("h3", {
+                        className: "text-base mb-2",
+                        children: "FAQs"
+                    }), (0,
+                    a.jsxs)(b, {
+                        title: "What are the Token End User Terms?",
+                        topBorder: !0,
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "my-2 text-xs leading-5",
+                            children: "These Token End-User Terms (the “Token End-User Terms”) are a legally binding agreement between you (“User”, “you”, or “your”) and Midnight TGE Ltd..."
+                        }), (0,
+                        a.jsx)("a", {
+                            className: "text-text-text-accent underline text-xs leading-5",
+                            href: w.c.faqUrl,
+                            target: "_blank",
+                            children: "Read more"
+                        })]
+                    }), (0,
+                    a.jsxs)(b, {
+                        title: "What is a unique claim message?",
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "my-2 text-xs leading-5",
+                            children: "In Glacier Drop, a unique claim message binds together an Origin address with its corresponding allocation size, Destination address, and a hash of terms & conditions into a bundle..."
+                        }), (0,
+                        a.jsx)("a", {
+                            className: "text-text-text-accent underline text-xs leading-5",
+                            href: w.c.faqUrl,
+                            target: "_blank",
+                            children: "Read more"
+                        })]
+                    }), (0,
+                    a.jsxs)(b, {
+                        title: "Can I verify the unique claim message?",
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "my-2 text-xs leading-5",
+                            children: "Yes. After signing, you'll be presented with the signed message payload..."
+                        }), (0,
+                        a.jsx)("a", {
+                            className: "text-text-text-accent underline text-xs leading-5",
+                            href: w.c.faqUrl,
+                            target: "_blank",
+                            children: "Read more"
+                        })]
+                    })]
+                })]
+            })
+        }
+          , T = {
+            id: 3,
+            title: "Solve cryptographic challenges",
+            status: "pending",
+            hasHelp: !0,
+            url: "/wizard/mine",
+            checks: [S, C],
+            isCurrent: e => e.split("/").includes("mine"),
+            renderHelp: (e, t) => (0,
+            a.jsxs)(r.A, {
+                scroll: !0,
+                bodyClassName: "flex flex-col gap-6 pt-0",
+                rounded: !1,
+                showHeaderBorder: t,
+                headerClassName: "!py-0 mb-6",
+                className: v()("!py-8", {
+                    "rounded-t-lg": t
+                }),
+                header: (0,
+                a.jsx)("h3", {
+                    className: "text-2xl",
+                    children: "Get help for this step"
+                }),
+                children: [(0,
+                a.jsxs)("h3", {
+                    className: v()("flex items-center gap-2 text-sm text-text-text-primary", {
+                        "mt-5": t
+                    }),
+                    children: [(0,
+                    a.jsx)("div", {
+                        className: "flex h-8 w-8 items-center justify-center rounded-full border-1",
+                        children: "3"
+                    }), "Solve cryptographic challenges"]
+                }), (0,
+                a.jsx)("div", {
+                    className: "flex flex-col gap-2",
+                    children: (0,
+                    a.jsx)("div", {
+                        className: "text-xs leading-5",
+                        children: "Cryptographic challenges are the computing tasks performed by your computer/device during Scavenger Mine."
+                    })
+                }), (0,
+                a.jsxs)("div", {
+                    children: [(0,
+                    a.jsx)("h3", {
+                        className: "text-base mb-2",
+                        children: "FAQs"
+                    }), (0,
+                    a.jsxs)(b, {
+                        title: "How do I find solutions to Scavenger Mine cryptographic challenges?",
+                        topBorder: !0,
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "my-2 text-xs leading-5",
+                            children: "You only need to start the Scavenger Mine session and leave your device/browser running..."
+                        }), (0,
+                        a.jsx)("a", {
+                            className: "text-text-text-accent underline text-xs leading-5",
+                            href: w.c.faqUrl,
+                            target: "_blank",
+                            children: "Read more"
+                        })]
+                    }), (0,
+                    a.jsxs)(b, {
+                        title: "What are submitted solutions?",
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "my-2 text-xs leading-5",
+                            children: "Solutions are mathematical proofs that satisfy the requirements set out by each challenge depending on its difficulty..."
+                        }), (0,
+                        a.jsx)("a", {
+                            className: "text-text-text-accent underline text-xs leading-5",
+                            href: w.c.faqUrl,
+                            target: "_blank",
+                            children: "Read more"
+                        })]
+                    })]
+                })]
+            })
+        }
+          , R = {
+            id: 4,
+            title: "View your submitted solutions",
+            status: "pending",
+            hasHelp: !0,
+            url: "/wizard/work",
+            checks: [S, C, k],
+            isCurrent: e => e.split("/").includes("work"),
+            renderHelp: (e, t) => (0,
+            a.jsxs)(r.A, {
+                scroll: !0,
+                bodyClassName: "flex flex-col gap-6 pt-0",
+                rounded: !1,
+                showHeaderBorder: t,
+                headerClassName: "!py-0 mb-6",
+                className: v()("!py-8", {
+                    "rounded-t-lg": t
+                }),
+                header: (0,
+                a.jsx)("h3", {
+                    className: "text-2xl",
+                    children: "Get help for this step"
+                }),
+                children: [(0,
+                a.jsxs)("h3", {
+                    className: v()("flex items-center gap-2 text-sm text-text-text-primary", {
+                        "mt-5": t
+                    }),
+                    children: [(0,
+                    a.jsx)("div", {
+                        className: "flex h-8 w-8 items-center justify-center rounded-full border-1",
+                        children: "4"
+                    }), "View your submitted solutions"]
+                }), (0,
+                a.jsx)("div", {
+                    className: "flex flex-col gap-2",
+                    children: (0,
+                    a.jsx)("div", {
+                        className: "text-xs leading-5",
+                        children: "Solutions are mathematical proofs that satisfy the requirements set out by each challenge depending on its difficulty. Only after a solution is submitted does it count toward calculating your allocation."
+                    })
+                }), (0,
+                a.jsxs)("div", {
+                    children: [(0,
+                    a.jsx)("h3", {
+                        className: "text-base mb-2",
+                        children: "FAQs"
+                    }), (0,
+                    a.jsxs)(b, {
+                        title: "What are submitted solutions?",
+                        topBorder: !0,
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "my-2 text-xs leading-5",
+                            children: "Solutions are mathematical proofs that satisfy the requirements set out by each challenge depending on its difficulty..."
+                        }), (0,
+                        a.jsx)("a", {
+                            className: "text-text-text-accent underline text-xs leading-5",
+                            href: w.c.faqUrl,
+                            target: "_blank",
+                            children: "Read more"
+                        })]
+                    }), (0,
+                    a.jsxs)(b, {
+                        title: "What are cryptographic challenges?",
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "my-2 text-xs leading-5",
+                            children: "Cryptographic challenges are the computing tasks performed by your computer/device during Scavenger Mine..."
+                        }), (0,
+                        a.jsx)("a", {
+                            className: "text-text-text-accent underline text-xs leading-5",
+                            href: w.c.faqUrl,
+                            target: "_blank",
+                            children: "Read more"
+                        })]
+                    }), (0,
+                    a.jsxs)(b, {
+                        title: "How do I find solutions to Scavenger Mine cryptographic challenges?",
+                        children: [(0,
+                        a.jsx)("div", {
+                            className: "my-2 text-xs leading-5",
+                            children: "You only need to start the Scavenger Mine session and leave your device/browser running..."
+                        }), (0,
+                        a.jsx)("a", {
+                            className: "text-text-text-accent underline text-xs leading-5",
+                            href: w.c.faqUrl,
+                            target: "_blank",
+                            children: "Read more"
+                        })]
+                    })]
+                })]
+            })
+        }
+          , _ = [A, E, T, R]
+          , D = e => _.find(t => t.isCurrent(e))
+          , U = e => {
+            for (let t of e.checks)
+                if (!t()) {
+                    if (t === S)
+                        return A;
+                    else if (t === C)
+                        return E;
+                    else if (t === k)
+                        return T
+                }
+        }
+          , M = _
+    }
+    ,
+    7222: (e, t, s) => {
+        s.d(t, {
+            X: () => r
+        });
+        var a = s(7334);
+        let r = async () => {
+            let e = await a.K.get("/TandC");
+            if (!e.content || "string" != typeof e.content)
+                throw Error("Invalid terms & conditions format");
+            return {
+                content: e.content,
+                message: e.message,
+                version: e.version
+            }
+        }
+    }
+}]);
