@@ -42,8 +42,8 @@ export class WalletsController {
   }
 
   @Get('challenge-changed')
-  hasChallengeChanged() {
-    const info = this.autoMinerService.getChallengeInfo();
+  async hasChallengeChanged() {
+    const info = await this.autoMinerService.getChallengeInfo();
     return {
       changed: info.hasChanged,
       currentChallengeId: info.currentChallengeId,

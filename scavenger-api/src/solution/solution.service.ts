@@ -1,10 +1,13 @@
-import { Injectable, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, NotFoundException, Logger } from '@nestjs/common';
+import axios from 'axios';
 import { StorageService } from '../storage/storage.service';
 import { ChallengeService } from '../challenge/challenge.service';
 import { AshmaizeService } from '../ashmaize/ashmaize.service';
 
 @Injectable()
 export class SolutionService {
+  private readonly logger = new Logger(SolutionService.name);
+
   constructor(
     private readonly storageService: StorageService,
     private readonly challengeService: ChallengeService,
@@ -37,8 +40,8 @@ export class SolutionService {
     }
 
     // Obter o desafio atual
-    const challengeResponse = this.challengeService.getCurrentChallenge();
-    
+    const challengeResponse = await this.challengeService.getCurrentChallenge();
+
     if (challengeResponse.code !== 'active') {
       throw new HttpException(
         {
@@ -56,7 +59,6 @@ export class SolutionService {
     const challenge = challengeResponse.challenge;
 
     // ✅ Normalizar challenge_id: aceitar com ou sem ** prefixo
-    // O browser pode enviar com ou sem asteriscos, mas usamos o formato da API (com **) no preimage
     const challengeIdWithoutAsterisks = challengeId.replace(/^\*\*/, '');
 
     // ✅ Validar formato do challenge_id (D##C##) - conforme teste
@@ -102,7 +104,6 @@ export class SolutionService {
     }
 
     // ✅ Construir preimage (conforme especificação Midnight)
-    // IMPORTANTE: Usar challenge.challenge_id COM asteriscos (como vem da API e como o browser usa)
     const preimage = this.buildPreimage(
       nonce,
       address,
@@ -113,7 +114,7 @@ export class SolutionService {
       challenge.no_pre_mine_hour,
     );
 
-    // Validar solução usando AshMaize
+    // Validar solução usando AshMaize (retorna boolean no seu código original)
     const isValid = await this.ashmaizeService.validateSolution(
       preimage,
       challenge.no_pre_mine,
@@ -121,6 +122,7 @@ export class SolutionService {
     );
 
     if (!isValid) {
+      this.logger.warn(`Solução inválida localmente para ${address.substring(0, 20)}... nonce=${nonce}`);
       throw new HttpException(
         {
           message: 'Solution validation failed: Solution does not meet difficulty',
@@ -145,30 +147,63 @@ export class SolutionService {
       );
     }
 
-    // ✅ Salvar solução
-    this.storageService.addSolution(address, challengeId, nonce, preimage);
-    
-    // ✅ Log quando challenge é resolvido e submetido
-    console.log(
-      `🎉 SOLUÇÃO SUBMETIDA!\n` +
-      `   Challenge: ${challengeId}\n` +
-      `   Endereço: ${address.substring(0, 20)}...\n` +
-      `   Nonce: ${nonce}\n` +
-      `   Timestamp: ${new Date().toISOString()}`
+    // -----------------------
+    // Enviar para Midnight (com logs)
+    // -----------------------
+    const url = `https://scavenger.prod.gd.midnighttge.io/solution/${encodeURIComponent(address)}/${encodeURIComponent(challenge.challenge_id)}/${encodeURIComponent(nonce)}`;
+
+    this.logger.log(`📡 Enviando solução para Midnight...`);
+    this.logger.debug(` - URL: ${url}`);
+    this.logger.debug(` - preimage (len=${preimage.length}): ${preimage.substring(0, 120)}${preimage.length > 120 ? '... (truncated)' : ''}`);
+
+    try {
+  const response = await axios.post(url, {}); // body vazio conforme docs
+
+  this.logger.log(`✅ Midnight respondeu com receipt.`);
+  this.logger.debug(
+    `📄 Midnight response: ${JSON.stringify(response.data, null, 2)}`
+  );
+
+  // Salvar solução local somente após confirmação
+  this.storageService.addSolution(address, challengeId, nonce, preimage);
+
+  return response.data;
+
+} catch (err: any) {
+  const axiosData = err?.response?.data;
+  const msg = axiosData?.message || err?.message || String(err);
+
+  // ✅ Tratamento: solução já enviada — continuar mineração sem crash
+  if (msg.includes("Solution already exists")) {
+    this.logger.warn(
+      `⚠️ Solução já existe na Midnight — ignorando e continuando mineração`
     );
 
-    // Gerar crypto_receipt
-    const timestamp = new Date();
-    const receiptPreimage = `${preimage}${timestamp.toISOString()}`;
-    const signature = this.generateServerSignature(receiptPreimage);
+    // opcionalmente marcar como duplicada
+    this.storageService.addSolution(address, challengeId, nonce, preimage);
 
     return {
-      crypto_receipt: {
-        preimage: receiptPreimage,
-        timestamp: timestamp.toISOString(),
-        signature,
-      },
+      status: "duplicate",
+      message: "Solution already exists — continue mining",
     };
+  }
+
+  this.logger.error(`❌ Erro ao enviar solução para Midnight: ${msg}`);
+
+  this.logger.debug(
+    `Midnight error detail: ${JSON.stringify(axiosData ?? err, null, 2)}`
+  );
+
+  throw new HttpException(
+    {
+      message: 'Failed to send solution to Midnight Scavenger API',
+      midnight_error: axiosData ?? err?.message ?? err,
+      statusCode: HttpStatus.BAD_GATEWAY,
+    },
+    HttpStatus.BAD_GATEWAY,
+  );
+}
+
   }
 
   /**
@@ -176,9 +211,9 @@ export class SolutionService {
    * 1. Concatena todas as strings na ordem: nonce + address + challenge_id + difficulty + no_pre_mine + latest_submission + no_pre_mine_hour
    * 2. O challenge_id deve vir COM ** (como a API retorna e como o browser usa)
    * 3. Depois essa string é codificada como UTF-8 para o hash
-   * 
+   *
    * Conforme mine-session.work.js (linhas 148-156):
-   * const preimage = [tryNonce, _address, _challengeId, _difficultyHex, 
+   * const preimage = [tryNonce, _address, _challengeId, _difficultyHex,
    *                   _noPreMine, _latestSubmission, _noPreMineHour].join('');
    * const salt = new TextEncoder().encode(preimage);
    */
@@ -218,4 +253,3 @@ export class SolutionService {
     return hash; // Em produção, usar assinatura real com chave privada do servidor
   }
 }
-

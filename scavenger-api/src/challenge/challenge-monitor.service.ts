@@ -17,16 +17,20 @@ export class ChallengeMonitorService implements OnModuleInit {
     private readonly autoMinerService: AutoMinerService,
   ) {}
 
-  onModuleInit() {
+  async onModuleInit() {
     // Inicializar challenge atual
-    const challenge = this.challengeService.getCurrentChallenge();
-    if (challenge.challenge) {
-      this.currentChallengeId = challenge.challenge.challenge_id;
-      this.logger.log(`📊 Challenge inicial: ${this.currentChallengeId}`);
-    }
+    try {
+      const challenge = await this.challengeService.getCurrentChallenge();
+      if (challenge.challenge) {
+        this.currentChallengeId = challenge.challenge.challenge_id;
+        this.logger.log(`📊 Challenge inicial: ${this.currentChallengeId}`);
+      }
 
-    // ✅ Monitorar mudanças a cada minuto
-    this.startMonitoring();
+      // ✅ Monitorar mudanças a cada minuto
+      this.startMonitoring();
+    } catch (error) {
+      this.logger.error('Erro ao inicializar o monitor de challenges:', error);
+    }
   }
 
   /**
@@ -34,12 +38,12 @@ export class ChallengeMonitorService implements OnModuleInit {
    */
   private startMonitoring() {
     // Verificar a cada minuto se o challenge mudou
-    this.checkInterval = setInterval(() => {
-      this.checkForChallengeChange();
+    this.checkInterval = setInterval(async () => {
+      await this.checkForChallengeChange();
     }, 60000); // 60 segundos
 
     // Verificar imediatamente
-    this.checkForChallengeChange();
+    void this.checkForChallengeChange();
 
     this.logger.log('✅ Monitor de challenges iniciado (verifica a cada 60 segundos)');
   }
@@ -47,9 +51,9 @@ export class ChallengeMonitorService implements OnModuleInit {
   /**
    * Verifica se o challenge mudou
    */
-  private checkForChallengeChange() {
+  private async checkForChallengeChange() {
     try {
-      const challenge = this.challengeService.getCurrentChallenge();
+      const challenge = await this.challengeService.getCurrentChallenge();
       
       if (challenge.code !== 'active' || !challenge.challenge) {
         return;
@@ -101,9 +105,9 @@ export class ChallengeMonitorService implements OnModuleInit {
   /**
    * Obtém informações sobre o challenge atual e mudanças
    */
-  getChallengeStatus() {
-    const challenge = this.challengeService.getCurrentChallenge();
-    const challengeInfo = this.autoMinerService.getChallengeInfo();
+  async getChallengeStatus() {
+    const challenge = await this.challengeService.getCurrentChallenge();
+    const challengeInfo = await this.autoMinerService.getChallengeInfo();
 
     return {
       currentChallengeId: this.currentChallengeId,
