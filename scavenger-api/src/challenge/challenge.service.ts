@@ -7,7 +7,7 @@ export class ChallengeService {
   private readonly apiUrl = 'https://scavenger.prod.gd.midnighttge.io/challenge';
   private lastChallenge: ChallengeResponse | null = null;
   private lastFetchTime: number = 0;
-  private readonly cacheDuration = 10000; // 10 segundos de cache
+  private readonly cacheDuration = 100000; // 10 segundos de cache
 
   async getCurrentChallenge(): Promise<ChallengeResponse> {
     const now = Date.now();

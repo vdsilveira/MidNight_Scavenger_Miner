@@ -281,7 +281,7 @@ export class AutoMinerService implements OnModuleInit {
     // Converte o target da API para número (removendo zeros à esquerda)
     const target = parseInt(targetDifficulty, 16) >>> 0;
     // Faz o OR bit a bit e compara com o target
-    const orResult = hashValue | target;
+    const orResult = (hashValue | target) >>> 0;
     return orResult === target;
   }
 
@@ -324,11 +324,11 @@ export class AutoMinerService implements OnModuleInit {
     this.workerAttempts.set(address, workerAttempts);
 
     // Log debug a cada 2000 tentativas por worker
-    if (workerAttempts %100000 === 0) {
+    if (workerAttempts %1=== 0) {
       const hashPrefix = hashHex.slice(0, 8);
       const hashValue = parseInt(hashPrefix, 16) >>> 0;
       const target = parseInt(challengeData.difficulty, 16) >>> 0;
-      const orResult = hashValue | target;
+      const orResult = (hashValue | target) >>> 0;
       
       this.logger.debug(
         `[DEBUG] Worker ${address.substring(0, 20)}... (attempts: ${workerAttempts}):\n\n` +
