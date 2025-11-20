@@ -103,8 +103,9 @@ async function donateTo(destination, original, signature, index) {
 const RANGE_START = 0;
 const RANGE_END =150;
 
-const DESTINATION =
-  "addr1qxemvvgh5hfedv26g2qd7mancmqpkhyq4frtdmzemawz954kmx75g3ntj0jd7km30k0jlf5u9qvu5jyrj27xcmvz3v2qexg0ta";
+const DESTINATION = process.env.DESTINATION_ADDRESS;
+if (!DESTINATION) throw new Error("❌ DESTINATION_ADDRESS não encontrada no .env");
+  
 
 // Mensagem fixa do whitepaper
 const buildMessage = (dst) =>
