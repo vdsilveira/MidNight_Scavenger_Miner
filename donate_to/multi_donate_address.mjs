@@ -101,7 +101,7 @@ async function donateTo(destination, original, signature, index) {
 // 4️⃣ PARAMETROS
 // ================================================================
 const RANGE_START = 0;
-const RANGE_END =2;
+const RANGE_END =150;
 
 const DESTINATION =
   "addr1qxemvvgh5hfedv26g2qd7mancmqpkhyq4frtdmzemawz954kmx75g3ntj0jd7km30k0jlf5u9qvu5jyrj27xcmvz3v2qexg0ta";
