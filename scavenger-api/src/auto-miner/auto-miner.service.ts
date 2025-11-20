@@ -324,7 +324,7 @@ export class AutoMinerService implements OnModuleInit {
     this.workerAttempts.set(address, workerAttempts);
 
     // Log debug a cada 2000 tentativas por worker
-    if (workerAttempts %1=== 0) {
+    if (workerAttempts %10000000=== 0) {
       const hashPrefix = hashHex.slice(0, 8);
       const hashValue = parseInt(hashPrefix, 16) >>> 0;
       const target = parseInt(challengeData.difficulty, 16) >>> 0;
